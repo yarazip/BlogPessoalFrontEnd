@@ -37,13 +37,11 @@ export class AppComponent {
 const urlWithFragment = event.urlAfterRedirects || event.url;
 const url = urlWithFragment.split('?')[0].split('#')[0];
         
-        // Rotas que devem mostrar o header padrão
         const defaultHeaderRoutes = ['/', '/home', '/login', '/register'];
         
-        // Verifica se a URL atual corresponde a alguma rota padrão
         this.showDashboardHeader = !defaultHeaderRoutes.some(route => 
           url === route || url.startsWith(route + '/')
-        ); // Fechando o some e o subscribe
+        ); 
       });
   }
 }

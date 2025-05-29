@@ -8,7 +8,7 @@
     --medium-grey: #959595;
     --dark-grey: #333333;
     --black: #000000;
-    --accent-color: #f96f2f; /* Cor acentuada para elementos interativos */
+    --accent-color: #f96f2f; 
 }
 
 * {
@@ -27,7 +27,6 @@ body {
     line-height: 1.6;
 }
 
-/* Header Styles */
 .header {
     width: 100%;
     padding: 20px 0;
@@ -94,7 +93,6 @@ body {
     width: 100%;
 }
 
-/* Main Content */
 .main-container {
     flex: 1;
     max-width: 1200px;
@@ -103,7 +101,6 @@ body {
     animation: fade-in 0.8s ease-out;
 }
 
-/* Hero Section */
 .hero {
     text-align: center;
     padding: 60px 20px;
@@ -127,7 +124,6 @@ body {
     margin: 0 auto 30px;
 }
 
-/* Posts Grid */
 .posts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -200,7 +196,6 @@ body {
     margin-left: 10px;
 }
 
-/* Single Post Page */
 .single-post {
     background-color: var(--highlights);
     border-radius: 15px;
@@ -233,7 +228,6 @@ body {
     margin: 30px 0;
 }
 
-/* Footer */
 .footer {
     background-color: var(--dark-grey);
     color: var(--highlights);
@@ -275,7 +269,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* Animations */
 @keyframes slide-in {
     from {
         transform: translateY(-20px);
@@ -296,7 +289,6 @@ body {
     }
 }
 
-/* Rotating Image (opcional) */
 .rotating-image {
     display: none;
     position: fixed;
@@ -319,7 +311,6 @@ body {
     }
 }
 
-/* Responsive Design */
 @media (min-width: 768px) {
     .logo {
         font-size: 2.5rem;

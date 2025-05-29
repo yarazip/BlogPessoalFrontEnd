@@ -47,7 +47,7 @@ export class PerfilComponent implements OnInit {
   if (this.usuario.fotoUrl.startsWith('http')) {
     return this.usuario.fotoUrl;
   }
-  return 'http://localhost:8888' + this.usuario.fotoUrl;
+  return 'http://localhost:8080' + this.usuario.fotoUrl;
 }
 
 

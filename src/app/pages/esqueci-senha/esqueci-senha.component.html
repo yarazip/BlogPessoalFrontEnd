@@ -6,12 +6,12 @@
   <title>Recuperar senha | Blogify</title>
 </head>
 <body>
+  <!-- FUTURO; -->
   <div class="forgot-password-container">
     <h1>Recuperar Senha</h1>
     <p>Digite seu e-mail para receber um link de recuperação</p>
   
     <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()">
-      <!-- Campo de E-mail -->
       <div class="form-group">
         <input
           type="email"
@@ -25,7 +25,6 @@
         </div>
       </div>
   
-      <!-- Mensagens de Feedback -->
       <div *ngIf="successMessage" class="success-message">
         {{ successMessage }}
       </div>
@@ -33,14 +32,12 @@
         {{ errorMessage }}
       </div>
   
-      <!-- Botão de Envio -->
       <button type="submit" class="submit-btn" [disabled]="isLoading">
         <span *ngIf="!isLoading">Enviar Link</span>
         <span *ngIf="isLoading">Enviando...</span>
       </button>
     </form>
   
-    <!-- Link para voltar ao Login -->
     <a (click)="navigateToLogin()">Voltar para o Login</a>
   </div>
   </body>

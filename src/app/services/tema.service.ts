@@ -7,7 +7,7 @@ import { Tema } from '../components/models/Tema';
   providedIn: 'root'
 })
 export class TemaService {
-  private apiUrl = 'http://localhost:8888/api/temas';
+  private apiUrl = 'http://localhost:8080/api/temas';
 
   constructor(private http: HttpClient) {}
 

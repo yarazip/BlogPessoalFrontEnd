@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service'; // Ajuste o caminho conforme necessário
+import { AuthService } from '../../services/auth.service'; 
 
 @Component({
   selector: 'app-esqueci-senha',
@@ -30,7 +30,6 @@ export class EsqueciSenhaComponent {
     });
   }
 
-  // Helper para acessar os controles do formulário
   get f() {
     return this.forgotPasswordForm.controls;
   }

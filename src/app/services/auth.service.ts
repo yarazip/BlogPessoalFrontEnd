@@ -1,4 +1,3 @@
-// auth.service.ts
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -26,9 +25,9 @@ export interface Usuario {
   providedIn: 'root',
 })
 export class AuthService {
-    private baseUrl = 'http://localhost:8888/api/usuarios';
+    private baseUrl = 'http://localhost:8080/api/usuarios';
 
-  private apiUrl = 'http://localhost:8888/api/auth';
+  private apiUrl = 'http://localhost:8080/api/auth';
 private readonly TOKEN_KEY = 'token';
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -51,7 +50,7 @@ saveAuthData(usuario: UsuarioResponse): void {
   const cleanToken = usuario.token.startsWith('Bearer ') 
     ? usuario.token.substring(7) 
     : usuario.token;
-  localStorage.setItem(this.TOKEN_KEY, cleanToken);  // salva só o token puro
+  localStorage.setItem(this.TOKEN_KEY, cleanToken); 
   localStorage.setItem('usuario', JSON.stringify({
     id: usuario.id,
     nome: usuario.nome,
@@ -76,7 +75,7 @@ atualizarPerfil(id: number, foto: File, bio: string): Observable<Usuario> {
 }
 
 getUsuarioById(id: number) {
-  return this.http.get<Usuario>(`http://localhost:8888/api/usuarios/${id}`);
+  return this.http.get<Usuario>(`http://localhost:8080/api/usuarios/${id}`);
 }
 
 

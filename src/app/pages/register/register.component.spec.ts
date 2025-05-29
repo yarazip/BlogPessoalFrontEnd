@@ -8,8 +8,8 @@ describe('RegisterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [RegisterComponent],  // Registrando o componente nas declarações
-      imports: [RouterModule]             // Importando RouterModule para uso de [routerLink] no componente
+      declarations: [RegisterComponent],  
+      imports: [RouterModule]            
     })
     .compileComponents();
 

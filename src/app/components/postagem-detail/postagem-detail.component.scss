@@ -105,15 +105,13 @@
   }
 }
 
-// Estilo para modo escuro
-.dark-mode {
+ .dark-mode {
   .post-content {
     border: 1px solid #333;
   }
 }
 
-// Responsividade
-@media (max-width: 768px) {
+    @media (max-width: 768px) {
   .post-header {
     h1 {
       font-size: 2rem;

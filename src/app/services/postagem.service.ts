@@ -8,7 +8,7 @@ import { Tema } from '../components/models/Tema';
   providedIn: 'root'
 })
 export class PostagemService {
-  private apiUrl = 'http://localhost:8888/api/postagens';
+  private apiUrl = 'http://localhost:8080/api/postagens';
 
   constructor(private http: HttpClient) {}
 

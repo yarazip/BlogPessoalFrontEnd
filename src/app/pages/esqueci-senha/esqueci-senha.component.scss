@@ -27,7 +27,7 @@
   
   
   .form-group input {
-    width: 80%; /* ou um valor fixo, ex: 300px */
+    width: 80%; 
     margin: 0 auto;
   }
   
@@ -104,7 +104,6 @@
   }
 }
 
-/* Dark mode specific adjustments */
 .dark-mode .forgot-password-container {
   background: var(--card-bg);
   

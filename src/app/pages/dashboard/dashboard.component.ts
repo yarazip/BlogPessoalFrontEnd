@@ -95,7 +95,6 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (stats: StatsResponse[]) => {
 const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 
-// Mapear nomes em inglês para índice
 const mapEnglishToIndex: {[key: string]: number} = {
   'Sunday': 0,
   'Monday': 1,
@@ -108,7 +107,7 @@ const mapEnglishToIndex: {[key: string]: number} = {
 
 const labels = stats.map(s => {
   const diaIndex = mapEnglishToIndex[s.day];
-  return diasSemana[diaIndex] || s.day; // fallback para caso dê problema
+  return diasSemana[diaIndex] || s.day; 
 });
 
 
@@ -230,7 +229,6 @@ applyTheme() {
   updateChartTheme() {
     if (!this.chart) return;
 
-    // Atualiza cores do gráfico
     this.chart.data.datasets[0].backgroundColor = this.isDarkMode ? this.getDarkColors() : this.getLightColors();
     this.chart.data.datasets[0].borderColor = this.isDarkMode ? 'rgba(30, 30, 30, 1)' : 'rgba(255, 255, 255, 1)';
 

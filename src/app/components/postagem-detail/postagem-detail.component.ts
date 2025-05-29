@@ -13,7 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   imports: [
     CommonModule, 
     DatePipe,
-    Nl2brPipe // Pipe adicionado aqui
+    Nl2brPipe 
   ],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']

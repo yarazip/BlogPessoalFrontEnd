@@ -36,7 +36,6 @@ html {
   --rec-senha: #EDEDED;
 }
 
-/* Layout base */
 .full-width-section {
     width: 100%;
     padding: 80px 0;
@@ -44,7 +43,7 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column; /* Mantém o conteúdo empilhado verticalmente */
+    flex-direction: column; 
 }
 
 
@@ -55,7 +54,6 @@ html {
 }
 
 
-/* Estilos específicos para cada seção */
 .hero {
     background-color: var(--hero-bg);
     text-align: center;

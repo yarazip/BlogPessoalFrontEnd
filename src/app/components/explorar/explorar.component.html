@@ -1,7 +1,6 @@
 <div class="postagens-feed">
   <div class="postagem" *ngFor="let postagem of postagens">
 
-    <!-- Header do usuário -->
     <div class="postagem-header">
       <img 
         [src]="postagem.usuario?.foto" 
@@ -15,7 +14,6 @@
       </div>
     </div>
 
-    <!-- Conteúdo da postagem -->
     <h3>{{ postagem.titulo }}</h3>
     <p>{{ postagem.texto }}</p>
 

@@ -30,7 +30,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     document.body.classList.remove('menu-open');
   }
 
-  // 🌙 Alternar tema claro/escuro
   toggleTheme() {
     this.isDarkMode = !this.isDarkMode;
     this.updateThemeStorage();

@@ -4,8 +4,7 @@
 @use "@fortawesome/fontawesome-free/scss/regular";
 @use "@fortawesome/fontawesome-free/scss/brands";
 
-/* Variáveis ajustáveis */
-$header-height: 80px; /* Altura do header - ajuste conforme necessário */
+$header-height: 80px; 
 $container-max-width: 900px;
 $desktop-padding: 40px;
 $mobile-padding: 20px;
@@ -13,7 +12,7 @@ $mobile-padding: 20px;
 .explorar-container {
   max-width: $container-max-width;
   margin: 0 auto;
-  padding: calc($header-height + 30px) $desktop-padding 80px; /* Espaço para header + margens */
+  padding: calc($header-height + 30px) $desktop-padding 80px; 
   width: 100%;
   box-sizing: border-box;
 
@@ -52,7 +51,7 @@ $mobile-padding: 20px;
 }
 
 .postagem h3 {
-  font-size: clamp(1.5rem, 2vw, 2rem); /* Título responsivo */
+  font-size: clamp(1.5rem, 2vw, 2rem); 
   margin-bottom: 25px;
   color: var(--text-color);
   line-height: 1.3;
@@ -62,7 +61,7 @@ $mobile-padding: 20px;
   color: var(--text-color);
   margin-bottom: 30px;
   line-height: 1.8;
-  font-size: clamp(1rem, 1.2vw, 1.2rem); /* Texto responsivo */
+  font-size: clamp(1rem, 1.2vw, 1.2rem); 
 }
 
 .postagem small {
@@ -71,7 +70,7 @@ $mobile-padding: 20px;
   margin-top: 25px;
   padding-top: 18px;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: clamp(0.8rem, 1vw, 1rem); /* Data responsiva */
+  font-size: clamp(0.8rem, 1vw, 1rem); 
 
   .dark-mode & {
     border-top-color: rgba(255, 255, 255, 0.1);
@@ -115,7 +114,6 @@ $mobile-padding: 20px;
   }
 }
 
-/* Ajustes finos de responsividade */
 @media (max-width: 600px) {
   .explorar-container {
     padding-top: calc($header-height + 20px);

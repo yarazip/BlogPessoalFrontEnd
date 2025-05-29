@@ -1,11 +1,9 @@
 <header>
   <div class="header-container">
-    <!-- Logo -->
     <a routerLink="/home" class="logo-link">
       <div class="logo blogfy-logo">BLOG<span>ify</span></div>
     </a>
 
-    <!-- Navegação principal -->
     <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
       <div class="nav-links">
         <a
@@ -26,7 +24,6 @@
         </a>
       </div>
 
-      <!-- Botão do menu mobile -->
       <button
         class="mobile-menu-toggle"
         (click)="toggleMobileMenu()"
@@ -38,7 +35,6 @@
       </button>
     </nav>
 
-    <!-- Controles do cabeçalho -->
     <div class="header-right">
       <button
         (click)="toggleTheme()"

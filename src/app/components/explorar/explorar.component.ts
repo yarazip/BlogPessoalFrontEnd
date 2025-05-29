@@ -11,9 +11,9 @@ import { HttpClientModule } from '@angular/common/http'; // Caso o serviço use 
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule,  // Se o PostagemService usa HttpClient
+    HttpClientModule, 
   ],
-  providers: [PostagemService] // só se não estiver no root
+  providers: [PostagemService] 
 })
 export class ExplorarComponent implements OnInit {
 

@@ -1,4 +1,3 @@
-// src/app/shared/pipes/truncate.pipe.ts
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
