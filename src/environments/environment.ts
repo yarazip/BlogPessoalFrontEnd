@@ -1,6 +1,5 @@
-// environment.ts
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8080/api',
+  production: false, 
+  apiUrl: 'https://blogify-cf4p.onrender.com/api',
   publicEndpoints: ['/auth/login', '/auth/register', '/usuarios/cadastrar']
 };
