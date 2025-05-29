@@ -1,0 +1,34 @@
+<header [class.fixed]="isHomePage">
+  <div class="header-container">
+    <!-- Logo -->
+    <a routerLink="/home" class="logo-link">
+      <div class="logo blogify-logo">BLOG<span>ify</span></div>
+    </a>
+    
+    <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
+      <div class="nav-links">
+        <a (click)="scrollToFragment('home')">Página Inicial</a>
+        <a (click)="scrollToFragment('sobre')">Sobre</a>
+        <a (click)="scrollToFragment('recursos')">Recursos</a>
+      </div>
+
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </nav>
+
+    <div class="header-right">
+      <button (click)="toggleTheme()" class="theme-toggle" aria-label="Alternar tema">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+      </button>
+      <div class="header-buttons">
+        <a routerLink="/login" class="login-btn">Entrar</a>
+        <a routerLink="/register" class="get-started-btn">Começar</a>
+      </div>
+    </div>
+  </div>
+</header>
+  

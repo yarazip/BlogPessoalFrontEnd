@@ -1,0 +1,237 @@
+ @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap');
+ 
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .register-container {
+      display: flex;
+      min-height: calc(100vh - 150px);
+      padding: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+      gap: 60px;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    @media (min-width: 768px) {
+      .register-container {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+    
+    .register-card {
+      background-color: var(--card-bg);
+      padding: 50px; 
+      border-radius: 16px; 
+      width: 100%;
+      max-width: 600px;
+      transition: all 0.3s ease;
+      box-shadow: 0 15px 20px var(--shadow-color); 
+    }
+    
+    .register-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 30px var(--shadow-color);
+    }
+    
+    .register-card h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0.75rem; 
+      color: var(--text-color);
+    }
+    
+    .subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      font-size: 1.125rem; 
+    }
+    
+    .register-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem; 
+    }
+    
+    .form-group label {
+      font-weight: 600;
+      color: var(--text-color);
+      font-size: 1rem; 
+    }
+    
+    .form-group input {
+      padding: 1rem 1.25rem; 
+      border-radius: 0.625rem;
+      border: 2px solid var(--input-border); 
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.2);
+    }
+    
+    .password-hint {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .register-button {
+      padding: 1rem;
+      font-size: 1rem;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 0.625rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .register-button:hover {
+      background-color:var(--);
+    }
+    
+    .invalid-feedback {
+      color: #d32f2f;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    .login-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    
+    .login-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+.error-message {
+  color: #e74c3c;
+  padding: 5px;
+  text-align: center;
+  font-weight: 450;
+  margin-top: -15px;
+}
+
+.blogify-logo2{
+  font-family: 'Syncopate', sans-serif;
+  font-weight: 700px;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  
+  span {
+    font-weight: 400;
+    color: var(--primary-color);
+  }
+
+}
+  .blog-brainstorm {
+    flex: 1;
+    margin-top: -320px;
+    min-width: 300px;
+    padding: 30px;
+    display: none;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    gap: 15px; 
+  }
+  
+  @media (min-width: 1024px) {
+    .blog-brainstorm {
+      display: flex;
+      width: 60vw;
+      height: 80vh;
+      justify-content: flex-end;
+      padding: 30px; 
+    }
+  }
+  
+  .word {
+    font-family: 'oswald', 'sans serif'  ;
+    opacity: 0.7;
+    transition: transform 1s ease;
+  }
+  
+  .word:hover {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  
+  .horizontal {
+    writing-mode: horizontal-tb;
+  }
+  
+  .vertical {
+    writing-mode: vertical-rl;
+  }
+  
+  .small {
+    font-size: 12px;
+  }
+  
+  .medium {
+    font-size: 22px; 
+  }
+  
+  .large {
+    font-size: 36px; 
+  }
+  
+ 
+  
+  .floating {
+    animation: floatSubtle 6s ease-in-out infinite;
+    will-change: transform;
+  }
+  
+  @keyframes fadeSlideIn {
+    0% {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .word {
+    opacity: 0;
+    animation: fadeSlideIn 1s ease forwards;
+  }
+  

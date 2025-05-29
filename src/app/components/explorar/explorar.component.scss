@@ -1,0 +1,138 @@
+/* explorar.component.scss */
+@use "@fortawesome/fontawesome-free/scss/fontawesome";
+@use "@fortawesome/fontawesome-free/scss/solid";
+@use "@fortawesome/fontawesome-free/scss/regular";
+@use "@fortawesome/fontawesome-free/scss/brands";
+
+/* Variáveis ajustáveis */
+$header-height: 80px; /* Altura do header - ajuste conforme necessário */
+$container-max-width: 900px;
+$desktop-padding: 40px;
+$mobile-padding: 20px;
+
+.explorar-container {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: calc($header-height + 30px) $desktop-padding 80px; /* Espaço para header + margens */
+  width: 100%;
+  box-sizing: border-box;
+
+  @media (max-width: 900px) {
+    padding-left: $mobile-padding;
+    padding-right: $mobile-padding;
+  }
+}
+
+.postagens-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.postagem {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px var(--shadow-color);
+  }
+
+  @media (max-width: 768px) {
+    padding: 30px $mobile-padding;
+    border-radius: 12px;
+  }
+}
+
+.postagem h3 {
+  font-size: clamp(1.5rem, 2vw, 2rem); /* Título responsivo */
+  margin-bottom: 25px;
+  color: var(--text-color);
+  line-height: 1.3;
+}
+
+.postagem p {
+  color: var(--text-color);
+  margin-bottom: 30px;
+  line-height: 1.8;
+  font-size: clamp(1rem, 1.2vw, 1.2rem); /* Texto responsivo */
+}
+
+.postagem small {
+  display: block;
+  color: var(--primary-color);
+  margin-top: 25px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: clamp(0.8rem, 1vw, 1rem); /* Data responsiva */
+
+  .dark-mode & {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.postagem-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.foto-perfil {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.info-usuario {
+  h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-color);
+  }
+
+  small {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    border-top: none;
+    padding-top: 0;
+    margin-top: 4px;
+    display: block;
+  }
+}
+
+/* Ajustes finos de responsividade */
+@media (max-width: 600px) {
+  .explorar-container {
+    padding-top: calc($header-height + 20px);
+    padding-bottom: 60px;
+  }
+
+  .postagens-feed {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 400px) {
+  .postagem {
+    padding: 25px 15px;
+  }
+
+  .postagem-header {
+    gap: 10px;
+  }
+}

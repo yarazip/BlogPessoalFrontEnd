@@ -1,0 +1,40 @@
+<h2 class="welcome">Bem-vindo ao Dashboard, {{ usuario?.nome }}</h2>
+
+<section class="actions-section">
+  <button (click)="goToPostagens()" class="action-btn">
+    <i class="fas fa-list"></i> Ver Postagens
+  </button>
+  <button (click)="goToPostagemNova()" class="action-btn primary">
+    <i class="fas fa-plus"></i> Nova Postagem
+  </button>
+  <!-- <button class="action-btn">
+    <i class="fas fa-bell"></i> Notificações
+  </button> -->
+</section>
+
+<div class="dashboard-container">
+  <section class="stats-section">
+    <div class="card">
+      <h3><span class="blogify-logo2">BLOG<span>ify</span></span> LOVERS</h3>
+      <p class="stat-value">{{ userCount }}</p>
+    </div>
+    <div class="card">
+      <h3>Postagens feitas no <span class="blogify-logo2">BLOG<span>ify</span></span> </h3>
+      <p class="stat-value">{{ postCount }}</p>
+    </div>
+    <!-- <div class="card">
+      <h3>Comentários</h3>
+      <p class="stat-value">{{ commentCount }}</p>
+    </div> -->
+  </section>
+ <!-- <div class="chart-wrapper">
+  <canvas id="postStatsChart"></canvas>
+</div> -->
+<div class="chart-container">
+  <div class="chart-wrapper">
+    <canvas #activityChart
+            aria-label="Gráfico de distribuição de postagens"
+            role="img"></canvas>
+  </div>
+</div>
+</div>

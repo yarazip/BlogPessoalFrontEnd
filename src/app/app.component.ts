@@ -1,12 +1,49 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { HeaderComponent } from './components/header/header.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { RouterModule } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { DashboardHeaderComponent } from './components/header-dashboard/dashboard-header.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterModule,
+    HeaderComponent,
+    FooterComponent,
+    DashboardHeaderComponent,
+    RouterOutlet,
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'blogfy';
+  title = 'blogify';
+  showDashboardHeader = false;
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+
+  constructor(private router: Router) {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+const urlWithFragment = event.urlAfterRedirects || event.url;
+const url = urlWithFragment.split('?')[0].split('#')[0];
+        
+        // Rotas que devem mostrar o header padrão
+        const defaultHeaderRoutes = ['/', '/home', '/login', '/register'];
+        
+        // Verifica se a URL atual corresponde a alguma rota padrão
+        this.showDashboardHeader = !defaultHeaderRoutes.some(route => 
+          url === route || url.startsWith(route + '/')
+        ); // Fechando o some e o subscribe
+      });
+  }
 }

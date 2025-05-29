@@ -1,0 +1,28 @@
+<div class="post-detail-container">
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && postagem" class="post-content">
+    <div class="post-header">
+      <h1>{{ postagem.titulo }}</h1>
+      <div class="post-meta">
+        <span class="badge">{{ postagem.tema?.descricao || 'Sem tema' }}</span>
+        <span>{{ postagem.data | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+
+    <div class="card-text mb-4" [innerHTML]="postagem.texto | nl2br"></div>
+    
+    <div class="post-actions">
+      <button (click)="editar(postagem.id!)" class="btn btn-warning">
+        <i class="fas fa-edit"></i> Editar
+      </button>
+      <button (click)="excluir(postagem.id!)" class="btn btn-danger">
+        <i class="fas fa-trash"></i> Excluir
+      </button>
+    </div>
+  </div>
+</div>

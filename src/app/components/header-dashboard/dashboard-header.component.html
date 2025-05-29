@@ -1,0 +1,57 @@
+<header>
+  <div class="header-container">
+    <!-- Logo -->
+    <a routerLink="/home" class="logo-link">
+      <div class="logo blogfy-logo">BLOG<span>ify</span></div>
+    </a>
+
+    <!-- Navegação principal -->
+    <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
+      <div class="nav-links">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          >Insights</a
+        >
+
+        <a routerLink="/postagens" routerLinkActive="active">Postagens</a>
+        <a routerLink="/explorar" routerLinkActive="active">Feed</a>
+        <a
+          routerLink="/perfil"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="fas fa-user"></i> Perfil
+        </a>
+      </div>
+
+      <!-- Botão do menu mobile -->
+      <button
+        class="mobile-menu-toggle"
+        (click)="toggleMobileMenu()"
+        aria-label="Menu"
+      >
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+    </nav>
+
+    <!-- Controles do cabeçalho -->
+    <div class="header-right">
+      <button
+        (click)="toggleTheme()"
+        class="theme-toggle"
+        aria-label="Alternar tema"
+      >
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+      </button>
+      <button class="logout-btn" (click)="logout()" aria-label="Sair">
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="logout-text">Sair</span>
+      </button>
+    </div>
+  </div>
+</header>

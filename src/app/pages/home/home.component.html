@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./assets/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="./home.component.scss" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <title>Crie seu Blog | Blogify</title>
+  </head>
+
+  <body class="light-mode">
+    <section id="home" class="hero full-width-section">
+      <div class="section-container">
+        <h1>Crie um blog que é unicamente seu</h1>
+        <p>
+          Comece com um modelo flexível e personalize para se adequar ao seu
+          estilo e necessidades.
+        </p>
+        <a [routerLink]="['/register']" class="cta-button">Começar</a>
+      </div>
+    </section>
+
+    <section id="sobre" class="why-blogify full-width-section">
+      <div class="section-container">
+        <div class="why-container">
+          <h2>
+            Por que <span class="blogify-logo">BLOG<span>ify</span></span
+            >?
+          </h2>
+          <div class="why-content">
+            <div class="why-text">
+              <p>
+                <span class="blogify-logo2">BLOG<span>ify</span></span> é uma
+                plataforma profissional que permite transformar suas ideias,
+                histórias e conhecimentos em conteúdos de valor. De forma
+                rápida, intuitiva e moderna, você cria, organiza e compartilha
+                posts, levando sua voz para o mundo.
+              </p>
+
+              <div class="curiosity-box">
+                <div class="curiosity-icon" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="40"
+                    height="40"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="var(--primary-color)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.5-1.5 4.5-3.5 5.5v2.5H8v-2.5C6 13.5 4.5 11.5 4.5 9a7 7 0 0 1 7-7z"
+                    />
+                    <circle
+                      cx="12"
+                      cy="9"
+                      r="2"
+                      fill="var(--secondary-color)"
+                    />
+                  </svg>
+                </div>
+                <h3>Curiosidade</h3>
+                <p>
+                  O sufixo <code>-ify</code> em inglês significa "tornar" ou
+                  "transformar", como em "beautify" (tornar bonito) e "simplify"
+                  (tornar simples). O nome <span class="blogify-logo2">BLOG<span>ify</span></span> carrega a ideia de "transformar em Blog".
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="recursos" class="features full-width-section">
+      <div class="section-container">
+        <h2>Tudo que você precisa para criar seu blog</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Responsivo para celular</h3>
+            <p>
+              Atualize seu blog em qualquer lugar com nosso site fácil de usar.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Análises Integradas</h3>
+            <p>
+              Acompanhe seu crescimento com estatísticas detalhadas de
+              visitantes.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Hospedagem Confiável</h3>
+            <p>Hospedagem rápida e segura e com disponibilidade.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="templates full-width-section">
+      <div class="section-container">
+        <h2>Blogs incríveis!</h2>
+        <h3>EM BREVE!</h3>
+        <p>
+          Escolha da nossa coleção de modelos profissionalmente desenhados cada
+          um personalizável para se adequar ao seu estilo pessoal.
+        </p>
+        <div class="template-grid">
+          <div class="template-card">
+            <img
+              src="../../../assets/img/minimalista.jpg"
+              alt="Modelo Minimalista"
+              class="template-img"
+            />
+            <div class="template-info">
+              <h3>Minimalista</h3>
+              <p>Design limpo e simples</p>
+            </div>
+          </div>
+          <div class="template-card">
+            <img
+              src="../../../assets/img/moderno.jpg"
+              alt="Modelo Moderno"
+              class="template-img"
+            />
+            <div class="template-info">
+              <h3>Moderno</h3>
+              <p>Audacioso e contemporâneo</p>
+            </div>
+          </div>
+          <div class="template-card">
+            <img
+              src="../../../assets/img/classico.jpg"
+              alt="Modelo Clássico"
+              class="template-img"
+            />
+            <div class="template-info">
+              <h3>Clássico</h3>
+              <p>Elegância atemporal</p>
+            </div>
+          </div>
+          <div class="template-card">
+            <img
+              src="../../../assets/img/artistico.jpg"
+              alt="Modelo Criativo"
+              class="template-img"
+            />
+            <div class="template-info">
+              <h3>Criativo</h3>
+              <p>Artístico e expressivo</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials full-width-section">
+      <div class="section-container">
+        <h2>Confiado por milhões de criadores</h2>
+        <div class="testimonial-grid">
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "O Blogify tornou tão fácil começar meu blog de culinária. Os
+              modelos são lindos e a plataforma é intuitiva."
+            </p>
+            <p class="testimonial-author">— Sarah K., Blog de Culinária</p>
+          </div>
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "Consegui configurar meu blog de viagens em um final de semana. As
+              análises me ajudam a entender melhor meu público."
+            </p>
+            <p class="testimonial-author">— Michael T., Escritor de Viagens</p>
+          </div>
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "Como fotógrafo, ter um portfólio bonito era essencial. O Blogify
+              entregou exatamente o que eu precisava."
+            </p>
+            <p class="testimonial-author">— Jessica L., Fotógrafa</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta full-width-section">
+      <div class="section-container">
+        <h2>Pronto para começar seu blog?</h2>
+        <p>
+          Junte-se a milhões de criadores que usam o Blogify para compartilhar
+          suas histórias com o mundo.
+        </p>
+        <a [routerLink]="['/register']" class="cta-button">Começar</a>
+      </div>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-avatar">
+<img *ngIf="usuario?.fotoUrl" [src]="usuario.fotoUrl" alt="Avatar">
+
+      <label class="edit-avatar-btn">
+        <input type="file" hidden (change)="onFileSelected($event)">
+        <i class="fas fa-camera"></i>
+      </label>
+    </div>
+
+    <div class="profile-bio">
+      <div *ngIf="!editandoBio">{{ usuario?.bio || 'Adicione sua bio...' }}</div>
+      <input *ngIf="editandoBio" [(ngModel)]="usuario.bio" type="text">
+    </div>
+
+    <div class="profile-actions">
+      <button class="edit-profile-btn" (click)="toggleEditarBio()">
+        <i class="fas fa-edit"></i> {{ editandoBio ? 'Salvar Bio' : 'Editar Bio' }}
+      </button>
+
+      <button class="settings-btn">
+        <i class="fas fa-cog"></i> Configurações
+      </button>
+    </div>
+  </div>
+</div>

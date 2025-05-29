@@ -1,0 +1,36 @@
+<div class="post-list-container">
+  <div class="list-header">
+    <h2>Postagens</h2>
+    <button routerLink="/postagens/nova" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Nova Postagem
+    </button>
+  </div>
+
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && postagens.length === 0" class="empty-message">
+    Nenhuma postagem encontrada.
+  </div>
+
+  <div *ngFor="let post of postagens" class="post-card">
+    <div class="card-body">
+      <h5 class="card-title">
+        <a [routerLink]="['/postagens', post.id]" class="stretched-link">
+          {{ post.titulo }}
+        </a>
+      </h5>
+      
+      <div class="card-meta">
+        <span class="badge">{{ post.tema?.descricao || 'Sem tema' }}</span>
+        <span class="date">{{ post.data | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      
+      <p class="card-text">{{ post.texto | truncate:150 }}</p>
+    </div>
+  </div>
+</div>

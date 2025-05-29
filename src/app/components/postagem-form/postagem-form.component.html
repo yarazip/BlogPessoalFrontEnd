@@ -1,0 +1,82 @@
+<div class="postagem-container">
+  <div class="card">
+    <h2>{{ isEdit ? 'Editar' : 'Nova' }} Postagem</h2>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
+      <!-- Campo Título -->
+      <div class="form-group">
+        <label for="titulo">Título *</label>
+        <input
+          type="text"
+          id="titulo"
+          formControlName="titulo"
+          placeholder="Digite um título para sua postagem"
+          [class.is-invalid]="titulo?.invalid && (titulo?.dirty || titulo?.touched)"
+        >
+        <div *ngIf="titulo?.invalid && (titulo?.dirty || titulo?.touched)" class="invalid-feedback">
+          <span *ngIf="titulo?.errors?.['required']">Título é obrigatório</span>
+          <span *ngIf="titulo?.errors?.['minlength']">Mínimo 3 caracteres</span>
+          <span *ngIf="titulo?.errors?.['maxlength']">Máximo 100 caracteres</span>
+        </div>
+      </div>
+
+      <!-- Campo Texto -->
+      <div class="form-group">
+        <label for="texto">Conteúdo *</label>
+        <textarea
+          id="texto"
+          formControlName="texto"
+          rows="6"
+          placeholder="Escreva o conteúdo da sua postagem"
+          [class.is-invalid]="texto?.invalid && (texto?.dirty || texto?.touched)"
+        ></textarea>
+        <div *ngIf="texto?.invalid && (texto?.dirty || texto?.touched)" class="invalid-feedback">
+          <span *ngIf="texto?.errors?.['required']">Conteúdo é obrigatório</span>
+          <span *ngIf="texto?.errors?.['minlength']">Mínimo 10 caracteres</span>
+        </div>
+      </div>
+
+      <!-- Campo Tema -->
+     <div class="form-group">
+  <label for="tema">Tema *</label>
+  <select
+    id="tema"
+    formControlName="temaId"
+    [class.is-invalid]="temaId?.invalid && (temaId?.dirty || temaId?.touched)"
+  >
+    <option [ngValue]="null" disabled>Selecione um tema</option>
+    <option *ngFor="let tema of temas" [ngValue]="tema.id">
+      {{ tema.descricao }}
+    </option>
+  </select>
+  <div *ngIf="temaId?.invalid && (temaId?.dirty || temaId?.touched)" class="invalid-feedback">
+    <span>Selecione um tema</span>
+  </div>
+</div>
+
+      <!-- Botões -->
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="cancelar()"
+        >
+          Cancelar
+        </button>
+    <button
+  type="submit"
+  class="btn btn-primary"
+  [disabled]="postagemForm.invalid || isLoading"
+>
+  <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+  {{ isEdit ? 'Atualizar' : 'Publicar' }}
+</button>
+
+      </div>
+    </form>
+  </div>
+</div>

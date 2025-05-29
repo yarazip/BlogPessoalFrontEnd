@@ -1,0 +1,23 @@
+<div class="postagens-feed">
+  <div class="postagem" *ngFor="let postagem of postagens">
+
+    <!-- Header do usuário -->
+    <div class="postagem-header">
+      <img 
+        [src]="postagem.usuario?.foto" 
+        alt="Foto de {{ postagem.usuario?.nome }}" 
+        class="foto-perfil"
+      >
+      
+      <div class="info-usuario">
+        <h4>{{ postagem.usuario?.nome }}</h4>
+        <small>Publicado em: {{ postagem.data | date: 'short' }}</small>
+      </div>
+    </div>
+
+    <!-- Conteúdo da postagem -->
+    <h3>{{ postagem.titulo }}</h3>
+    <p>{{ postagem.texto }}</p>
+
+  </div>
+</div>

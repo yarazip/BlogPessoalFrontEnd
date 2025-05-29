@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar senha | Blogify</title>
+</head>
+<body>
+  <div class="forgot-password-container">
+    <h1>Recuperar Senha</h1>
+    <p>Digite seu e-mail para receber um link de recuperação</p>
+  
+    <form [formGroup]="forgotPasswordForm" (ngSubmit)="onSubmit()">
+      <!-- Campo de E-mail -->
+      <div class="form-group">
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Seu e-mail"
+          [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+        />
+        <div *ngIf="submitted && f['email'].errors" class="error-message">
+          <span *ngIf="f['email'].errors['required']">E-mail é obrigatório</span>
+          <span *ngIf="f['email'].errors['email']">Digite um e-mail válido</span>
+        </div>
+      </div>
+  
+      <!-- Mensagens de Feedback -->
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+  
+      <!-- Botão de Envio -->
+      <button type="submit" class="submit-btn" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Enviar Link</span>
+        <span *ngIf="isLoading">Enviando...</span>
+      </button>
+    </form>
+  
+    <!-- Link para voltar ao Login -->
+    <a (click)="navigateToLogin()">Voltar para o Login</a>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+.forgot-password-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  background: var(--card-bg);
+  text-align: center;
+  color: var(--text-color);
+
+  h1 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+    display: flex;
+    justify-content: center;
+  
+  
+  .form-group input {
+    width: 80%; /* ou um valor fixo, ex: 300px */
+    margin: 0 auto;
+  }
+  
+
+    input {
+  width: 90%;
+  padding: 12px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: block;
+  margin: 0 auto;
+
+      &.is-invalid {
+        border-color: var(--primary-color);
+      }
+    }
+
+    .error-message {
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .success-message {
+    color: var(--secondary-color);
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .error-message {
+    color: var(--primary-color);
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background: var(--text-color);
+    }
+
+    &:disabled {
+      background: var(--secondary-color);
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+
+  .back-link {
+    display: block;
+    margin-top: 1.5rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+
+    &:hover {
+      text-decoration: underline;
+      color: var(--text-color);
+    }
+  }
+}
+
+/* Dark mode specific adjustments */
+.dark-mode .forgot-password-container {
+  background: var(--card-bg);
+  
+  input {
+    background-color: var(--secondary-color);
+    border-color: var(--hero-bg);
+  }
+  
+  .submit-btn {
+    color: var(--text-color);
+  }
+}

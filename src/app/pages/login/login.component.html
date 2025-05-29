@@ -1,0 +1,196 @@
+<main class="login-container">
+ <!-- Login Card Section -->
+<div class="login-card">
+  <h1>Bem-vindo de volta</h1>
+  <p class="subtitle">Acesse sua conta para continuar</p>
+
+  <form class="login-form" (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+    <div class="form-group">
+      <label for="email">E-mail</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        placeholder="seu@email.com"
+        required
+      />
+      <div class="error-message" *ngIf="submitted && f['email'].errors">
+        <small *ngIf="f['email'].errors?.['required']">O e-mail é obrigatório.</small>
+        <small *ngIf="f['email'].errors?.['email']">Informe um e-mail válido.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Senha</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="senha"
+        placeholder="Sua senha"
+        required
+      />
+      <div class="error-message" *ngIf="submitted && f['senha'].errors">
+        <small *ngIf="f['senha'].errors?.['required']">A senha é obrigatória.</small>
+      </div>
+
+      <a routerLink="/esqueci-senha" class="forgot-password">
+        Esqueceu a senha?
+      </a>
+    </div>
+<div class="error-message" *ngIf="loginError">
+  <small>{{ errorMessage }}</small>
+</div>
+
+    <button
+      type="submit"
+      class="login-button"
+      [disabled]="isLoading || loginForm.invalid"
+    >
+      {{ isLoading ? "Entrando..." : "Entrar" }}
+    </button>
+
+    <div class="register-link">
+      Não tem uma conta? <a routerLink="/register">Cadastre-se</a>
+    </div>
+
+
+  </form>
+</div>
+
+  <!--brainstorm -->
+  <div class="blog-brainstorm">
+    <span class="word large horizontal floating" style="animation-delay: 4.1s"
+      >Blog</span
+    >
+    <span class="word medium vertical" style="animation-delay: 10.2s"
+      >Inspiração</span
+    >
+    <span class="word small horizontal floating" style="animation-delay: 12.8s"
+      >Artigos</span
+    >
+    <span class="word large vertical" style="animation-delay: 1.5s"
+      >Criação</span
+    >
+    <span class="word medium horizontal floating" style="animation-delay: 2.9s"
+      >Leitura</span
+    >
+    <span class="word large horizontal" style="animation-delay: 10.3s"
+      >Ideias</span
+    >
+    <span class="word small vertical floating" style="animation-delay: 6.4s"
+      >Tecnologia</span
+    >
+    <span class="word medium vertical" style="animation-delay: 8.9s"
+      >Design</span
+    >
+    <span class="word large horizontal floating" style="animation-delay: 12.2s"
+      >Escrever</span
+    >
+    <span class="word medium vertical" style="animation-delay: 9.1s"
+      >Compartilhar</span
+    >
+
+    <span class="word small horizontal floating" style="animation-delay: 11s"
+      >Público</span
+    >
+    <span class="word medium vertical" style="animation-delay: 6.7s"
+      >Autor</span
+    >
+    <span class="word large horizontal floating" style="animation-delay: 13.5s"
+      >Texto</span
+    >
+    <span class="word small vertical" style="animation-delay: 13.9s"
+      >Comentários</span
+    >
+    <span class="word small horizontal floating" style="animation-delay: 12.4s"
+      >Estilo</span
+    >
+    <span class="word medium horizontal" style="animation-delay: 9.8s"
+      >Marca</span
+    >
+    <span class="word large vertical floating" style="animation-delay: 11.1s"
+      >Conteúdo</span
+    >
+    <span class="word small vertical" style="animation-delay: 8.5s">Nicho</span>
+    <span class="word medium horizontal floating" style="animation-delay: 10.8s"
+      >Layout</span
+    >
+    <span class="word large horizontal" style="animation-delay: 7.4s"
+      ><span class="blogify-logo2">BLOG<span>ify</span></span></span
+    >
+
+    <span class="word medium vertical" style="animation-delay: 13.7s"
+      >Imagem</span
+    >
+    <span class="word large horizontal" style="animation-delay: 6.6s"
+      >Criatividade</span
+    >
+    <span class="word medium horizontal" style="animation-delay: 12.9s"
+      >Tendência</span
+    >
+    <span class="word small vertical floating" style="animation-delay: 5.5s"
+      >Editor</span
+    >
+    <span class="word large horizontal" style="animation-delay: 11.2s"
+      >Comunidade</span
+    >
+    <span class="word small vertical" style="animation-delay: 13s"
+      >Alcance</span
+    >
+    <span class="word medium vertical" style="animation-delay: 8.3s">Tema</span>
+    <span class="word large horizontal" style="animation-delay: 9.7s"
+      >Inovação</span
+    >
+    <span class="word small vertical" style="animation-delay: 1s"
+      >Interface</span
+    >
+    <span class="word small vertical" style="animation-delay: 13.3s"
+      >Expressão</span
+    >
+
+    <span class="word large horizontal" style="animation-delay: 10.4s"
+      >Autenticidade</span
+    >
+    <span class="word small horizontal" style="animation-delay: 7s"
+      >Perfil</span
+    >
+    <span class="word medium vertical" style="animation-delay: 5.3s"
+      >Trending</span
+    >
+    <span class="word small vertical" style="animation-delay: 9.4s"
+      >Análise</span
+    >
+    <span class="word medium horizontal" style="animation-delay: 12.3s"
+      >Visitantes</span
+    >
+    <span class="word small vertical" style="animation-delay: 6.1s">Tags</span>
+    <span class="word large vertical" style="animation-delay: 13.9s"
+      >Experiência</span
+    >
+    <span class="word small horizontal" style="animation-delay: 10.7s"
+      >Visual</span
+    >
+    <span class="word large horizontal" style="animation-delay: 8.9s"
+      >Expressão</span
+    >
+    <span class="word medium vertical" style="animation-delay: 11.8s"
+      >Estética</span
+    >
+
+    <span class="word medium horizontal" style="animation-delay: 6.2s"
+      >Narrativa</span
+    >
+    <span class="word small vertical" style="animation-delay: 12.1s"
+      >Blogar</span
+    >
+    <span class="word medium horizontal" style="animation-delay: 11.3s"
+      >Engajamento</span
+    >
+    <span class="word medium vertical" style="animation-delay: 7.9s"
+      >Linkagem</span
+    >
+    <span class="word medium horizontal" style="animation-delay: 10s"
+      >Leitores</span
+    >
+  </div>
+</main>
