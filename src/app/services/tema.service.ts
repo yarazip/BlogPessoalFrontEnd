@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Tema } from '../components/models/Tema';
+import { environment } from '../../environments/environment';  
 
 @Injectable({
   providedIn: 'root'
 })
 export class TemaService {
-  private apiUrl = 'http://localhost:8080/api/temas';
+  private apiUrl = `${environment.apiUrl}/temas`;  
 
   constructor(private http: HttpClient) {}
 

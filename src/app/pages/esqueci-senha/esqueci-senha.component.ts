@@ -51,9 +51,10 @@ export class EsqueciSenhaComponent {
         this.forgotPasswordForm.reset();
         this.submitted = false;
       },
-      error: (error) => {
-        this.errorMessage = error.message || 'Ocorreu um erro ao processar sua solicitação.';
-      },
+     error: (error: any) => {
+  console.error(error);
+}
+,
       complete: () => {
         this.isLoading = false;
       }
@@ -63,4 +64,5 @@ export class EsqueciSenhaComponent {
   navigateToLogin() {
     this.router.navigate(['/login']);
   }
+  
 }

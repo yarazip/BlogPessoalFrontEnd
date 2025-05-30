@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService, Usuario } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-perfil',
@@ -42,14 +44,14 @@ export class PerfilComponent implements OnInit {
       error: (err) => console.error('Erro ao atualizar bio:', err)
     });
   }
-  getFotoCompleta(): string {
+ 
+getFotoCompleta(): string {
   if (!this.usuario?.fotoUrl) return '';
   if (this.usuario.fotoUrl.startsWith('http')) {
     return this.usuario.fotoUrl;
   }
-  return 'http://localhost:8080' + this.usuario.fotoUrl;
+  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
 }
-
 
   onFileSelected(event: any) {
     const arquivo = event.target.files[0];

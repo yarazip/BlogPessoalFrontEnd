@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';  
 
 export interface StatsResponse {
   day: string;
@@ -13,7 +13,7 @@ export interface StatsResponse {
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = 'http://localhost:8080/api';
+  private apiUrl = environment.apiUrl;  
 
   constructor(private http: HttpClient) {}
 
@@ -23,12 +23,12 @@ export class DashboardService {
     );
   }
   
-getPostCount(): Observable<number> {
-  return this.http.get<{ quantidade: number }>(`${this.apiUrl}/postagens/count`).pipe(
-    map(response => response.quantidade),
-    catchError(() => of(0))
-  );
-}
+  getPostCount(): Observable<number> {
+    return this.http.get<{ quantidade: number }>(`${this.apiUrl}/postagens/count`).pipe(
+      map(response => response.quantidade),
+      catchError(() => of(0))
+    );
+  }
 
   getCommentCount(): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/comentarios/count`).pipe(
@@ -42,6 +42,6 @@ getPostCount(): Observable<number> {
         console.error('Erro no getPostStats:', err);
         return of([]);
       })
-    );}
-
+    );
+  }
 }

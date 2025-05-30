@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Postagem } from '../components/models/Postagem';
-import { Tema } from '../components/models/Tema';
+import { environment } from '../../environments/environment';  
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostagemService {
-  private apiUrl = 'http://localhost:8080/api/postagens';
+  private apiUrl = `${environment.apiUrl}/postagens`;  
 
   constructor(private http: HttpClient) {}
 
@@ -17,19 +17,16 @@ export class PostagemService {
   }
 
   listarTodasPostagens(): Observable<Postagem[]> {
-  return this.http.get<Postagem[]>(this.apiUrl);
-}
-
-
+    return this.http.get<Postagem[]>(this.apiUrl);
+  }
 
   getById(id: number): Observable<Postagem> {
     return this.http.get<Postagem>(`${this.apiUrl}/${id}`);
   }
 
- create(postagem: Postagem): Observable<Postagem> {
-  return this.http.post<Postagem>(this.apiUrl, postagem);
-}
-
+  create(postagem: Postagem): Observable<Postagem> {
+    return this.http.post<Postagem>(this.apiUrl, postagem);
+  }
 
   update(postagem: Postagem): Observable<Postagem> {
     return this.http.put<Postagem>(`${this.apiUrl}/${postagem.id}`, postagem);
@@ -38,9 +35,8 @@ export class PostagemService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-    getByUsuario(usuarioId: number): Observable<Postagem[]> {
-  return this.http.get<Postagem[]>(`${this.apiUrl}/filtro?autor=${usuarioId}`);
-}
 
-
+  getByUsuario(usuarioId: number): Observable<Postagem[]> {
+    return this.http.get<Postagem[]>(`${this.apiUrl}/filtro?autor=${usuarioId}`);
+  }
 }
