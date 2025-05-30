@@ -25,10 +25,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../blog-pessoal/src/main/resources/static",          
+            "outputPath": "../blog-pessoal/src/main/resources/static",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills":"src/polyfills.ts",
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -39,10 +39,9 @@
               },
               "src/favicon.ico"
             ],
-     "styles": [
-  "src/styles/styles.scss"
-]
-,
+            "styles": [
+              "src/styles/styles.scss"
+            ],
             "scripts": [],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -52,16 +51,22 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1MB",    
-                  "maximumError": "2MB"       
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "100KB",   
-                  "maximumError": "150KB"  
+                  "maximumWarning": "100KB",
+                  "maximumError": "150KB"
                 }
               ],
               "outputHashing": "all",
@@ -108,7 +113,7 @@
               "src/assets"
             ],
             "styles": [
-                "src/styles/styles.scss"
+              "src/styles/styles.scss"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"
