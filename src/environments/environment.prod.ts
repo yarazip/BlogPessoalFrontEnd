@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.blogify.com/api'
+  apiUrl: 'https://blogify-cf4p.onrender.com/api'
 };
