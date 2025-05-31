@@ -100,12 +100,12 @@ saveAuthData(usuario: UsuarioResponse): void {
     localStorage.removeItem('usuario');
     this.router.navigate(['/login']);
   }
-
-  updateUsuario(usuario: Partial<Usuario>): void {
-    const current = this.getUsuario();
-    if (current) {
-      const updated = { ...current, ...usuario };
-      localStorage.setItem('usuario', JSON.stringify(updated));
-    }
+updateUsuario(usuario: Partial<Usuario> & { foto?: string }): void {
+  const current = this.getUsuario();
+  if (current) {
+    const updated = { ...current, ...usuario };
+    localStorage.setItem('usuario', JSON.stringify(updated));
   }
+}
+
 }
