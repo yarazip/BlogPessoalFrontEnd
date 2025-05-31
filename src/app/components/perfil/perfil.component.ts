@@ -47,11 +47,10 @@ export class PerfilComponent implements OnInit {
  
 getFotoCompleta(): string {
   if (!this.usuario?.fotoUrl) return '';
-  if (this.usuario.fotoUrl.startsWith('http')) {
-    return this.usuario.fotoUrl;
-  }
-  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl + '?t=' + new Date().getTime();
+  if (this.usuario.fotoUrl.startsWith('http')) return this.usuario.foto;
+  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
 }
+
 
 
   onFileSelected(event: any) {
