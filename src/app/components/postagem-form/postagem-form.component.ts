@@ -32,11 +32,11 @@ export class PostagemFormComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    this.postagemForm = this.fb.group({
-      titulo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      texto: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000000)]],
-      temaId: [null, Validators.required]
-    });
+   this.postagemForm = this.fb.group({
+  titulo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+  texto: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000000)]],
+  temaId: [null, Validators.required]
+});
   }
 
   ngOnInit(): void {
