@@ -57,16 +57,16 @@ private readonly TOKEN_KEY = 'token';
   return this.http.post(`${this.apiUrl}/forgot-password`, { email });
 }
 
-
- atualizarFoto(id: number, foto: File) {
+atualizarFoto(id: number, foto: File, bio?: string) {
   const formData = new FormData();
   formData.append('foto', foto);
+  if (bio) {
+    formData.append('bio', bio);
+  }
 
-  return this.http.put<any>(
-    `${this.apiUrl}/usuarios/${id}`,
-    formData
-  );
+  return this.http.put<any>(`${environment.apiUrl}/usuarios/${id}`, formData);
 }
+
 
 
 
