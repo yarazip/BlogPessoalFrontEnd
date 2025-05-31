@@ -59,6 +59,7 @@ private readonly TOKEN_KEY = 'token';
 
 
   atualizarPerfil(id: number, foto: File, bio: string): Observable<Usuario> {
+    
     const formData = new FormData();
 
     if (foto) {

@@ -58,19 +58,19 @@ getFotoCompleta(): string {
     const bio = this.usuario.bio || '';
     const id = this.usuario.id;
 
-    this.authService.atualizarPerfil(id, arquivo, bio).subscribe({
-      next: (res: any) => {
-        console.log('Perfil atualizado com sucesso!');
-        this.usuario = {
-          ...this.usuario,
-          fotoUrl: res.fotoUrl || res.foto || this.usuario.fotoUrl,
-          bio: res.bio || this.usuario.bio
-        };
-        this.authService.updateUsuario(this.usuario);
-      },
-      error: (err) => {
-        console.error('Erro ao atualizar perfil:', err);
-      }
-    });
+  this.authService.atualizarPerfil(id, arquivo, bio).subscribe({
+  next: (res: any) => {
+    console.log('Resposta backend:', res);  // veja exatamente o que retorna
+    this.usuario = {
+      ...this.usuario,
+      fotoUrl: res.fotoUrl || res.foto || this.usuario.fotoUrl,
+      bio: res.bio || this.usuario.bio
+    };
+    this.authService.updateUsuario(this.usuario);
+  },
+  error: (err) => {
+    console.error('Erro ao atualizar perfil:', err);
+  }
+});
   }
 }
