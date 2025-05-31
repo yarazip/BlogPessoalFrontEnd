@@ -26,9 +26,9 @@ export class PerfilComponent implements OnInit {
     this.editandoBio = !this.editandoBio;
   }
 
-  getFotoCompleta(): string {
-    return this.usuario.foto || '';
-  }
+  // getFotoCompleta(): string {
+  //   return this.usuario.foto || '';
+  // }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
