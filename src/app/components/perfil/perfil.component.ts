@@ -44,12 +44,12 @@ export class PerfilComponent implements OnInit {
       error: (err) => console.error('Erro ao atualizar bio:', err)
     });
   }
- 
 getFotoCompleta(): string {
   if (!this.usuario?.fotoUrl) return '';
-  if (this.usuario.fotoUrl.startsWith('http')) return this.usuario.fotoUrl;
-  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
+  const urlBase = this.usuario.fotoUrl.startsWith('http') ? this.usuario.fotoUrl : environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
+  return urlBase + '?t=' + new Date().getTime();
 }
+
 
 
 onFileSelected(event: any) {
