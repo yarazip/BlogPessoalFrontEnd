@@ -27,7 +27,7 @@ export const routes: Routes = [
   // This should be the details view (read-only with edit/delete options)
   { path: 'postagens/:id', loadComponent: () => import('./components/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent), canActivate: [AuthGuard], title: 'Blogify - Detalhes da Postagem' },
   
-  { path: 'postagens/:id', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
+   { path: 'postagens/:id/editar', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
 
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
