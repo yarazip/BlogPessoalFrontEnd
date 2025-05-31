@@ -61,11 +61,6 @@ atualizarFoto(id: number, formData: FormData) {
 }
 
 
-
-
-
-
-
 saveAuthData(usuario: UsuarioResponse): void {
   const cleanToken = usuario.token.startsWith('Bearer ') 
     ? usuario.token.substring(7) 
