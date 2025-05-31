@@ -44,11 +44,7 @@ export class PerfilComponent implements OnInit {
 // }
 
 getFotoCompleta(): string {
-  if (!this.usuario.fotoUrl) return '';
-  const url = this.usuario.fotoUrl.startsWith('http')
-    ? this.usuario.fotoUrl
-    : `https://blogify-cf4p.onrender.com/${this.usuario.fotoUrl}`;
-  return `${url}?t=${new Date().getTime()}`; 
+  return this.usuario.fotoUrl || '';
 }
 
 
