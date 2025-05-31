@@ -56,7 +56,8 @@ onFileSelected(event: any) {
           console.log('Foto atualizada', res);
           this.usuario.fotoUrl = res.foto; 
           
-this.authService.updateUsuario({ foto: res.foto } as any);
+this.usuario.foto = res.foto;
+this.authService.updateUsuario({ foto: res.foto });
         },
         error: (err) => {
           console.error('Erro ao atualizar foto:', err);
