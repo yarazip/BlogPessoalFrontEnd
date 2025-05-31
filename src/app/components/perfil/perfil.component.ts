@@ -43,12 +43,14 @@ export class PerfilComponent implements OnInit {
 //     });
 // }
 
- getFotoCompleta(): string {
+getFotoCompleta(): string {
   if (!this.usuario.fotoUrl) return '';
-  return this.usuario.fotoUrl.startsWith('http')
+  const url = this.usuario.fotoUrl.startsWith('http')
     ? this.usuario.fotoUrl
     : `https://blogify-cf4p.onrender.com/${this.usuario.fotoUrl}`;
+  return `${url}?t=${new Date().getTime()}`; 
 }
+
 
 onFileSelected(event: any) {
   const file: File = event.target.files[0];
