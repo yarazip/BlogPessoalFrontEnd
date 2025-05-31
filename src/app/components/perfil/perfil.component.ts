@@ -50,8 +50,9 @@ getFotoCompleta(): string {
   if (this.usuario.fotoUrl.startsWith('http')) {
     return this.usuario.fotoUrl;
   }
-  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
+  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl + '?t=' + new Date().getTime();
 }
+
 
   onFileSelected(event: any) {
     const arquivo = event.target.files[0];
