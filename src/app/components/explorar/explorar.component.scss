@@ -9,6 +9,10 @@ $container-max-width: 900px;
 $desktop-padding: 40px;
 $mobile-padding: 20px;
 
+.content {
+  padding-top: 60px;
+}
+
 .explorar-container {
   max-width: $container-max-width;
   margin: 0 auto;

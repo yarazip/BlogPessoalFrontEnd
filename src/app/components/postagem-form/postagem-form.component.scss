@@ -2,6 +2,9 @@
 @use "@fortawesome/fontawesome-free/scss/fontawesome";
 @use "@fortawesome/fontawesome-free/scss/solid";
 
+.content {
+  padding-top: 60px;
+}
 .postagem-container {
   max-width: 800px;
   margin: 2rem auto;

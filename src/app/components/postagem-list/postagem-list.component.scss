@@ -2,6 +2,10 @@
 @use "@fortawesome/fontawesome-free/scss/solid";
 @use "@fortawesome/fontawesome-free/scss/regular";
 
+.content {
+  padding-top: 60px;
+}
+
 .post-list-container {
   max-width: 1200px;
   margin: 3rem auto;
