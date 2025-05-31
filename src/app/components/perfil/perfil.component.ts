@@ -14,18 +14,19 @@ export class PerfilComponent implements OnInit {
   editandoBio = false;
 
   constructor(private authService: AuthService) {}
+
 ngOnInit(): void {
   const user = this.authService.getUsuario();
   if (user) {
     this.authService.getUsuarioById(user.id).subscribe({
       next: (dados) => {
-        this.usuario = { ...dados };
-        this.authService.updateUsuario({ foto: dados.foto });
+        this.usuario = dados;
       },
-      error: (err) => console.error('Erro ao buscar dados do usuário:', err)
+      error: (err) => console.error('Erro ao carregar usuário:', err)
     });
   }
 }
+
 
 
   toggleEditarBio() {
