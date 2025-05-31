@@ -26,27 +26,26 @@ export class PerfilComponent implements OnInit {
 
   toggleEditarBio() {
     if (this.editandoBio) {
-      this.salvarBio();
+      // this.salvarBio();
     }
     this.editandoBio = !this.editandoBio;
   }
 
-  salvarBio() {
-    const formData = new FormData();
-    formData.append('bio', this.usuario.bio || '');
+//  salvarBio() {
+//   this.authService.atualizarUsuario(this.usuario.id, { bio: this.usuario.bio })
+//     .subscribe({
+//       next: (res: any) => {
+//         console.log('Bio atualizada com sucesso');
+//         this.usuario = { ...this.usuario, bio: res.bio };
+//         this.authService.updateUsuario(this.usuario);
+//       },
+//       error: (err) => console.error('Erro ao atualizar bio:', err)
+//     });
+// }
 
-    this.authService.atualizarUsuario(this.usuario.id, formData).subscribe({
-      next: (res: any) => {
-        console.log('Bio atualizada com sucesso');
-        this.usuario = { ...this.usuario, bio: res.bio };
-        this.authService.updateUsuario(this.usuario);
-      },
-      error: (err) => console.error('Erro ao atualizar bio:', err)
-    });
-  }
  
 getFotoCompleta(): string {
-  if (!this.usuario?.fotoUrl) return '';
+  if (!this.usuario?.fotoUrl) return 'assets/img/default-profile.png';
   if (this.usuario.fotoUrl.startsWith('http')) return this.usuario.fotoUrl;
   return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
 }
@@ -60,13 +59,14 @@ onFileSelected(event: any) {
       .subscribe({
         next: (usuario) => {
           console.log('Foto atualizada com sucesso', usuario);
-          this.authService.updateUsuario(usuario);
+          this.authService.updateUsuario(usuario); // Atualiza dados locais
         },
         error: (error) => {
           console.error('Erro ao atualizar foto:', error);
         }
       });
   }
+
 }
 
   
