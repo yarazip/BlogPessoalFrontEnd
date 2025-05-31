@@ -16,35 +16,42 @@
   margin-bottom: 50px;
   align-items: center;
 }
-.profile-avatar {
-  width: 150px;       /* largura fixa, pode ajustar */
-  height: 150px;      /* altura fixa igual à largura para ser quadrado */
-  border-radius: 50%; /* para ficar redondo, tipo avatar */
-  overflow: hidden;   /* corta qualquer coisa que "vaze" do container */
-  position: relative; /* para posicionar o botão */
-  border: 2px solid #ccc;
-  cursor: pointer;
-}
 
-.profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;  /* preenche o container, cortando proporcionalmente */
-  display: block;
+.profile-avatar {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 5px 15px var(--shadow-color);
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 .edit-avatar-btn {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background-color: rgba(0,0,0,0.5);
+  bottom: 10px;
+  right: 10px;
+  background-color: var(--primary-color);
   color: white;
-  padding: 6px;
+  border: none;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 14px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.1);
+  }
 }
-
 
 .profile-info {
   flex: 1;
