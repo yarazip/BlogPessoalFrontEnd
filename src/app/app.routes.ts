@@ -24,7 +24,7 @@ export const routes: Routes = [
 
   { path: 'postagens', loadComponent: () => import('./components/postagem-list/postagem-list.component').then(m => m.PostagemListComponent), canActivate: [AuthGuard], title: 'Blogify - Postagens' },
   { path: 'postagens/nova', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Nova Postagem' },
-  { path: 'postagens/:id', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
+  // { path: 'postagens/:id', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
   { path: 'postagens/:id', loadComponent: () => import('./components/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent), canActivate: [AuthGuard], title: 'Blogify - Detalhes da Postagem' },
 
   { path: '**', redirectTo: '', pathMatch: 'full' }
