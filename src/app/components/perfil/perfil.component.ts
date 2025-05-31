@@ -50,7 +50,6 @@ export class PerfilComponent implements OnInit {
     : `https://blogify-cf4p.onrender.com/${this.usuario.fotoUrl}`;
 }
 
-
 onFileSelected(event: any) {
   const file: File = event.target.files[0];
   if (file) {
@@ -58,14 +57,17 @@ onFileSelected(event: any) {
       .subscribe({
         next: (res) => {
           console.log('Foto atualizada', res);
-          // Atualiza a foto no objeto para refletir no template
           this.usuario.fotoUrl = res.foto;
+          // Atualiza localStorage para persistir foto atualizada
+          this.authService.updateUsuario({ fotoUrl: res.foto });
         },
         error: (err) => {
           console.error('Erro ao atualizar foto:', err);
+          alert('Erro ao atualizar foto');
         }
       });
   }
+
 }
 
 
