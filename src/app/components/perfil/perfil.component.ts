@@ -51,24 +51,22 @@ getFotoCompleta(): string {
   return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
 }
 
-
 onFileSelected(event: any) {
-  const arquivo = event.target.files[0];
-  const id = this.usuario.id;
+  const file: File = event.target.files[0];
+  const userId = this.authService.getCurrentUserId();
 
-  const formData = new FormData();
-  formData.append('foto', arquivo);
-
-  this.authService.atualizarFoto(id, formData).subscribe({
-    next: (res: any) => {
-      this.usuario = { ...this.usuario, fotoUrl: res.foto || this.usuario.fotoUrl };
-      this.authService.updateUsuario(this.usuario);
-      console.log('Foto atualizada com sucesso:', this.getFotoCompleta());
-    },
-    error: (err) => {
-      console.error('Erro ao atualizar foto:', err);
-    }
-  });
+  if (file && userId) {
+    this.authService.atualizarFoto(Number(userId), file)
+      .subscribe({
+        next: (usuario) => {
+          console.log('Foto atualizada com sucesso', usuario);
+          this.authService.updateUsuario(usuario);
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar foto:', error);
+        }
+      });
+  }
 }
 
   
