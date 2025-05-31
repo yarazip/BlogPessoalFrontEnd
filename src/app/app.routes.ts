@@ -18,16 +18,14 @@ export const routes: Routes = [
   { path: 'esqueci-senha', loadComponent: () => import('./pages/esqueci-senha/esqueci-senha.component').then(m => m.EsqueciSenhaComponent), title: 'Blogify - Recuperar Senha' },
 
   { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent), title: 'Blogify - Dashboard', canActivate: [AuthGuard] },
-{ 
-    path: 'perfil', 
-    component: PerfilComponent 
-  },
-    { path: 'explorar', component: ExplorarComponent },
 
-  { path: 'postagens', loadComponent: () => import('./components/postagem-list/postagem-list.component').then(m => m.PostagemListComponent), title: 'Blogify - Postagens', canActivate: [AuthGuard] },
-  { path: 'postagens/nova', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), title: 'Blogify - Nova Postagem', canActivate: [AuthGuard] },
-  { path: 'postagens/editar/:id', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), title: 'Blogify - Editar Postagem', canActivate: [AuthGuard] },
-  { path: 'postagens/:id', loadComponent: () => import('./components/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent), title: 'Blogify - Detalhes da Postagem', canActivate: [AuthGuard] },
-{ path: 'dashboard', component: DashboardComponent },
+  { path: 'perfil', component: PerfilComponent },
+  { path: 'explorar', component: ExplorarComponent },
+
+  { path: 'postagens', loadComponent: () => import('./components/postagem-list/postagem-list.component').then(m => m.PostagemListComponent), canActivate: [AuthGuard], title: 'Blogify - Postagens' },
+  { path: 'postagens/nova', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Nova Postagem' },
+  { path: 'postagens/editar/:id', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
+  { path: 'postagens/:id', loadComponent: () => import('./components/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent), canActivate: [AuthGuard], title: 'Blogify - Detalhes da Postagem' },
+
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
