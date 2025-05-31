@@ -30,7 +30,7 @@
         <span class="date">{{ post.data | date:'dd/MM/yyyy HH:mm' }}</span>
       </div>
       
-      <p class="card-text">{{ post.texto | truncate:150 }}</p>
+<p class="card-text" [innerText]="post.texto | truncate:150"></p>
     </div>
   </div>
 </div>

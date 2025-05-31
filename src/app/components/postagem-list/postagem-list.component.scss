@@ -176,3 +176,8 @@ color: var(--primary-color);  }
     }
   }
 }
+.card-text {
+  white-space: pre-wrap; 
+  word-wrap: break-word; 
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif; /* emojis */
+}
