@@ -3,9 +3,8 @@
 
     <div class="postagem-header">
       <img 
-        [src]="postagem.usuario?.foto" 
-        alt="Foto de {{ postagem.usuario?.nome }}" 
-        class="foto-perfil"
+      <img [src]="usuario?.foto || 'assets/img/foto-padrao.png'" alt="Foto do usuário">
+
       >
       
       <div class="info-usuario">
