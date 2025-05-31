@@ -53,23 +53,23 @@ getFotoCompleta(): string {
   return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
 }
 
-
   onFileSelected(event: any) {
     const arquivo = event.target.files[0];
     const bio = this.usuario.bio || '';
     const id = this.usuario.id;
 
   this.authService.atualizarPerfil(id, arquivo, bio).subscribe({
-  next: (res: any) => {
+ next: (res: any) => {
   console.log('Resposta backend:', res);
-  const novaFotoUrl = res.fotoUrl || res.foto || this.usuario.fotoUrl;
   this.usuario = {
     ...this.usuario,
-    fotoUrl: novaFotoUrl + '?t=' + new Date().getTime(),
+    fotoUrl: res.foto || this.usuario.fotoUrl,
     bio: res.bio || this.usuario.bio
   };
   this.authService.updateUsuario(this.usuario);
-  console.log('URL da foto para exibir:', this.getFotoCompleta());
+
+  const urlCompleta = this.getFotoCompleta();
+  console.log('URL completa da foto:', urlCompleta);
 },
   error: (err) => {
     console.error('Erro ao atualizar perfil:', err);
