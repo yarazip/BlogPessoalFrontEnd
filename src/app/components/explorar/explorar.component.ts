@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';  // Para pipe date, ngFor, etc
 import { Postagem } from '../models/Postagem';
 import { PostagemService } from '../../services/postagem.service';
 import { HttpClientModule } from '@angular/common/http'; // Caso o serviço use HttpClient
+import { Nl2brPipe } from '../../shared/pipes/nl2br.pipe';
 
 @Component({
   selector: 'app-explorar',
@@ -12,6 +13,7 @@ import { HttpClientModule } from '@angular/common/http'; // Caso o serviço use 
   imports: [
     CommonModule,
     HttpClientModule, 
+    Nl2brPipe  
   ],
   providers: [PostagemService] 
 })

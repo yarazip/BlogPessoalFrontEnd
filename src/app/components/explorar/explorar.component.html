@@ -15,7 +15,7 @@
     </div>
 
     <h3>{{ postagem.titulo }}</h3>
-    <p>{{ postagem.texto }}</p>
+<p [innerHTML]="postagem.texto | nl2br"></p>
 
   </div>
 </div>
