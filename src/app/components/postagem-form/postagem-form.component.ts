@@ -34,7 +34,7 @@ export class PostagemFormComponent implements OnInit {
   ) {
     this.postagemForm = this.fb.group({
       titulo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      texto: ['', [Validators.required, Validators.minLength(10)]],
+      texto: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000000)]],
       temaId: [null, Validators.required]
     });
   }
