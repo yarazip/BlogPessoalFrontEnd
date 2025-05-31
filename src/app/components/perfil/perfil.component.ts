@@ -58,7 +58,6 @@ onFileSelected(event: any) {
       .subscribe({
         next: (res) => {
           console.log('Foto atualizada', res);
-          // Atualiza a foto no objeto para refletir no template
           this.usuario.fotoUrl = res.foto;
         },
         error: (err) => {
