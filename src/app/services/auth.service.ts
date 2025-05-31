@@ -58,19 +58,12 @@ private readonly TOKEN_KEY = 'token';
 }
 
 
-  atualizarPerfil(id: number, foto: File, bio: string): Observable<Usuario> {
-    
-    const formData = new FormData();
+  atualizarFoto(id: number, arquivoFoto: File) {
+  const formData = new FormData();
+  formData.append('foto', arquivoFoto);
+  return this.http.put(`${this.apiUrl}/usuarios/${id}`, formData);
+}
 
-    if (foto) {
-      formData.append('foto', foto);
-    }
-    if (bio) {
-      formData.append('bio', bio);
-    }
-
-    return this.http.put<Usuario>(`${this.baseUrl}/${id}`, formData);
-  }
 
 
 saveAuthData(usuario: UsuarioResponse): void {
