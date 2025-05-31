@@ -49,26 +49,16 @@ private readonly TOKEN_KEY = 'token';
     return this.http.get<Usuario>(`${this.baseUrl}/${id}`);
   }
 
- atualizarUsuario(id: number, usuario: Partial<Usuario>): Observable<Usuario> {
-  return this.http.put<Usuario>(
-    `${this.baseUrl}/${id}`, 
-    usuario
-  );
-}
-
+  atualizarUsuario(id: number, formData: FormData): Observable<Usuario> {
+    return this.http.put<Usuario>(`${this.baseUrl}/${id}`, formData);
+  }
 
   forgotPassword(email: string): Observable<any> {
   return this.http.post(`${this.apiUrl}/forgot-password`, { email });
 }
- atualizarFoto(id: number, arquivoFoto: File): Observable<any> {
-  const formData = new FormData();
-  formData.append('foto', arquivoFoto);
-
-  return this.http.put<any>(`${this.baseUrl}/${id}/foto`, formData);
+atualizarFoto(id: number, formData: FormData) {
+  return this.http.put<Usuario>(`${this.apiUrl}/usuarios/${id}/foto`, formData);
 }
-
-
-
 
 
 
