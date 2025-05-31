@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { AuthService, Usuario } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
 
@@ -13,7 +14,7 @@ import { environment } from '../../../environments/environment';
 export class PerfilComponent implements OnInit {
   usuario!: Usuario & { fotoUrl?: string };
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private http: HttpClient) {}
 
   ngOnInit(): void {
     const user = this.authService.getUsuario();
@@ -29,22 +30,21 @@ export class PerfilComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    const arquivo = event.target.files[0];
-    if (!arquivo) return;
+    const file: File = event.target.files[0];
+    if (file && this.usuario?.id) {
+      const formData = new FormData();
+      formData.append('foto', file);
 
-    const id = this.usuario.id;
-
-    this.authService.atualizarFoto(id, arquivo).subscribe({
-      next: (res: any) => {
-        this.usuario.fotoUrl = res.foto || this.usuario.fotoUrl;
-        this.authService.updateUsuario(this.usuario);
-
-        const urlCompleta = this.getFotoCompleta();
-        console.log('URL completa da foto:', urlCompleta);
-      },
-      error: (err) => {
-        console.error('Erro ao atualizar foto:', err);
-      }
-    });
+      this.http.put<{ foto: string }>(`${environment.apiUrl}/usuarios/${this.usuario.id}/foto`, formData)
+        .subscribe({
+          next: (response) => {
+            console.log('Foto atualizada com sucesso', response);
+            this.usuario.fotoUrl = response.foto;
+          },
+          error: (error) => {
+            console.error('Erro ao atualizar foto:', error);
+          }
+        });
+    }
   }
 }
