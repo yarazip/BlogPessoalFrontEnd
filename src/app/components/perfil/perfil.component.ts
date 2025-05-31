@@ -54,10 +54,9 @@ onFileSelected(event: any) {
       .subscribe({
         next: (res) => {
           console.log('Foto atualizada', res);
-          this.usuario.fotoUrl = res.foto; // mantém para exibir imagem na UI
+          this.usuario.fotoUrl = res.foto; 
           
-          // Atualiza localStorage para persistir foto atualizada
-          this.authService.updateUsuario({ foto: res.foto }); // usar 'foto' e não 'fotoUrl'
+this.authService.updateUsuario({ foto: res.foto } as any);
         },
         error: (err) => {
           console.error('Erro ao atualizar foto:', err);
