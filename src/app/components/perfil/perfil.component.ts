@@ -43,31 +43,31 @@ export class PerfilComponent implements OnInit {
 //     });
 // }
 
- 
-getFotoCompleta(): string {
-  if (!this.usuario?.fotoUrl) return 'assets/img/default-profile.png';
-  if (this.usuario.fotoUrl.startsWith('http')) return this.usuario.fotoUrl;
-  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
+ getFotoCompleta(): string {
+  if (!this.usuario.fotoUrl) return '';
+  return this.usuario.fotoUrl.startsWith('http')
+    ? this.usuario.fotoUrl
+    : `https://blogify-cf4p.onrender.com/${this.usuario.fotoUrl}`;
 }
+
 
 onFileSelected(event: any) {
   const file: File = event.target.files[0];
-  const userId = this.authService.getCurrentUserId();
-
-  if (file && userId) {
-    this.authService.atualizarFoto(Number(userId), file)
+  if (file) {
+    this.authService.atualizarFoto(this.usuario.id, file)
       .subscribe({
-        next: (usuario) => {
-          console.log('Foto atualizada com sucesso', usuario);
-          this.authService.updateUsuario(usuario); // Atualiza dados locais
+        next: (res) => {
+          console.log('Foto atualizada', res);
+          // Atualiza a foto no objeto para refletir no template
+          this.usuario.fotoUrl = res.foto;
         },
-        error: (error) => {
-          console.error('Erro ao atualizar foto:', error);
+        error: (err) => {
+          console.error('Erro ao atualizar foto:', err);
         }
       });
   }
-
 }
+
 
   
 }

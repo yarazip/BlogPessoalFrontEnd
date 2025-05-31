@@ -60,16 +60,16 @@ private readonly TOKEN_KEY = 'token';
   forgotPassword(email: string): Observable<any> {
   return this.http.post(`${this.apiUrl}/forgot-password`, { email });
 }
-
-atualizarFoto(id: number, foto: File): Observable<Usuario> {
+atualizarFoto(id: number, foto: File): Observable<any> {
   const formData = new FormData();
   formData.append('foto', foto);
-  
-  return this.http.put<Usuario>(
-    `${this.baseUrl}/${id}/foto`, 
+
+  return this.http.put<any>(
+    `${this.apiUrl}/usuarios/${id}/foto`,
     formData
   );
 }
+
 
 
 
