@@ -47,7 +47,6 @@ getFotoCompleta(): string {
   return this.usuario.fotoUrl || '';
 }
 
-
 onFileSelected(event: any) {
   const file: File = event.target.files[0];
   if (file) {
@@ -55,9 +54,10 @@ onFileSelected(event: any) {
       .subscribe({
         next: (res) => {
           console.log('Foto atualizada', res);
-          this.usuario.fotoUrl = res.foto;
+          this.usuario.fotoUrl = res.foto; // mantém para exibir imagem na UI
+          
           // Atualiza localStorage para persistir foto atualizada
-          this.authService.updateUsuario({ fotoUrl: res.foto });
+          this.authService.updateUsuario({ foto: res.foto }); // usar 'foto' e não 'fotoUrl'
         },
         error: (err) => {
           console.error('Erro ao atualizar foto:', err);
@@ -65,9 +65,7 @@ onFileSelected(event: any) {
         }
       });
   }
-
 }
-
 
   
 }
