@@ -3,7 +3,7 @@
 
     <div class="postagem-header">
       <img 
-      <img [src]="usuario?.foto || 'assets/img/foto-padrao.png'" alt="Foto do usuário">
+<img *ngIf="usuario?.foto" [src]="usuario.foto" alt="Foto do usuário">
 
       >
       
