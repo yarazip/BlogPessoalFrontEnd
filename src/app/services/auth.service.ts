@@ -58,11 +58,16 @@ private readonly TOKEN_KEY = 'token';
 }
 
 
-  atualizarFoto(id: number, arquivoFoto: File) {
+ atualizarFoto(id: number, foto: File) {
   const formData = new FormData();
-  formData.append('foto', arquivoFoto);
-  return this.http.put(`${this.apiUrl}/usuarios/${id}`, formData);
+  formData.append('foto', foto);
+
+  return this.http.put<any>(
+    `${this.apiUrl}/usuarios/${id}`,
+    formData
+  );
 }
+
 
 
 
