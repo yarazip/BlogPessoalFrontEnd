@@ -68,7 +68,7 @@ export class PostagemListComponent implements OnInit {
 
 
   editar(id: number): void {
-    this.router.navigate(['/postagens/editar', id]);
+    this.router.navigate(['/postagens', id]);
   }
   
   
