@@ -36,22 +36,28 @@ ngOnInit(): void {
   // getFotoCompleta(): string {
   //   return this.usuario.foto || '';
   // }
-
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.authService.atualizarFoto(this.usuario.id, file)
-        .subscribe({
-          next: (res) => {
-            console.log('Foto atualizada', res);
-            this.usuario = { ...this.usuario, foto: res.foto };
-            this.authService.updateUsuario({ foto: res.foto });
-          },
-          error: (err) => {
-            console.error('Erro ao atualizar foto:', err);
-            alert('Erro ao atualizar foto');
-          }
-        });
+onFileSelected(event: any) {
+  const file: File = event.target.files[0];
+  if (file) {
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Formato inválido. Envie uma imagem JPG, PNG ou WEBP.');
+      return;
     }
+
+    this.authService.atualizarFoto(this.usuario.id, file)
+      .subscribe({
+        next: (res) => {
+          console.log('Foto atualizada', res);
+          this.usuario = { ...this.usuario, foto: res.foto };
+          this.authService.updateUsuario({ foto: res.foto });
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar foto:', err);
+          alert('Erro ao atualizar foto');
+        }
+      });
   }
+}
+
 }
