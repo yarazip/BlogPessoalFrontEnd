@@ -66,8 +66,6 @@ export class PostagemDetailComponent implements OnInit {
       });
     }
   }
-editar(id: number): void {
-  this.router.navigate(['/postagens', id, 'editar']);
-}
-
-}
+  editar(id: number): void {
+    this.router.navigate(['postagens', id, 'editar'], { relativeTo: this.route.parent });
+}}
