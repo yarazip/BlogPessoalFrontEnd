@@ -46,8 +46,8 @@ private readonly TOKEN_KEY = 'token';
   }
 
   getUsuarioById(id: number) {
-  return this.http.get<Usuario>(`${this.baseUrl}/usuarios/${id}`);
-}
+    return this.http.get<Usuario>(`${this.baseUrl}/${id}`);
+  }
 
   atualizarUsuario(id: number, formData: FormData): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.baseUrl}/${id}`, formData);
