@@ -10,7 +10,6 @@ import { PostagemFormComponent } from './components/postagem-form/postagem-form.
 import { PostagemDetailComponent } from './components/postagem-detail/postagem-detail.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { ExplorarComponent } from './components/explorar/explorar.component';
-
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent), title: 'Blogify - Página Inicial' },
   { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent), title: 'Blogify - Login' },
@@ -24,8 +23,12 @@ export const routes: Routes = [
 
   { path: 'postagens', loadComponent: () => import('./components/postagem-list/postagem-list.component').then(m => m.PostagemListComponent), canActivate: [AuthGuard], title: 'Blogify - Postagens' },
   { path: 'postagens/nova', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Nova Postagem' },
-  // { path: 'postagens/:id', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
+  
+  // This should be the details view (read-only with edit/delete options)
   { path: 'postagens/:id', loadComponent: () => import('./components/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent), canActivate: [AuthGuard], title: 'Blogify - Detalhes da Postagem' },
+  
+  // Separate route for editing
+  { path: 'postagens/:id/editar', loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent), canActivate: [AuthGuard], title: 'Blogify - Editar Postagem' },
 
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
