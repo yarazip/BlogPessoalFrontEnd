@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { AuthService, Usuario } from '../../services/auth.service';
 import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-perfil',
@@ -12,9 +12,10 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./perfil.component.scss']
 })
 export class PerfilComponent implements OnInit {
-  usuario!: Usuario & { fotoUrl?: string };
+  usuario!: Usuario & { bio?: string; fotoUrl?: string };
+  editandoBio = false;
 
-  constructor(private authService: AuthService, private http: HttpClient) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     const user = this.authService.getUsuario();
@@ -23,28 +24,52 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  getFotoCompleta(): string {
-    if (!this.usuario?.fotoUrl) return '';
-    if (this.usuario.fotoUrl.startsWith('http')) return this.usuario.fotoUrl;
-    return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
-  }
-
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file && this.usuario?.id) {
-      const formData = new FormData();
-      formData.append('foto', file);
-
-      this.http.put<{ foto: string }>(`${environment.apiUrl}/usuarios/${this.usuario.id}/foto`, formData)
-        .subscribe({
-          next: (response) => {
-            console.log('Foto atualizada com sucesso', response);
-            this.usuario.fotoUrl = response.foto;
-          },
-          error: (error) => {
-            console.error('Erro ao atualizar foto:', error);
-          }
-        });
+  toggleEditarBio() {
+    if (this.editandoBio) {
+      this.salvarBio();
     }
+    this.editandoBio = !this.editandoBio;
   }
+
+  salvarBio() {
+    const formData = new FormData();
+    formData.append('bio', this.usuario.bio || '');
+
+    this.authService.atualizarUsuario(this.usuario.id, formData).subscribe({
+      next: (res: any) => {
+        console.log('Bio atualizada com sucesso');
+        this.usuario = { ...this.usuario, bio: res.bio };
+        this.authService.updateUsuario(this.usuario);
+      },
+      error: (err) => console.error('Erro ao atualizar bio:', err)
+    });
+  }
+ 
+getFotoCompleta(): string {
+  if (!this.usuario?.fotoUrl) return '';
+  if (this.usuario.fotoUrl.startsWith('http')) return this.usuario.fotoUrl;
+  return environment.apiUrl.replace('/api', '') + this.usuario.fotoUrl;
+}
+
+
+onFileSelected(event: any) {
+  const arquivo = event.target.files[0];
+  const id = this.usuario.id;
+
+  const formData = new FormData();
+  formData.append('foto', arquivo);
+
+  this.authService.atualizarFoto(id, formData).subscribe({
+    next: (res: any) => {
+      this.usuario = { ...this.usuario, fotoUrl: res.foto || this.usuario.fotoUrl };
+      this.authService.updateUsuario(this.usuario);
+      console.log('Foto atualizada com sucesso:', this.getFotoCompleta());
+    },
+    error: (err) => {
+      console.error('Erro ao atualizar foto:', err);
+    }
+  });
+}
+
+  
 }
