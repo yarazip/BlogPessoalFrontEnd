@@ -63,8 +63,7 @@ atualizarFoto(id: number, arquivoFoto: File) {
   return this.http.put<{ foto: string }>(`${this.baseUrl}/${id}/foto`, formData);
 }
 
-
-saveAuthData(usuario: UsuarioResponse): void {
+saveAuthData(usuario: UsuarioResponse & { foto?: string }): void {
   const cleanToken = usuario.token.startsWith('Bearer ') 
     ? usuario.token.substring(7) 
     : usuario.token;
@@ -72,9 +71,11 @@ saveAuthData(usuario: UsuarioResponse): void {
   localStorage.setItem('usuario', JSON.stringify({
     id: usuario.id,
     nome: usuario.nome,
-    email: usuario.email
+    email: usuario.email,
+    foto: usuario.foto || ''  // <-- adiciona a foto aqui
   }));
 }
+
 
 
   getUsuario(): Usuario | null {
