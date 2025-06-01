@@ -14,13 +14,16 @@ export interface StatsResponse {
 })
 export class DashboardService {
   private apiUrl = environment.apiUrl;  
+private baseUrl = `${environment.apiUrl}/usuarios`;
 
   constructor(private http: HttpClient) {}
 
- getUserCount() {
-  return this.http.get<number>(`${this.apiUrl}/usuarios/count`);
+  
+getUserCount(): Observable<number> {
+  return this.http.get<number>(`${this.baseUrl}/count`).pipe(
+    catchError(() => of(0))
+  );
 }
-
   
   getPostCount(): Observable<number> {
     return this.http.get<{ quantidade: number }>(`${this.apiUrl}/postagens/count`).pipe(
