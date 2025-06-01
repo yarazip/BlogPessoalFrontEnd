@@ -6,8 +6,13 @@
   <title>Recuperar senha | Blogify</title>
 </head>
 <body>
-  <!-- FUTURO; -->
   <div class="forgot-password-container">
+    <!-- Aviso de desenvolvimento -->
+    <div class="dev-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>Esta página está em desenvolvimento. Funcionalidade limitada.</span>
+    </div>
+    
     <h1>Recuperar Senha</h1>
     <p>Digite seu e-mail para receber um link de recuperação</p>
   
@@ -25,20 +30,20 @@
         </div>
       </div>
   
-      <div *ngIf="successMessage" class="success-message">
+      <div *If="successMessage" class="success-message">
         {{ successMessage }}
       </div>
-      <div *ngIf="errorMessage" class="error-message">
+      <div *If="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
   
       <button type="submit" class="submit-btn" [disabled]="isLoading">
         <span *ngIf="!isLoading">Enviar Link</span>
-        <span *ngIf="isLoading">Enviando...</span>
+        <span *ngIf="isLoading"><i class="fas fa-spinner fa-spin"></i> Enviando...</span>
       </button>
     </form>
   
-    <a (click)="navigateToLogin()">Voltar para o Login</a>
+    <a class="back-link" (click)="navigateToLogin()">Voltar para o Login</a>
   </div>
-  </body>
+</body>
 </html>
