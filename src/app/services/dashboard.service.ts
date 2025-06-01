@@ -17,12 +17,12 @@ export class DashboardService {
 
   constructor(private http: HttpClient) {}
 
- getUserCount(): Observable<number> {
-  return this.http.get<{ quantidade: number }>(`${this.apiUrl}/usuarios/count`).pipe(
-    map(response => response.quantidade),
+getUserCount(): Observable<number> {
+  return this.http.get<number>(`${this.apiUrl}/usuarios/count`).pipe(
     catchError(() => of(0))
   );
 }
+
 
   
   getPostCount(): Observable<number> {

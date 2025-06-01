@@ -67,6 +67,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     forkJoin([
       this.dashboardService.getUserCount().pipe(catchError(() => of(0))),
+      
       this.dashboardService.getPostCount().pipe(catchError(() => of(0))),
       this.dashboardService.getCommentCount().pipe(catchError(() => of(0)))
     ]).subscribe({
