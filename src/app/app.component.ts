@@ -37,7 +37,7 @@ export class AppComponent {
 const urlWithFragment = event.urlAfterRedirects || event.url;
 const url = urlWithFragment.split('?')[0].split('#')[0];
         
-        const defaultHeaderRoutes = ['/', '/home', '/login', '/register'];
+        const defaultHeaderRoutes = ['/', '/home', '/login', '/register', '/esqueci'];
         
         this.showDashboardHeader = !defaultHeaderRoutes.some(route => 
           url === route || url.startsWith(route + '/')
