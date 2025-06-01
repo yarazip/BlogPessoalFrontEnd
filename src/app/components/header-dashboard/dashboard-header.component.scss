@@ -1,12 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 
-
-body {
-  padding-top: var(--header-height);
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
+// Variables
+:root {
+  --header-height: 70px;
+  --mobile-header-height: 60px;
+  --transition-time: 0.3s;
 }
 
 header {
@@ -17,20 +16,38 @@ header {
   z-index: 1000;
   background-color: var(--bg-color);
   border-bottom: 1px solid var(--header-border);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: all var(--transition-time) ease;
+  height: var(--header-height);
+
+  @media (max-width: 768px) {
+    height: var(--mobile-header-height);
+  }
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
-  height: var(--header-height);
-  transition: all 0.3s ease;
+  padding: 0 2rem;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  transition: all var(--transition-time) ease;
+
+  @media (max-width: 992px) {
+    padding: 0 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 1rem;
+  }
 }
 
 .logo-link {
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .blogfy-logo {
@@ -40,32 +57,43 @@ header {
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--text-color);
-  transition: all 0.3s ease;
+  transition: all var(--transition-time) ease;
   
   span {
     font-weight: 400;
     color: var(--primary-color);
-    transition: color 0.3s ease;
+    transition: color var(--transition-time) ease;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+    letter-spacing: 1px;
   }
 }
 
 .main-nav {
   display: flex;
   align-items: center;
+  height: 100%;
 
   .nav-links {
     display: flex;
-    gap: 30px;
+    gap: 2rem;
+    height: 100%;
+    align-items: center;
 
     a {
       font-family: 'Segoe UI', sans-serif;
-      font-size: 17px;
+      font-size: 1rem;
       font-weight: 500;
       color: var(--text-color);
       text-decoration: none;
-      transition: all 0.3s ease;
+      transition: all var(--transition-time) ease;
       position: relative;
-      padding: 5px 0;
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      height: 100%;
 
       &:hover {
         color: var(--primary-color);
@@ -81,9 +109,9 @@ header {
         bottom: 0;
         left: 0;
         width: 0;
-        height: 2px;
+        height: 3px;
         background-color: var(--primary-color);
-        transition: width 0.3s ease;
+        transition: width var(--transition-time) ease;
       }
 
       &.active {
@@ -93,22 +121,49 @@ header {
           width: 100%;
         }
       }
+
+      i {
+        margin-right: 0.5rem;
+        
+        @media (max-width: 768px) {
+          margin-right: 0;
+          font-size: 1.2rem;
+        }
+      }
+
+      @media (max-width: 992px) {
+        font-size: 0.9rem;
+      }
     }
 
     @media (max-width: 768px) {
       position: fixed;
-      top: var(--header-height);
+      top: var(--mobile-header-height);
       left: 0;
       width: 100%;
       background: var(--bg-color);
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
-      padding: 2rem 0;
+      padding: 1.5rem 0;
       box-shadow: 0 10px 15px -3px var(--shadow-color);
       z-index: 1000;
       gap: 1.5rem;
       display: none;
-      transition: background-color 0.3s ease;
+      height: auto;
+      max-height: calc(100vh - var(--mobile-header-height));
+      overflow-y: auto;
+      transition: all var(--transition-time) ease;
+
+      a {
+        padding: 0.5rem 1rem;
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        
+        &::after {
+          bottom: -5px;
+        }
+      }
     }
   }
 
@@ -119,13 +174,13 @@ header {
 
     .mobile-menu-toggle {
       .hamburger-line:nth-child(1) {
-        transform: translateY(6px) rotate(45deg);
+        transform: translateY(7px) rotate(45deg);
       }
       .hamburger-line:nth-child(2) {
         opacity: 0;
       }
       .hamburger-line:nth-child(3) {
-        transform: translateY(-6px) rotate(-45deg);
+        transform: translateY(-7px) rotate(-45deg);
       }
     }
   }
@@ -138,17 +193,19 @@ header {
   cursor: pointer;
   padding: 0.5rem;
   flex-direction: column;
-  justify-content: space-around;
-  width: 2rem;
-  height: 2rem;
+  justify-content: space-between;
+  width: 30px;
+  height: 24px;
   z-index: 1001;
+  position: relative;
 
   .hamburger-line {
     width: 100%;
-    height: 2px;
+    height: 3px;
     background-color: var(--text-color);
-    transition: all 0.3s ease;
+    transition: all var(--transition-time) ease;
     transform-origin: center;
+    border-radius: 2px;
   }
 
   @media (max-width: 768px) {
@@ -159,33 +216,40 @@ header {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 1rem;
+  height: 100%;
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+  }
 }
 
 .theme-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-color);
-  padding: 8px;
+  padding: 0.5rem;
   border-radius: 50%;
   width: 40px;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all var(--transition-time) ease;
   position: relative;
   background-color: var(--secondary-color);
 
   &:hover {
     transform: scale(1.1);
+    background-color: var(--primary-color);
+    color: white;
   }
 
   i {
     position: absolute;
-    transition: all 0.3s ease;
+    transition: all var(--transition-time) ease;
   }
 
   .fa-moon {
@@ -197,53 +261,57 @@ header {
     opacity: var(--sun-opacity);
     transform: var(--sun-transform);
   }
+
+  @media (max-width: 480px) {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
 }
 
 .logout-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--text-color);
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   border-radius: 4px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
+  gap: 0.5rem;
+  transition: all var(--transition-time) ease;
   background-color: var(--secondary-color);
+  height: 40px;
 
   &:hover {
     color: var(--error-color);
     transform: scale(1.05);
+    background-color: rgba(var(--error-rgb), 0.1);
   }
 
   .logout-text {
     font-size: 0.9rem;
     font-weight: 500;
 
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       display: none;
     }
   }
-}
 
-@media (max-width: 768px) {
-  .header-container {
-    padding: 15px 20px;
-  }
-
-  .nav-links {
-    gap: 15px;
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+    height: 36px;
+    width: 36px;
+    justify-content: center;
   }
 }
 
-@media (max-width: 480px) {
-  .blogfy-logo {
-    font-size: 1.2rem;
-  }
-  
-  .header-right {
-    gap: 10px;
+// Body padding adjustment
+body {
+  padding-top: var(--header-height);
+
+  @media (max-width: 768px) {
+    padding-top: var(--mobile-header-height);
   }
 }
