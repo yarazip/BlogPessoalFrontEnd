@@ -58,9 +58,9 @@ export class RegisterComponent {
     return null;
   }
 
-  
-onSubmit() {
 
+onSubmit() {
+  this.submitted = true;
   
   if (this.registerForm.invalid) {
     this.registerForm.markAllAsTouched();
@@ -73,6 +73,7 @@ onSubmit() {
 
   this.authService.register(nome, email, senha).subscribe({
     next: () => {
+      this.isLoading = false;
       this.router.navigate(['/login']);
     },
     error: (error) => {
@@ -82,10 +83,8 @@ onSubmit() {
       if (error.status === 409) {
         this.errorMessage = error.error.message || 'Email já está em uso';
       } else {
-        this.errorMessage = 'O e-mail já está em uso';
+        this.errorMessage = 'Ocorreu um erro ao cadastrar. Tente novamente mais tarde.';
       }
     }
   });
-}
-
-}
+}}
