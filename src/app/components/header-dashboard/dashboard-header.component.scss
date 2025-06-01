@@ -151,22 +151,24 @@ header {
       left: 0;
       width: 100%;
       background: var(--bg-color);
-      flex-direction: column;
-      align-items: center;
-      padding: 1.5rem 0;
+      flex-direction: row; /* Changed from column to row */
+      flex-wrap: wrap; /* Allow items to wrap */
+      justify-content: center; /* Center items horizontally */
+      padding: 1rem 0;
       box-shadow: 0 10px 15px -3px var(--shadow-color);
       z-index: 1000;
-      gap: 1.5rem;
+      gap: 1rem;
       display: none;
       height: auto;
-      max-height: calc(100vh - var(--mobile-header-height));
-      overflow-y: auto;
+      max-height: none;
+      overflow-y: visible;
 
       a {
         padding: 0.5rem 1rem;
-        width: 100%;
+        width: auto;
         text-align: center;
         justify-content: center;
+        height: auto;
         
         &::after {
           bottom: -5px;
@@ -333,5 +335,10 @@ body {
 @media (max-width: 768px) {
   body {
     padding-top: var(--mobile-header-height) !important;
+  }
+  
+  /* Adjust the main content when mobile menu is open */
+  .mobile-open ~ main {
+    padding-top: calc(var(--mobile-header-height) + 60px); /* Header height + nav height */
   }
 }
