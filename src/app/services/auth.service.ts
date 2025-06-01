@@ -75,7 +75,7 @@ saveAuthData(usuario: UsuarioResponse): void {
     id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
-    foto: usuario.foto || ''  // ✅ Agora salva a foto
+    foto: usuario.foto || '' 
   }));
 }
 
