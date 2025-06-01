@@ -10,6 +10,7 @@ export interface UsuarioResponse {
   nome: string;
   email: string;
   token: string;
+  foto? : string;
 }
 
 export interface UsuarioLogin {
@@ -68,13 +69,16 @@ saveAuthData(usuario: UsuarioResponse): void {
   const cleanToken = usuario.token.startsWith('Bearer ') 
     ? usuario.token.substring(7) 
     : usuario.token;
+    
   localStorage.setItem('token', cleanToken);
   localStorage.setItem('usuario', JSON.stringify({
     id: usuario.id,
     nome: usuario.nome,
-    email: usuario.email
+    email: usuario.email,
+    foto: usuario.foto || ''  // ✅ Agora salva a foto
   }));
 }
+
 
 
   getUsuario(): Usuario | null {
