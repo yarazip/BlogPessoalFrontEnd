@@ -65,19 +65,20 @@ atualizarFoto(id: number, arquivoFoto: File) {
 }
 
 
-saveAuthData(usuario: UsuarioResponse): void {
+saveAuthData(usuario: UsuarioResponse & { foto?: string }): void {
   const cleanToken = usuario.token.startsWith('Bearer ') 
     ? usuario.token.substring(7) 
     : usuario.token;
-    
+
   localStorage.setItem('token', cleanToken);
   localStorage.setItem('usuario', JSON.stringify({
     id: usuario.id,
     nome: usuario.nome,
     email: usuario.email,
-    foto: usuario.foto || '' 
+    foto: usuario.foto || ''
   }));
 }
+
 
 
 
