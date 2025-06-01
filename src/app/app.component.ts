@@ -24,29 +24,24 @@ import { DashboardHeaderComponent } from './components/header-dashboard/dashboar
 export class AppComponent {
   title = 'blogify';
   showDashboardHeader = false;
-  showDefaultHeader = true;
 
   constructor(private router: Router) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
+        
+        const url = (event as NavigationEnd).urlAfterRedirects;
+        
+        const publicRoutes = ['/', '/home', '/login', '/register', '/esqueci'];
 
-        const url = (event.urlAfterRedirects || event.url).split('?')[0].split('#')[0];
+        const isPublic = publicRoutes.some(route => url === route || url.startsWith(route + '/'));
 
-        const publicRoutes = ['/login', '/register', '/esqueci-senha'];  // Rotas públicas
-        const dashboardRoutes = ['/home', '/postagens', '/perfil'];      // Rotas protegidas
-
-        if (dashboardRoutes.some(route => url.startsWith(route))) {
-          this.showDashboardHeader = true;
-          this.showDefaultHeader = false;
-        } else if (publicRoutes.some(route => url.startsWith(route))) {
-          this.showDashboardHeader = false;
-          this.showDefaultHeader = true;
-        } else {
-          // Padrão (404 ou outros casos não previstos)
-          this.showDashboardHeader = false;
-          this.showDefaultHeader = true;
-        }
+        // Mostra o DashboardHeader apenas se NÃO for rota pública
+        this.showDashboardHeader = this.isLoggedIn() && !isPublic;
       });
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
   }
 }
