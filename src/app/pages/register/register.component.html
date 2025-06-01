@@ -77,8 +77,12 @@
           </div>
         </div>
 
-        <button type="submit" class="register-button">Criar conta</button>
-
+<button type="submit" class="register-button" [disabled]="isLoading">
+  <span *ngIf="!isLoading">Criar conta</span>
+  <span *ngIf="isLoading" class="loading-content">
+    <span class="spinner"></span> Carregando...
+  </span>
+</button>
         <div class="login-link">
           <a [routerLink]="['/login']">Já tem uma conta? Faça login</a>
         </div>

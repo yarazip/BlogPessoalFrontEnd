@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
+  loading = false;
   registerForm: FormGroup;
   submitted = false;
   isLoading = false;
@@ -56,7 +57,11 @@ export class RegisterComponent {
 
     return null;
   }
+
+  
 onSubmit() {
+
+  
   if (this.registerForm.invalid) {
     this.registerForm.markAllAsTouched();
     return;
