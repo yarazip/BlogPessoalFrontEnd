@@ -24,24 +24,29 @@ import { DashboardHeaderComponent } from './components/header-dashboard/dashboar
 export class AppComponent {
   title = 'blogify';
   showDashboardHeader = false;
-
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
-  }
-
+  showDefaultHeader = true;
 
   constructor(private router: Router) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-const urlWithFragment = event.urlAfterRedirects || event.url;
-const url = urlWithFragment.split('?')[0].split('#')[0];
-        
-        const defaultHeaderRoutes = ['/', '/home', '/login', '/register', '/esqueci'];
-        
-        this.showDashboardHeader = !defaultHeaderRoutes.some(route => 
-          url === route || url.startsWith(route + '/')
-        ); 
+
+        const url = (event.urlAfterRedirects || event.url).split('?')[0].split('#')[0];
+
+        const publicRoutes = ['/login', '/register', '/esqueci-senha'];  // Rotas públicas
+        const dashboardRoutes = ['/home', '/postagens', '/perfil'];      // Rotas protegidas
+
+        if (dashboardRoutes.some(route => url.startsWith(route))) {
+          this.showDashboardHeader = true;
+          this.showDefaultHeader = false;
+        } else if (publicRoutes.some(route => url.startsWith(route))) {
+          this.showDashboardHeader = false;
+          this.showDefaultHeader = true;
+        } else {
+          // Padrão (404 ou outros casos não previstos)
+          this.showDashboardHeader = false;
+          this.showDefaultHeader = true;
+        }
       });
   }
 }
