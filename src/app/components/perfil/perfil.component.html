@@ -1,8 +1,7 @@
 <div class="profile-container">
   <div class="profile-header">
     <div class="profile-avatar">
-<img *ngIf="usuario.foto" [src]="usuario?.foto"          alt="Foto de {{ postagem.usuario?.nome }}" 
- />
+<img *ngIf="usuario.foto" [src]="getFotoCompleta()" alt="Foto do usuário" />
 
       <label class="edit-avatar-btn" title="Alterar Foto">
         <input type="file" hidden (change)="onFileSelected($event)" />
