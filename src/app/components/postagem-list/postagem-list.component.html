@@ -27,7 +27,7 @@
       
       <div class="card-meta">
         <span class="badge">{{ post.tema?.descricao || 'Sem tema' }}</span>
-        <span class="date">{{ post.data | date:'dd/MM/yyyy HH:mm' }}</span>
+<span class="date">{{ post.data | date:'dd/MM/yyyy HH:mm':'GMT-3' }}</span>
       </div>
       
 <p class="card-text" [innerText]="post.texto | truncate:150"></p>
