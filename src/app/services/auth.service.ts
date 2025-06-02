@@ -114,8 +114,8 @@ updateUsuario(usuario: Partial<Usuario> & { foto?: string }): void {
   }
 }
 getUserCount() {
-  return this.http.get<{ quantidade: number }>(`${environment.apiUrl}/usuarios/count`)
-    .pipe(map(res => res.quantidade));
+  return this.http.get<number>(`${this.apiUrl}/usuarios/count`);
 }
+
 
 }

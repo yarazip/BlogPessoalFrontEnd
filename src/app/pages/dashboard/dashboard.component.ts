@@ -253,4 +253,5 @@ applyTheme() {
   goToPostagemNova() {
     this.router.navigate(['/postagens/nova']);
   }
+  
 }
