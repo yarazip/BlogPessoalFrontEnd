@@ -1,6 +1,6 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment'; 
 
@@ -112,9 +112,6 @@ updateUsuario(usuario: Partial<Usuario> & { foto?: string }): void {
     const updated = { ...current, ...usuario };
     localStorage.setItem('usuario', JSON.stringify(updated));
   }
-}
-getUserCount() {
-  return this.http.get<number>(`${this.apiUrl}/usuarios/count`);
 }
 
 
