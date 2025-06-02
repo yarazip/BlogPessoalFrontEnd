@@ -6,12 +6,13 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { DateBrPipe } from '../../pipes/date-br.pipe';
 
 
 @Component({
   selector: 'app-postagem-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, TruncatePipe],
+  imports: [CommonModule, RouterModule, DateBrPipe, TruncatePipe],
   templateUrl: './postagem-list.component.html',
   styleUrls: ['./postagem-list.component.scss']
 })

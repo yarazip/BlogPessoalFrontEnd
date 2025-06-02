@@ -4,6 +4,7 @@ import { Postagem } from '../models/Postagem';
 import { PostagemService } from '../../services/postagem.service';
 import { HttpClientModule } from '@angular/common/http'; // Caso o serviço use HttpClient
 import { Nl2brPipe } from '../../shared/pipes/nl2br.pipe';
+import { DateBrPipe } from '../../pipes/date-br.pipe';
 
 @Component({
   selector: 'app-explorar',
@@ -13,7 +14,8 @@ import { Nl2brPipe } from '../../shared/pipes/nl2br.pipe';
   imports: [
     CommonModule,
     HttpClientModule, 
-    Nl2brPipe  
+    Nl2brPipe,
+    DateBrPipe
   ],
   providers: [PostagemService] 
 })
