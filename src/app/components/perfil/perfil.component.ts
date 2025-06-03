@@ -38,6 +38,14 @@ const tiposPermitidos = [
   'image/avif'
 ];
 
+const MAX_SIZE = 5 * 1024 * 1024;
+
+if (file.size > MAX_SIZE) {
+  alert('Arquivo muito grande. O tamanho máximo permitido é 5MB.');
+  return;
+}
+
+
   if (file && tiposPermitidos.includes(file.type)) {
     this.authService.atualizarFoto(this.usuario.id, file)
       .subscribe({
