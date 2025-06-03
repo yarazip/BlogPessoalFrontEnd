@@ -29,7 +29,14 @@ export class PerfilComponent implements OnInit {
   onFileSelected(event: any) {
   const file: File = event.target.files[0];
 
-  const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const tiposPermitidos = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/svg+xml',
+  'image/avif'
+];
 
   if (file && tiposPermitidos.includes(file.type)) {
     this.authService.atualizarFoto(this.usuario.id, file)
