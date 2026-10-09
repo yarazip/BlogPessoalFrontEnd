@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { DateBrPipe } from '../../pipes/date-br.pipe';
+import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
-import { Postagem } from '../models/Postagem';
+import { Postagem } from '../../models/Postagem';
 
 const POSTAGENS_POR_PAGINA = 10;
 

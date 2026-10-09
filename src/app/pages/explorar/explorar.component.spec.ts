@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { PostagemService } from '../../services/postagem.service';
-import { Pagina } from '../models/Pagina';
-import { Postagem } from '../models/Postagem';
+import { Pagina } from '../../models/Pagina';
+import { Postagem } from '../../models/Postagem';
 import { ExplorarComponent } from './explorar.component';
 
 describe('ExplorarComponent', () => {

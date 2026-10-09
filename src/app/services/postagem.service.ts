@@ -2,8 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { OpcoesDePagina, Pagina } from '../components/models/Pagina';
-import { Postagem, PostagemRequest } from '../components/models/Postagem';
+import { OpcoesDePagina, Pagina } from '../models/Pagina';
+import { Postagem, PostagemRequest } from '../models/Postagem';
 
 @Injectable({ providedIn: 'root' })
 export class PostagemService {

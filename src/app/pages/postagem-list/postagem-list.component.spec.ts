@@ -3,8 +3,8 @@ import { provideRouter } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
-import { Pagina } from '../models/Pagina';
-import { Postagem } from '../models/Postagem';
+import { Pagina } from '../../models/Pagina';
+import { Postagem } from '../../models/Postagem';
 import { PostagemListComponent } from './postagem-list.component';
 
 describe('PostagemListComponent', () => {

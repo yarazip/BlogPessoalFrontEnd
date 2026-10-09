@@ -5,8 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
-import { LIMITES_POSTAGEM, PostagemRequest } from '../models/Postagem';
-import { Tema } from '../models/Tema';
+import { LIMITES_POSTAGEM, PostagemRequest } from '../../models/Postagem';
+import { Tema } from '../../models/Tema';
 
 @Component({
   selector: 'app-postagem-form',
