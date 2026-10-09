@@ -36,4 +36,8 @@
 <p class="card-text">{{ post.texto | truncate:150 }}</p>
     </div>
   </div>
+
+  <button *ngIf="haMais" type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
+    {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
+  </button>
 </div>

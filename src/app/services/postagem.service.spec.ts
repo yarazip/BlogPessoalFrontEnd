@@ -20,19 +20,32 @@ describe('Serviços de dados', () => {
     let service: PostagemService;
     beforeEach(() => (service = TestBed.inject(PostagemService)));
 
-    it('lista e busca por id', () => {
-      service.getAll().subscribe();
-      expect(http.expectOne(`${api}/postagens`).request.method).toBe('GET');
-
+    it('busca por id', () => {
       service.getById(4).subscribe();
       expect(http.expectOne(`${api}/postagens/4`).request.method).toBe('GET');
     });
 
-    it('filtra por autor usando parâmetro de consulta', () => {
-      service.getByUsuario(3).subscribe();
+    it('pede uma página em /postagens/pagina com os parâmetros informados', () => {
+      service.getPagina({ page: 2, size: 10, autor: 3 }).subscribe();
 
-      const req = http.expectOne(r => r.url === `${api}/postagens/filtro`);
+      const req = http.expectOne(r => r.url === `${api}/postagens/pagina`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.params.get('page')).toBe('2');
+      expect(req.request.params.get('size')).toBe('10');
       expect(req.request.params.get('autor')).toBe('3');
+      expect(req.request.params.has('tema')).toBeFalse();
+    });
+
+    it('envia a página 0 (valor "falso" que não pode ser descartado)', () => {
+      service.getPagina({ page: 0 }).subscribe();
+
+      expect(http.expectOne(r => r.url === `${api}/postagens/pagina`).request.params.get('page')).toBe('0');
+    });
+
+    it('sem opções, não envia parâmetro nenhum (a API usa os padrões)', () => {
+      service.getPagina().subscribe();
+
+      expect(http.expectOne(r => r.url === `${api}/postagens/pagina`).request.params.keys()).toEqual([]);
     });
 
     it('cria com POST e atualiza com PUT /{id} enviando idTema', () => {

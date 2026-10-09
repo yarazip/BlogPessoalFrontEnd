@@ -23,4 +23,8 @@
     <h3>{{ postagem.titulo }}</h3>
     <p class="texto-postagem">{{ postagem.texto }}</p>
   </article>
+
+  <button *ngIf="haMais" type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
+    {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
+  </button>
 </div>
