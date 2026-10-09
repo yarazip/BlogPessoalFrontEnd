@@ -24,7 +24,7 @@ export const routes: Routes = [
   },
   {
     path: 'explorar',
-    loadComponent: () => import('./components/explorar/explorar.component').then(m => m.ExplorarComponent),
+    loadComponent: () => import('./pages/explorar/explorar.component').then(m => m.ExplorarComponent),
     title: 'Blogify - Explorar'
   },
 
@@ -36,31 +36,31 @@ export const routes: Routes = [
   },
   {
     path: 'perfil',
-    loadComponent: () => import('./components/perfil/perfil.component').then(m => m.PerfilComponent),
+    loadComponent: () => import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
     canActivate: [authGuard],
     title: 'Blogify - Perfil'
   },
   {
     path: 'postagens',
-    loadComponent: () => import('./components/postagem-list/postagem-list.component').then(m => m.PostagemListComponent),
+    loadComponent: () => import('./pages/postagem-list/postagem-list.component').then(m => m.PostagemListComponent),
     canActivate: [authGuard],
     title: 'Blogify - Postagens'
   },
   {
     path: 'postagens/nova',
-    loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent),
+    loadComponent: () => import('./pages/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent),
     canActivate: [authGuard],
     title: 'Blogify - Nova Postagem'
   },
   {
     path: 'postagens/:id/editar',
-    loadComponent: () => import('./components/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent),
+    loadComponent: () => import('./pages/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent),
     canActivate: [authGuard],
     title: 'Blogify - Editar Postagem'
   },
   {
     path: 'postagens/:id',
-    loadComponent: () => import('./components/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent),
+    loadComponent: () => import('./pages/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent),
     canActivate: [authGuard],
     title: 'Blogify - Detalhes da Postagem'
   },

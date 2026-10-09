@@ -1,5 +1,9 @@
-<app-header *ngIf="!showDashboardHeader"></app-header>
-<app-dashboard-header *ngIf="showDashboardHeader"></app-dashboard-header>
+@if (!showDashboardHeader) {
+  <app-header></app-header>
+}
+@if (showDashboardHeader) {
+  <app-dashboard-header></app-dashboard-header>
+}
 
 <main class="conteudo" [class.com-cabecalho-fixo]="showDashboardHeader">
   <router-outlet></router-outlet>

@@ -1,0 +1,108 @@
+
+<div class="postagem-container">
+  <div class="card">
+    <h2>{{ isEdit ? 'Editar' : 'Nova' }} Postagem</h2>
+
+    @if (errorMessage) {
+      <div class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
+      <!-- Campo Título -->
+      <div class="form-group">
+        <label for="titulo">Título *</label>
+        <input
+          type="text"
+          id="titulo"
+          formControlName="titulo"
+          placeholder="Digite um título para sua postagem"
+          [class.is-invalid]="titulo.invalid && (titulo.dirty || titulo.touched)"
+          >
+          @if (titulo.invalid && (titulo.dirty || titulo.touched)) {
+            <div class="invalid-feedback">
+              @if (titulo.errors?.['required']) {
+                <span>Título é obrigatório</span>
+              }
+              @if (titulo.errors?.['minlength']) {
+                <span>Mínimo {{ limites.tituloMin }} caracteres</span>
+              }
+              @if (titulo.errors?.['maxlength']) {
+                <span>Máximo {{ limites.tituloMax }} caracteres</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="texto">Conteúdo *</label>
+          <textarea
+            id="texto"
+            formControlName="texto"
+            rows="6"
+            placeholder="Escreva o conteúdo da sua postagem"
+            [class.is-invalid]="texto.invalid && (texto.dirty || texto.touched)"
+          ></textarea>
+          @if (texto.invalid && (texto.dirty || texto.touched)) {
+            <div class="invalid-feedback">
+              @if (texto.errors?.['required']) {
+                <span>Conteúdo é obrigatório</span>
+              }
+              @if (texto.errors?.['minlength']) {
+                <span>Mínimo {{ limites.textoMin }} caracteres</span>
+              }
+              @if (texto.errors?.['maxlength']) {
+                <span>Máximo {{ limites.textoMax }} caracteres</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="tema">Tema *</label>
+          <select
+            id="tema"
+            formControlName="temaId"
+            [class.is-invalid]="temaId.invalid && (temaId.dirty || temaId.touched)"
+            >
+            <option [ngValue]="null" disabled>{{ semTemas ? "Nenhum tema cadastrado" : "Selecione um tema" }}</option>
+            @for (tema of temas; track tema.id) {
+              <option [ngValue]="tema.id">
+                {{ tema.descricao }}
+              </option>
+            }
+          </select>
+          @if (semTemas) {
+            <div class="invalid-feedback">Ainda não há temas cadastrados, então não é possível publicar.</div>
+          }
+          @if (temaId.invalid && (temaId.dirty || temaId.touched)) {
+            <div class="invalid-feedback">
+              <span>Selecione um tema</span>
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelar()"
+            >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="postagemForm.invalid || isLoading"
+            >
+            @if (isLoading) {
+              <span class="spinner-border spinner-border-sm"></span>
+            }
+            {{ isEdit ? 'Atualizar' : 'Publicar' }}
+          </button>
+
+        </div>
+      </form>
+    </div>
+  </div>

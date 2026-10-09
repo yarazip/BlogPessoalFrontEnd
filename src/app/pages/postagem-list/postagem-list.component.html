@@ -1,0 +1,51 @@
+
+<div class="post-list-container">
+  <div class="list-header">
+    <h2>Postagens</h2>
+    <button routerLink="/postagens/nova" class="btn btn-primary">
+      <app-icon name="plus" /> Nova Postagem
+    </button>
+  </div>
+
+
+  @if (isLoading) {
+    <div class="loading-spinner">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Carregando...</span>
+      </div>
+    </div>
+  }
+
+  @if (mensagemErro) {
+    <div class="mensagem-erro" role="alert">{{ mensagemErro }}</div>
+  }
+
+  @if (!isLoading && !mensagemErro && postagens.length === 0) {
+    <div class="empty-message">
+      Nenhuma postagem encontrada.
+    </div>
+  }
+
+  @for (post of postagens; track post.id) {
+    <div class="post-card">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a [routerLink]="['/postagens', post.id]" class="stretched-link">
+            {{ post.titulo }}
+          </a>
+        </h5>
+        <div class="card-meta">
+          <span class="badge">{{ post.tema?.descricao || 'Sem tema' }}</span>
+          <span class="date">{{ post.data | dateBr }}</span>
+        </div>
+        <p class="card-text">{{ post.texto | truncate:150 }}</p>
+      </div>
+    </div>
+  }
+
+  @if (haMais) {
+    <button type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
+      {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
+    </button>
+  }
+</div>

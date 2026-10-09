@@ -4,9 +4,9 @@ import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Usuario } from '../components/models/Usuario';
+import { Usuario } from '../models/Usuario';
 
-export type { Usuario } from '../components/models/Usuario';
+export type { Usuario } from '../models/Usuario';
 
 export interface UsuarioResponse {
   id: number;

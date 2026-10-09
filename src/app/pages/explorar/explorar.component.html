@@ -1,0 +1,40 @@
+<div class="postagens-feed">
+  @if (isLoading) {
+    <p class="mensagem-info">Carregando postagens...</p>
+  }
+  @if (mensagemErro) {
+    <p class="mensagem-erro" role="alert">{{ mensagemErro }}</p>
+  }
+  @if (!isLoading && !mensagemErro && postagens.length === 0) {
+    <p class="mensagem-info">
+      Ainda não há postagens.
+    </p>
+  }
+
+  @for (postagem of postagens; track postagem.id) {
+    <article class="postagem">
+      <div class="postagem-header">
+        <img
+          [src]="postagem.usuario?.foto || fotoPadrao"
+          alt="Foto de {{ postagem.usuario?.nome }}"
+          class="foto-perfil"
+          loading="lazy"
+        />
+
+        <div class="info-usuario">
+          <h4>{{ postagem.usuario?.nome }}</h4>
+          <small>Publicado em: {{ postagem.data | dateBr }}</small>
+        </div>
+      </div>
+
+      <h3>{{ postagem.titulo }}</h3>
+      <p class="texto-postagem">{{ postagem.texto }}</p>
+    </article>
+  }
+
+  @if (haMais) {
+    <button type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
+      {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
+    </button>
+  }
+</div>

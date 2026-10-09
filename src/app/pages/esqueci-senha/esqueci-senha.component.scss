@@ -1,22 +1,4 @@
 /* Variáveis de tema */
-:root {
-  --primary-color: #515050;
-  --text-color: #333333;
-  --bg-color: #FFFFFF;
-  --card-bg: #F5F5F5;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --warning-color: #FFA500;
-}
-
-.dark-mode {
-  --primary-color: #B0B0B0;
-  --text-color: #E0E0E0;
-  --bg-color: #121212;
-  --card-bg: #2D2D2D;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --warning-color: #FFC107;
-}
-
 /* Estilos base */
 :host {
   margin: 0;

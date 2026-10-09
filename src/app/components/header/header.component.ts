@@ -1,5 +1,5 @@
 import { IconComponent } from '../../shared/icon/icon.component';
-import { CommonModule } from '@angular/common';
+
 import { Component, OnDestroy, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ThemeService } from '../../services/theme.service';
@@ -7,7 +7,7 @@ import { ThemeService } from '../../services/theme.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [RouterLink, IconComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

@@ -1,5 +1,5 @@
 import { IconComponent } from '../../shared/icon/icon.component';
-import { NgIf } from '@angular/common';
+
 import { Component, OnInit, inject } from '@angular/core';
 import { AuthService, Usuario } from '../../services/auth.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
@@ -11,7 +11,7 @@ export const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [NgIf, IconComponent],
+  imports: [IconComponent],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
