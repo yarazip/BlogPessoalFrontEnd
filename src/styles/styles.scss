@@ -605,3 +605,10 @@ body {
   background: #58151c;
   border-color: #842029;
 }
+
+/* Rolagem suave até as âncoras (links do cabeçalho), respeitando quem prefere menos movimento */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

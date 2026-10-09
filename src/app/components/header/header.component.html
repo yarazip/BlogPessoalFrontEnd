@@ -7,9 +7,9 @@
     
     <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
       <div class="nav-links">
-        <a (click)="scrollToFragment('home')">Página Inicial</a>
-        <a (click)="scrollToFragment('sobre')">Sobre</a>
-        <a (click)="scrollToFragment('recursos')">Recursos</a>
+        <a routerLink="/" fragment="home" (click)="closeMobileMenu()">Página Inicial</a>
+        <a routerLink="/" fragment="sobre" (click)="closeMobileMenu()">Sobre</a>
+        <a routerLink="/" fragment="recursos" (click)="closeMobileMenu()">Recursos</a>
       </div>
 
       <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Menu">

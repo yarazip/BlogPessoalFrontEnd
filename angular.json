@@ -42,7 +42,7 @@
                 "output": "/assets/"
               },
               "src/favicon.ico",
-                "src/_redirects"
+              "src/_redirects"
             ],
             "styles": [
               "src/styles/styles.scss"
@@ -78,7 +78,10 @@
               "outputHashing": "all",
               "optimization": {
                 "scripts": true,
-                "styles": { "minify": true, "inlineCritical": false },
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
                 "fonts": true
               },
               "sourceMap": false,
@@ -125,12 +128,24 @@
             "scripts": [],
             "karmaConfig": "karma.conf.js"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
     "analytics": false,
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }
