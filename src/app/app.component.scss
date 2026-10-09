@@ -335,3 +335,13 @@ body {
         width: 800px;
     }
 }
+/* O conteúdo ocupa o espaço entre cabeçalho e rodapé (rodapé sempre no fim). */
+.conteudo {
+  flex: 1 0 auto;
+}
+
+/* O cabeçalho do usuário é fixo e não ocupa espaço no fluxo: reserva a altura dele uma única vez,
+   aqui, em vez de cada página compensar por conta própria. */
+.com-cabecalho-fixo {
+  padding-top: var(--header-height);
+}

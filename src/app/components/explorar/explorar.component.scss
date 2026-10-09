@@ -1,27 +1,11 @@
 /* explorar.component.scss */
 
-$header-height: 80px; 
 $container-max-width: 900px;
 $desktop-padding: 40px;
 $mobile-padding: 20px;
 
-.postagens-feed {
-  padding-top: 70px;
-}
 
 
-.explorar-container {
-  max-width: $container-max-width;
-  margin: 0 auto;
-  padding: calc($header-height + 30px) $desktop-padding 80px; 
-  width: 100%;
-  box-sizing: border-box;
-
-  @media (max-width: 900px) {
-    padding-left: $mobile-padding;
-    padding-right: $mobile-padding;
-  }
-}
 
 .postagens-feed {
   display: flex;
@@ -29,6 +13,7 @@ $mobile-padding: 20px;
   gap: 60px;
   width: 100%;
   margin: 0 auto;
+  padding-top: 2.5rem; /* o espaço do cabeçalho fixo é reservado pelo app.component */
 }
 
 .postagem {
@@ -116,10 +101,6 @@ $mobile-padding: 20px;
 }
 
 @media (max-width: 600px) {
-  .explorar-container {
-    padding-top: calc($header-height + 20px);
-    padding-bottom: 60px;
-  }
 
   .postagens-feed {
     gap: 40px;

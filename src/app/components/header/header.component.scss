@@ -34,13 +34,11 @@ header {
     z-index: 1000;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     
-    & ~ main {
-      padding-top: var(--header-height);
-    }
   }
 }
 .header-container {
-  height: var(--header-height);
+  /* altura mínima: em telas pequenas os botões quebram de linha e o contêiner precisa crescer */
+  min-height: var(--header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -369,4 +367,23 @@ app-home {
 
 body {
   padding-top: 0 !important;
+}
+
+/* Em telas pequenas o cabeçalho público empilha seus blocos. Antes isso vinha de regras globais em
+   styles.scss, que também desfiguravam o cabeçalho do usuário; agora fica só aqui. */
+@media (max-width: 768px) {
+  header {
+    padding: 15px 20px;
+  }
+
+  .nav-links {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 15px;
+  }
 }
