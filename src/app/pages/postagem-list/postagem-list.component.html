@@ -8,36 +8,44 @@
   </div>
 
 
-  <div *ngIf="isLoading" class="loading-spinner">
-    <div class="spinner-border" role="status">
-      <span class="visually-hidden">Carregando...</span>
-    </div>
-  </div>
-
-  <div *ngIf="mensagemErro" class="mensagem-erro" role="alert">{{ mensagemErro }}</div>
-
-  <div *ngIf="!isLoading && !mensagemErro && postagens.length === 0" class="empty-message">
-    Nenhuma postagem encontrada.
-  </div>
-
-  <div *ngFor="let post of postagens" class="post-card">
-    <div class="card-body">
-      <h5 class="card-title">
-        <a [routerLink]="['/postagens', post.id]" class="stretched-link">
-          {{ post.titulo }}
-        </a>
-      </h5>
-      
-      <div class="card-meta">
-        <span class="badge">{{ post.tema?.descricao || 'Sem tema' }}</span>
-<span class="date">{{ post.data | dateBr }}</span>
+  @if (isLoading) {
+    <div class="loading-spinner">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Carregando...</span>
       </div>
-      
-<p class="card-text">{{ post.texto | truncate:150 }}</p>
     </div>
-  </div>
+  }
 
-  <button *ngIf="haMais" type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
-    {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
-  </button>
+  @if (mensagemErro) {
+    <div class="mensagem-erro" role="alert">{{ mensagemErro }}</div>
+  }
+
+  @if (!isLoading && !mensagemErro && postagens.length === 0) {
+    <div class="empty-message">
+      Nenhuma postagem encontrada.
+    </div>
+  }
+
+  @for (post of postagens; track post.id) {
+    <div class="post-card">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a [routerLink]="['/postagens', post.id]" class="stretched-link">
+            {{ post.titulo }}
+          </a>
+        </h5>
+        <div class="card-meta">
+          <span class="badge">{{ post.tema?.descricao || 'Sem tema' }}</span>
+          <span class="date">{{ post.data | dateBr }}</span>
+        </div>
+        <p class="card-text">{{ post.texto | truncate:150 }}</p>
+      </div>
+    </div>
+  }
+
+  @if (haMais) {
+    <button type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
+      {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
+    </button>
+  }
 </div>

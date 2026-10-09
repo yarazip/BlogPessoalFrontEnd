@@ -1,6 +1,8 @@
 
 
-<p *ngIf="error" class="mensagem-erro" role="alert">{{ error }}</p>
+@if (error) {
+  <p class="mensagem-erro" role="alert">{{ error }}</p>
+}
 
 <h2 class="welcome">Bem-vindo ao Dashboard, {{ usuario?.nome }}</h2>
 
@@ -24,11 +26,11 @@
       <p class="stat-value">{{ postCount }}</p>
     </div>
   </section>
-<div class="chart-container">
-  <div class="chart-wrapper">
-    <canvas #activityChart
-            aria-label="Gráfico de distribuição de postagens"
-            role="img"></canvas>
+  <div class="chart-container">
+    <div class="chart-wrapper">
+      <canvas #activityChart
+        aria-label="Gráfico de distribuição de postagens"
+      role="img"></canvas>
+    </div>
   </div>
-</div>
 </div>

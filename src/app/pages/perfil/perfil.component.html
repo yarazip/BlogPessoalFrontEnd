@@ -1,25 +1,29 @@
-<div class="profile-container" *ngIf="usuario">
-  <div class="profile-header">
-    <div class="profile-avatar">
-      <img [src]="usuario.foto || 'assets/img/sem-foto.svg'" alt="Foto de {{ usuario.nome }}" />
-
-      <label class="edit-avatar-btn" title="Alterar foto">
-        <input
-          type="file"
-          hidden
-          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-          [disabled]="enviando"
-          (change)="onFileSelected($event)"
-        />
-        <app-icon name="camera" />
-      </label>
+@if (usuario) {
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-avatar">
+        <img [src]="usuario.foto || 'assets/img/sem-foto.svg'" alt="Foto de {{ usuario.nome }}" />
+        <label class="edit-avatar-btn" title="Alterar foto">
+          <input
+            type="file"
+            hidden
+            accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+            [disabled]="enviando"
+            (change)="onFileSelected($event)"
+            />
+            <app-icon name="camera" />
+          </label>
+        </div>
+        <div class="profile-info">
+          <h2>{{ usuario.nome }}</h2>
+          <p>{{ usuario.email }}</p>
+          @if (enviando) {
+            <p class="mensagem-info">Enviando foto...</p>
+          }
+          @if (mensagemErro) {
+            <p class="mensagem-erro" role="alert">{{ mensagemErro }}</p>
+          }
+        </div>
+      </div>
     </div>
-
-    <div class="profile-info">
-      <h2>{{ usuario.nome }}</h2>
-      <p>{{ usuario.email }}</p>
-      <p *ngIf="enviando" class="mensagem-info">Enviando foto...</p>
-      <p *ngIf="mensagemErro" class="mensagem-erro" role="alert">{{ mensagemErro }}</p>
-    </div>
-  </div>
-</div>
+  }
