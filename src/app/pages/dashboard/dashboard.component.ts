@@ -1,3 +1,4 @@
+import { IconComponent } from '../../shared/icon/icon.component';
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -22,7 +23,7 @@ const CORES_ESCURO = [
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

@@ -30,6 +30,7 @@ O endereço da API vem de `src/environments/`:
 |---|---|
 | `npm start` | servidor de desenvolvimento |
 | `npm run build` | build de produção (builder `application`/esbuild) em `dist/blogify` |
+| `npm run icons` | regenera o sprite de ícones (`src/assets/icons/sprite.svg`) |
 | `npm run lint` | ESLint (angular-eslint), incluindo regras de acessibilidade dos templates |
 | `npm test` | testes no Chrome, em modo observação |
 | `npm run test:ci` | testes uma vez, com Chrome sem interface (usado no CI) |
@@ -59,6 +60,18 @@ No Windows, se o Chrome não for encontrado: `set CHROME_BIN=C:\Program Files\Go
 - **Tema claro/escuro:** `ThemeService` é a única fonte da preferência.
 - **Conteúdo de usuário nunca vira HTML:** o texto das postagens é exibido por interpolação; as quebras de
   linha vêm de CSS (`.texto-postagem`). Não use `[innerHTML]` nem `bypassSecurityTrust*` com esse conteúdo.
+
+## Ícones
+
+Os ícones são um **sprite SVG** (`src/assets/icons/sprite.svg`), usados pelo componente `<app-icon name="plus" />`:
+herdam a cor e o tamanho do texto (como uma fonte de ícones) e são decorativos (`aria-hidden`), então um botão só
+com ícone precisa de `aria-label`. Não há fonte de ícones nem CDN.
+
+Para adicionar um ícone: inclua-o em `scripts/gerar-sprite.mjs`, rode `npm run icons` e acrescente o nome em
+`src/app/shared/icon/icon-names.ts` (um teste avisa se o arquivo e a lista divergirem).
+
+Os desenhos vêm do [Font Awesome Free](https://fontawesome.com) 6, licença
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (atribuição mantida no próprio sprite).
 
 ## Deploy (Netlify)
 

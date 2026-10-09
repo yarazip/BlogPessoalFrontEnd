@@ -20,10 +20,10 @@
 
     <div *ngIf="ehAutor" class="post-actions">
       <button type="button" (click)="editar(postagem.id!)" class="btn btn-warning">
-        <i class="fas fa-edit"></i> Editar
+        <app-icon name="edit" /> Editar
       </button>
       <button type="button" (click)="excluir(postagem.id!)" class="btn btn-danger">
-        <i class="fas fa-trash"></i> Excluir
+        <app-icon name="trash" /> Excluir
       </button>
     </div>
   </div>

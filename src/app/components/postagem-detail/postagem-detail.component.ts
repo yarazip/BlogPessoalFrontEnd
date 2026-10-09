@@ -1,3 +1,4 @@
+import { IconComponent } from '../../shared/icon/icon.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,7 +11,7 @@ import { Postagem } from '../models/Postagem';
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [CommonModule, DateBrPipe],
+  imports: [CommonModule, DateBrPipe, IconComponent],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })

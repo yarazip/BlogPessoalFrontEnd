@@ -1,3 +1,4 @@
+import { IconComponent } from '../../shared/icon/icon.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -13,7 +14,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-postagem-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, DateBrPipe, TruncatePipe],
+  imports: [CommonModule, RouterModule, DateBrPipe, TruncatePipe, IconComponent],
   templateUrl: './postagem-list.component.html',
   styleUrls: ['./postagem-list.component.scss']
 })
