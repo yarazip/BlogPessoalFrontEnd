@@ -1,22 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
 
-
-:root {
-  --header-height: 80px;
-  --header-height-mobile: 60px;
-}
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-html, body {
-  width: 100%;
-  min-height: 100%;
-  overflow-x: hidden;
-  background-color: var(--bg-color);
 }
 
 header {
@@ -363,10 +350,6 @@ header {
 app-home {
   display: block;
   padding-top: var(--header-height);
-}
-
-body {
-  padding-top: 0 !important;
 }
 
 /* Em telas pequenas o cabeçalho público empilha seus blocos. Antes isso vinha de regras globais em

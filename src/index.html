@@ -5,7 +5,17 @@
   <title>Blogify</title>
   <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="./assets/favicon.ico" />
+  <meta name="description" content="Blogify: crie, publique e leia postagens em um blog pessoal." />
+  <link rel="icon" href="./assets/favicon.ico" />
+
+  <!-- Fontes (Syncopate: logo e títulos; Oswald: login e cadastro). Um único pedido, com preconnect.
+       Se mudar o domínio, ajuste style-src/font-src da CSP no netlify.toml. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Syncopate:wght@400;700&display=swap"
+  />
 </head>
 <body>
   <app-root></app-root>
