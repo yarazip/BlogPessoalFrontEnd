@@ -63,12 +63,12 @@ No Windows, se o Chrome não for encontrado: `set CHROME_BIN=C:\Program Files\Go
 
 ## Ícones
 
-Os ícones são um **sprite SVG** (), usados pelo componente :
-herdam a cor e o tamanho do texto (como uma fonte de ícones) e são decorativos (), então um botão só
-com ícone precisa de . Não há fonte de ícones nem CDN.
+Os ícones são um **sprite SVG** (`src/assets/icons/sprite.svg`), usados pelo componente `<app-icon name="plus" />`:
+herdam a cor e o tamanho do texto (como uma fonte de ícones) e são decorativos (`aria-hidden`), então um botão só
+com ícone precisa de `aria-label`. Não há fonte de ícones nem CDN.
 
-Para adicionar um ícone: inclua-o em , rode  e acrescente o nome em
- (um teste avisa se o arquivo e a lista divergirem).
+Para adicionar um ícone: inclua-o em `scripts/gerar-sprite.mjs`, rode `npm run icons` e acrescente o nome em
+`src/app/shared/icon/icon-names.ts` (um teste avisa se o arquivo e a lista divergirem).
 
 Os desenhos vêm do [Font Awesome Free](https://fontawesome.com) 6, licença
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (atribuição mantida no próprio sprite).
