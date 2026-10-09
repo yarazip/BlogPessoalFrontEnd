@@ -1,19 +1,22 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { TruncatePipe } from './truncate.pipe';
 
-@Pipe({
-  name: 'truncate',
-  standalone: true
-})
-export class TruncatePipe implements PipeTransform {
-  transform(value: string, limit: number = 100, completeWords: boolean = false, ellipsis: string = '...'): string {
-    if (!value) return '';
-    
-    if (value.length <= limit) return value;
-    
-    if (completeWords) {
-      limit = value.substr(0, limit).lastIndexOf(' ');
-    }
-    
-    return `${value.substr(0, limit)}${ellipsis}`;
-  }
-}
+describe('TruncatePipe', () => {
+  const pipe = new TruncatePipe();
+
+  it('não mexe em textos curtos', () => {
+    expect(pipe.transform('curto', 10)).toBe('curto');
+  });
+
+  it('corta e acrescenta reticências', () => {
+    expect(pipe.transform('0123456789ABC', 10)).toBe('0123456789...');
+  });
+
+  it('pode cortar em palavra completa', () => {
+    expect(pipe.transform('uma frase bem comprida', 12, true)).toBe('uma frase...');
+  });
+
+  it('devolve vazio para valor ausente', () => {
+    expect(pipe.transform('')).toBe('');
+    expect(pipe.transform(undefined as unknown as string)).toBe('');
+  });
+});

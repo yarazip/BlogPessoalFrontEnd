@@ -1,16 +1,19 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment'; 
+import { jwtDecode } from 'jwt-decode';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { Usuario } from '../components/models/Usuario';
 
+export type { Usuario } from '../components/models/Usuario';
 
 export interface UsuarioResponse {
   id: number;
   nome: string;
   email: string;
   token: string;
-  foto? : string;
+  foto?: string;
 }
 
 export interface UsuarioLogin {
@@ -18,101 +21,101 @@ export interface UsuarioLogin {
   senha: string;
 }
 
-export interface Usuario {
-  id: number;
-  nome: string;
-  email: string;
-}
+const TOKEN_KEY = 'token';
+const USUARIO_KEY = 'usuario';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  
-  private baseUrl = `${environment.apiUrl}/usuarios`;
-private apiUrl = `${environment.apiUrl}/auth`;
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-private readonly TOKEN_KEY = 'token';
+  private readonly authUrl = `${environment.apiUrl}/auth`;
+  private readonly usuariosUrl = `${environment.apiUrl}/usuarios`;
 
-  constructor(private http: HttpClient, private router: Router) {}
-
-
-  login(usuarioLogin: UsuarioLogin): Observable<UsuarioResponse> {
-    return this.http.post<UsuarioResponse>(`${this.apiUrl}/login`, usuarioLogin);
+  login(credenciais: UsuarioLogin): Observable<UsuarioResponse> {
+    return this.http.post<UsuarioResponse>(`${this.authUrl}/login`, credenciais);
   }
 
-  register(nome: string, email: string, senha: string): Observable<HttpResponse<any>> {
-    const body = { nome, email, senha, foto: '' };
-    return this.http.post<any>(`${this.apiUrl}/register`, body, { observe: 'response' });
+  register(nome: string, email: string, senha: string): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.authUrl}/register`, { nome, email, senha });
   }
 
-  getUsuarioById(id: number) {
-    return this.http.get<Usuario>(`${this.baseUrl}/${id}`);
+  atualizarFoto(id: number, arquivoFoto: File): Observable<{ foto: string }> {
+    const formData = new FormData();
+    formData.append('foto', arquivoFoto);
+    return this.http.put<{ foto: string }>(`${this.usuariosUrl}/${id}/foto`, formData);
   }
 
-  atualizarUsuario(id: number, formData: FormData): Observable<Usuario> {
-    return this.http.put<Usuario>(`${this.baseUrl}/${id}`, formData);
+  /** Guarda a sessão. O token chega como "Bearer xxx" e é salvo sem o prefixo. */
+  saveAuthData(usuario: UsuarioResponse): void {
+    const token = usuario.token.startsWith('Bearer ') ? usuario.token.substring(7) : usuario.token;
+
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(
+      USUARIO_KEY,
+      JSON.stringify({ id: usuario.id, nome: usuario.nome, email: usuario.email, foto: usuario.foto ?? '' })
+    );
   }
-
-  forgotPassword(email: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/forgot-password`, { email });
-}
-
-atualizarFoto(id: number, arquivoFoto: File) {
-  const formData = new FormData();
-  formData.append('foto', arquivoFoto);
-  return this.http.put<{ foto: string }>(`${this.baseUrl}/${id}/foto`, formData);
-}
-
-
-saveAuthData(usuario: UsuarioResponse & { foto?: string }): void {
-  const cleanToken = usuario.token.startsWith('Bearer ') 
-    ? usuario.token.substring(7) 
-    : usuario.token;
-
-  localStorage.setItem('token', cleanToken);
-  localStorage.setItem('usuario', JSON.stringify({
-    id: usuario.id,
-    nome: usuario.nome,
-    email: usuario.email,
-    foto: usuario.foto || ''
-  }));
-}
-
-
-
 
   getUsuario(): Usuario | null {
-    const usuario = localStorage.getItem('usuario');
-    return usuario ? JSON.parse(usuario) : null;
+    const salvo = localStorage.getItem(USUARIO_KEY);
+    if (!salvo) {
+      return null;
+    }
+    try {
+      return JSON.parse(salvo) as Usuario;
+    } catch {
+      localStorage.removeItem(USUARIO_KEY);
+      return null;
+    }
   }
 
-  getCurrentUserId(): string | null {
-    const usuario = this.getUsuario();
-    return usuario ? usuario.id.toString() : null;
+  updateUsuario(parcial: Partial<Usuario>): void {
+    const atual = this.getUsuario();
+    if (atual) {
+      localStorage.setItem(USUARIO_KEY, JSON.stringify({ ...atual, ...parcial }));
+    }
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(TOKEN_KEY);
   }
 
+  /** Há sessão se existir um token que ainda não expirou. Token vencido ou ilegível é descartado. */
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+    if (this.tokenExpirado(token)) {
+      this.limparSessao();
+      return false;
+    }
+    return true;
   }
 
   logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem('usuario');
+    this.limparSessao();
     this.router.navigate(['/login']);
   }
 
-updateUsuario(usuario: Partial<Usuario> & { foto?: string }): void {
-  const current = this.getUsuario();
-  if (current) {
-    const updated = { ...current, ...usuario };
-    localStorage.setItem('usuario', JSON.stringify(updated));
+  /** Chamado quando a API responde 401 a uma requisição autenticada. */
+  sessaoExpirada(): void {
+    this.limparSessao();
+    this.router.navigate(['/login'], { queryParams: { expirada: 1 } });
   }
-}
 
+  private limparSessao(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USUARIO_KEY);
+  }
 
+  private tokenExpirado(token: string): boolean {
+    try {
+      const { exp } = jwtDecode<{ exp?: number }>(token);
+      return exp !== undefined && exp * 1000 <= Date.now();
+    } catch {
+      return true; // token malformado
+    }
+  }
 }

@@ -1,47 +1,41 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
-import { RouterModule } from '@angular/router';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { DashboardHeaderComponent } from './components/header-dashboard/dashboard-header.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
+import { AuthService } from './services/auth.service';
+import { ThemeService } from './services/theme.service';
+
+/** Páginas abertas a visitantes: nelas o cabeçalho é sempre o público. */
+const ROTAS_PUBLICAS = ['/', '/login', '/register', '/esqueci-senha', '/explorar'];
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    HeaderComponent,
-    FooterComponent,
-    DashboardHeaderComponent,
-    RouterOutlet,
-  ],
+  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent, DashboardHeaderComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'blogify';
+  private readonly authService = inject(AuthService);
+
   showDashboardHeader = false;
 
-  constructor(private router: Router) {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        
-        const url = (event as NavigationEnd).urlAfterRedirects;
-        
-        const publicRoutes = ['/', '/home', '/login', '/register', '/esqueci'];
+  constructor() {
+    inject(ThemeService); // aplica o tema salvo assim que o app abre
 
-        const isPublic = publicRoutes.some(route => url === route || url.startsWith(route + '/'));
-
-        // Mostra o DashboardHeader apenas se NÃO for rota pública
-        this.showDashboardHeader = this.isLoggedIn() && !isPublic;
+    inject(Router)
+      .events.pipe(
+        filter((evento): evento is NavigationEnd => evento instanceof NavigationEnd),
+        takeUntilDestroyed(inject(DestroyRef))
+      )
+      .subscribe(evento => {
+        const caminho = evento.urlAfterRedirects.split(/[?#]/)[0];
+        const publica = ROTAS_PUBLICAS.includes(caminho);
+        this.showDashboardHeader = this.authService.isLoggedIn() && !publica;
       });
-  }
-
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
   }
 }

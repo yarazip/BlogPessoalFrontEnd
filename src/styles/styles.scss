@@ -577,3 +577,31 @@ body {
   }
 }
 
+
+/* Texto de postagem: o conteúdo é do usuário, então é exibido como texto (nunca como HTML).
+   As quebras de linha são preservadas por CSS. */
+.texto-postagem {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* Mensagens de estado compartilhadas */
+.mensagem-erro {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  color: #842029;
+  background: #f8d7da;
+  border: 1px solid #f5c2c7;
+}
+
+.mensagem-info {
+  margin: 1rem 0;
+  opacity: 0.8;
+}
+
+.dark-mode .mensagem-erro {
+  color: #f8d7da;
+  background: #58151c;
+  border-color: #842029;
+}

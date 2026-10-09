@@ -25,7 +25,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "favicon": "assets/favicon.ico",
             "outputPath": "dist/blogify",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -72,7 +71,11 @@
                 }
               ],
               "outputHashing": "all",
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false },
+                "fonts": true
+              },
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,

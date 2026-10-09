@@ -1,112 +1,65 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
-import { filter, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  isDarkMode = false;
+export class HeaderComponent implements OnDestroy {
+  private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+
   isMobileMenuOpen = false;
-  isHomePage = false;
-  private destroy$ = new Subject<void>();
 
-  constructor(private router: Router) {}
-
-  ngOnInit() {
-    this.checkThemePreference();
-    this.setupRouterListener();
+  /** O cabeçalho da página inicial tem um visual próprio. */
+  get isHomePage(): boolean {
+    return this.router.url.split(/[?#]/)[0] === '/';
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  get isDarkMode(): boolean {
+    return this.themeService.isDarkMode();
+  }
+
+  ngOnDestroy(): void {
     document.body.classList.remove('menu-open');
   }
 
-  toggleTheme() {
-    this.isDarkMode = !this.isDarkMode;
-    this.updateThemeStorage();
-    this.applyThemeToDocument();
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 
-  onNavLinkClick(isSamePage: boolean) {
-  if (!isSamePage) {
-    this.isMobileMenuOpen = false;
+  onNavLinkClick(isSamePage: boolean): void {
+    if (!isSamePage) {
+      this.isMobileMenuOpen = false;
+    }
   }
-}
 
-
-  openMobileMenu() {
+  openMobileMenu(): void {
     this.isMobileMenuOpen = true;
     document.body.classList.add('menu-open');
   }
 
-  closeMobileMenu() {
+  closeMobileMenu(): void {
     this.isMobileMenuOpen = false;
     document.body.classList.remove('menu-open');
   }
 
-  toggleMobileMenu() {
+  toggleMobileMenu(): void {
     this.isMobileMenuOpen ? this.closeMobileMenu() : this.openMobileMenu();
   }
 
-  private setupRouterListener() {
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntil(this.destroy$)
-    ).subscribe((event: NavigationEnd) => {
-      const baseUrl = this.getBaseUrl(event.urlAfterRedirects);
-      this.isHomePage = ['/', '/home'].includes(baseUrl);
-    });
-  }
-
-  private getBaseUrl(url: string): string {
-    return url.split('?')[0].split('#')[0];
-  }
-
-  private checkThemePreference() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    this.isDarkMode = savedTheme
-      ? savedTheme === 'dark'
-      : prefersDark;
-
-    this.applyThemeToDocument();
-  }
-
-  private updateThemeStorage() {
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
-  }
-
-private applyThemeToDocument() {
-  const root = document.documentElement;
-
-  if (this.isDarkMode) {
-    root.classList.add('dark-mode');
-  } else {
-    root.classList.remove('dark-mode');
-  }
-}
-
-  scrollToFragment(fragment: string) {
-    this.router.navigate(['/home'], { fragment }).then(() => {
+  /** Vai para a página inicial e rola até a seção pedida. */
+  scrollToFragment(fragment: string): void {
+    this.router.navigate(['/'], { fragment }).then(() => {
       setTimeout(() => {
-        const element = document.getElementById(fragment);
-        if (element) {
-          element.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
+        document.getElementById(fragment)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 50);
     });
+    this.closeMobileMenu();
   }
 }

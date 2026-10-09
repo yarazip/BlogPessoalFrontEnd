@@ -1,51 +1,56 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+const CHAVE = 'theme';
+
+/**
+ * Única fonte do tema claro/escuro: guarda a preferência, aplica as classes no <html>
+ * e expõe o estado como signal para quem precisar reagir (ex.: gráfico do dashboard).
+ */
+@Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private darkMode = false;
+  private readonly _escuro = signal(this.preferenciaInicial());
+
+  /** Somente leitura: use toggleTheme()/setTheme() para alterar. */
+  readonly escuro = this._escuro.asReadonly();
 
   constructor() {
-    this.loadThemePreference();
-  }
-
-  private loadThemePreference(): void {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    this.darkMode = savedTheme ? savedTheme === 'dark' : prefersDark;
-    this.applyTheme();
-  }
-
-  toggleTheme(): void {
-    this.darkMode = !this.darkMode;
-    this.saveThemePreference();
-    this.applyTheme();
-  }
-
-  setTheme(theme: 'dark' | 'light'): void {
-    this.darkMode = theme === 'dark';
-    this.saveThemePreference();
-    this.applyTheme();
-  }
-
-  private saveThemePreference(): void {
-    localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
-  }
-
-  private applyTheme(): void {
-    const root = document.documentElement;
-    if (this.darkMode) {
-      root.classList.add('dark-mode');
-      root.classList.remove('light-mode');
-    } else {
-      root.classList.add('light-mode');
-      root.classList.remove('dark-mode');
-    }
+    this.aplicar();
   }
 
   isDarkMode(): boolean {
-    return this.darkMode;
+    return this._escuro();
+  }
+
+  toggleTheme(): void {
+    this.setTheme(this._escuro() ? 'light' : 'dark');
+  }
+
+  setTheme(tema: 'dark' | 'light'): void {
+    this._escuro.set(tema === 'dark');
+    try {
+      localStorage.setItem(CHAVE, tema);
+    } catch {
+      // armazenamento indisponível (modo privado): o tema vale só nesta sessão
+    }
+    this.aplicar();
+  }
+
+  private preferenciaInicial(): boolean {
+    let salvo: string | null = null;
+    try {
+      salvo = localStorage.getItem(CHAVE);
+    } catch {
+      salvo = null;
+    }
+    if (salvo === 'dark' || salvo === 'light') {
+      return salvo === 'dark';
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  private aplicar(): void {
+    const raiz = document.documentElement;
+    raiz.classList.toggle('dark-mode', this._escuro());
+    raiz.classList.toggle('light-mode', !this._escuro());
   }
 }

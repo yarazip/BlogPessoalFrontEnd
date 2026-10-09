@@ -1,19 +1,21 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { format, toZonedTime } from 'date-fns-tz';
 
+const FUSO = 'America/Sao_Paulo';
+
 @Pipe({
   name: 'dateBr',
-  standalone: true 
+  standalone: true
 })
 export class DateBrPipe implements PipeTransform {
-  
-  transform(value: string | Date, pattern: string = 'dd/MM/yyyy HH:mm'): string {
+
+  /** Formata no fuso de São Paulo; devolve vazio para valor ausente ou data inválida. */
+  transform(value: string | Date | null | undefined, pattern = 'dd/MM/yyyy HH:mm'): string {
     if (!value) return '';
 
-    const timeZone = 'America/Sao_Paulo';
     const date = new Date(value);
+    if (isNaN(date.getTime())) return '';
 
-    const zonedDate = toZonedTime(date, timeZone);
-    return format(zonedDate, pattern, { timeZone });
+    return format(toZonedTime(date, FUSO), pattern, { timeZone: FUSO });
   }
 }
