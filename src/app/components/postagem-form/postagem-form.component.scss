@@ -1,6 +1,4 @@
 /* postagem-form.component.scss */
-@use "@fortawesome/fontawesome-free/scss/fontawesome";
-@use "@fortawesome/fontawesome-free/scss/solid";
 
 .content {
   padding-top: 60px;
@@ -126,7 +124,7 @@
     border: none;
     
     &:hover:not(:disabled) {
-      background-color: darken(#f5f5f5, 10%);
+      background-color: #dcdcdc;
     }
   }
   
@@ -136,7 +134,7 @@
     border: none;
     
     &:hover:not(:disabled) {
-      background-color: darken(#515050, 10%);
+      background-color: #3a3939;
       transform: translateY(-2px);
     }
   }

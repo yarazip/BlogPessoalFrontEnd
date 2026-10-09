@@ -1,59 +1,72 @@
-# Blogify
+# Blogify (front-end)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.10.
+Front-end em **Angular 19** do Blog Pessoal: cadastro e login, postagens por usuário, feed público e dashboard.
+O back-end (Spring Boot) fica em outro repositório: [BlogPessoal](https://github.com/yarazip/BlogPessoal).
 
-## Development server
+Publicado no Netlify.
 
-To start a local development server, run:
+## Rodando localmente
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Pré-requisitos: Node 22 e o back-end rodando em `http://localhost:8080` (veja o README dele).
 
 ```bash
-ng generate component component-name
+npm ci
+npm start          # http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+O endereço da API vem de `src/environments/`:
+
+| Arquivo | Quando | `apiUrl` |
+|---|---|---|
+| `environment.ts` | `npm start` (desenvolvimento) | `http://localhost:8080/api` |
+| `environment.prod.ts` | `npm run build` (produção) | URL da API publicada |
+
+> O back-end só aceita requisições (CORS) das origens configuradas em `CORS_ALLOWED_ORIGINS`. Em
+> desenvolvimento, `http://localhost:4200` já é permitida.
+
+## Scripts
+
+| Comando | O que faz |
+|---|---|
+| `npm start` | servidor de desenvolvimento |
+| `npm run build` | build de produção em `dist/blogify` |
+| `npm test` | testes no Chrome, em modo observação |
+| `npm run test:ci` | testes uma vez, com Chrome sem interface (usado no CI) |
+
+## Testes
+
+Testes unitários com Jasmine + Karma, cobrindo serviços, interceptor, guard, formulários e segurança
+(por exemplo, que HTML em uma postagem é exibido como texto e nunca executado).
 
 ```bash
-ng generate --help
+npm run test:ci
 ```
 
-## Building
+No Windows, se o Chrome não for encontrado: `set CHROME_BIN=C:\Program Files\Google\Chrome\Application\chrome.exe`.
 
-To build the project run:
+## Como o app funciona
 
-```bash
-ng build
-```
+- **Sessão:** o login devolve um JWT, guardado no `localStorage` (sem o prefixo `Bearer`). O `authInterceptor`
+  o envia **somente** para a API e nunca no login/cadastro. Uma resposta 401 a uma requisição autenticada
+  encerra a sessão e leva ao login com um aviso. O `authGuard` também rejeita tokens expirados.
+- **Erros da API** seguem o padrão RFC 7807 (`detail`, `errors` por campo, `requestId` nos erros 500);
+  `mensagemDeErro()` os converte em texto para o usuário.
+- **Validações** dos formulários espelham as da API (título 5–100, texto 10–1000, senha 8–72 caracteres).
+  Se mudar um lado, mude o outro (`LIMITES_POSTAGEM` em `models/Postagem.ts`).
+- **Tema claro/escuro:** `ThemeService` é a única fonte da preferência.
+- **Conteúdo de usuário nunca vira HTML:** o texto das postagens é exibido por interpolação; as quebras de
+  linha vêm de CSS (`.texto-postagem`). Não use `[innerHTML]` nem `bypassSecurityTrust*` com esse conteúdo.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Deploy (Netlify)
 
-## Running unit tests
+O `netlify.toml` define o redirecionamento da SPA e os **cabeçalhos de segurança**, incluindo uma
+Content-Security-Policy restrita. Ao mudar a URL da API em `environment.prod.ts`, atualize também o
+`connect-src` da CSP. O build de produção desliga o "critical CSS inline" (`inlineCritical: false` em
+`angular.json`) porque ele depende de um `onload` inline que a CSP bloqueia.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Limitações conhecidas
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- "Esqueci a senha" ainda não existe na API: a tela apenas informa que está em desenvolvimento.
+- Não há tela para criar temas (hoje são criados pela API). Um banco novo começa sem temas.
+- O token fica no `localStorage`, como é comum em SPAs com JWT; a CSP e a ausência de `innerHTML` com
+  conteúdo de usuário reduzem o risco de XSS, mas não o eliminam por completo.
