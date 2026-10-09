@@ -33,12 +33,6 @@ export class HeaderComponent implements OnDestroy {
     this.themeService.toggleTheme();
   }
 
-  onNavLinkClick(isSamePage: boolean): void {
-    if (!isSamePage) {
-      this.isMobileMenuOpen = false;
-    }
-  }
-
   openMobileMenu(): void {
     this.isMobileMenuOpen = true;
     document.body.classList.add('menu-open');
@@ -50,16 +44,10 @@ export class HeaderComponent implements OnDestroy {
   }
 
   toggleMobileMenu(): void {
-    this.isMobileMenuOpen ? this.closeMobileMenu() : this.openMobileMenu();
-  }
-
-  /** Vai para a página inicial e rola até a seção pedida. */
-  scrollToFragment(fragment: string): void {
-    this.router.navigate(['/'], { fragment }).then(() => {
-      setTimeout(() => {
-        document.getElementById(fragment)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
-    });
-    this.closeMobileMenu();
+    if (this.isMobileMenuOpen) {
+      this.closeMobileMenu();
+    } else {
+      this.openMobileMenu();
+    }
   }
 }
