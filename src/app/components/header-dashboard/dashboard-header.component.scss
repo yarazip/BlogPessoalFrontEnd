@@ -1,71 +1,39 @@
 // Font imports
 @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
 
-// Variables
-:root {
-  --header-height: 80px;
-  --mobile-header-height: 70px;
-}
-
-// Base styles
+// A altura vem da variável global --header-height (src/styles/styles.scss). O espaço que o
+// cabeçalho fixo ocupa é reservado uma única vez, no <main> do app.component.
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  min-height: 100%;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  overflow-x: hidden;
-  font-family: 'Segoe UI', sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  
-  @media (max-width: 768px) {
-    padding-top: var(--mobile-header-height);
-  }
-  
-  @media (min-width: 769px) {
-    padding-top: var(--header-height);
-  }
-}
-
-// Header styles
+// Cabeçalho fixo no topo: precisa de top/left/right, senão fica onde estaria no fluxo da página.
 header {
-  height: 75px;
+  height: var(--header-height);
   width: 100%;
   background-color: var(--bg-color);
   border-bottom: 1px solid var(--header-border);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-
-  &.fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    
-    ~ main {
-      padding-top: var(--header-height);
-    }
-  }
 }
 
 .header-container {
   max-width: 1400px;
   margin: 0 auto;
-  height: var(--header-height);
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
 
   @media (max-width: 768px) {
-    height: var(--mobile-header-height);
     padding: 0 1rem;
   }
 }
@@ -144,12 +112,6 @@ header {
       transform: translateY(0);
       opacity: 1;
       pointer-events: auto;
-    }
-
-    @media (max-width: 768px) {
-      ~ main {
-        padding-top: calc(var(--mobile-header-height) + 60px);
-      }
     }
   }
 }

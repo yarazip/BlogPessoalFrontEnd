@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
@@ -8,9 +8,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { AuthService } from './services/auth.service';
 import { ThemeService } from './services/theme.service';
-
-/** Páginas abertas a visitantes: nelas o cabeçalho é sempre o público. */
-const ROTAS_PUBLICAS = ['/', '/login', '/register', '/esqueci-senha', '/explorar'];
+import { deveMostrarCabecalhoDoUsuario } from './shell/cabecalho';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +20,8 @@ const ROTAS_PUBLICAS = ['/', '/login', '/register', '/esqueci-senha', '/explorar
 export class AppComponent {
   private readonly authService = inject(AuthService);
 
-  showDashboardHeader = false;
+  /** Já nasce certo (pela URL do navegador), para não piscar o cabeçalho público até a 1ª navegação terminar. */
+  showDashboardHeader = deveMostrarCabecalhoDoUsuario(inject(Location).path(), this.authService.isLoggedIn());
 
   constructor() {
     inject(ThemeService); // aplica o tema salvo assim que o app abre
@@ -33,9 +32,7 @@ export class AppComponent {
         takeUntilDestroyed(inject(DestroyRef))
       )
       .subscribe(evento => {
-        const caminho = evento.urlAfterRedirects.split(/[?#]/)[0];
-        const publica = ROTAS_PUBLICAS.includes(caminho);
-        this.showDashboardHeader = this.authService.isLoggedIn() && !publica;
+        this.showDashboardHeader = deveMostrarCabecalhoDoUsuario(evento.urlAfterRedirects, this.authService.isLoggedIn());
       });
   }
 }
