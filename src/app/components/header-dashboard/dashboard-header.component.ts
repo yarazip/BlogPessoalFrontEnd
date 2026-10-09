@@ -1,29 +1,31 @@
-import { Component } from '@angular/core';
-import { RouterModule, Router } from '@angular/router'; 
+import { Component, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-dashboard-header',
   standalone: true,
-  imports: [RouterModule],  // importe RouterModule aqui
+  imports: [RouterModule],
   templateUrl: './dashboard-header.component.html',
   styleUrls: ['./dashboard-header.component.scss']
 })
 export class DashboardHeaderComponent {
+  private readonly authService = inject(AuthService);
+  private readonly themeService = inject(ThemeService);
+
   isMobileMenuOpen = false;
 
-  constructor(private router: Router) {}
-
-  toggleMobileMenu() {
+  toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
-toggleTheme() {
-  const isDarkMode = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-}
 
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 
-  logout() {
-    localStorage.removeItem('token');
-    this.router.navigate(['/home']);
+  /** Encerra a sessão por completo (token e dados do usuário) e volta ao login. */
+  logout(): void {
+    this.authService.logout();
   }
 }

@@ -1,10 +1,16 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+
+/** Marca "mismatch" no grupo quando a confirmação não confere com a senha. */
+function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
+  const senha = grupo.get('senha')?.value;
+  const confirmacao = grupo.get('confirmPassword')?.value;
+  return senha === confirmacao ? null : { mismatch: true };
+}
 
 @Component({
   selector: 'app-register',
@@ -14,77 +20,55 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
-  loading = false;
-  registerForm: FormGroup;
+  private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  // limites da API: nome até 100, senha de 8 a 72 caracteres
+  readonly registerForm = this.fb.nonNullable.group(
+    {
+      nome: ['', [Validators.required, Validators.maxLength(100)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
+      senha: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
+      confirmPassword: ['', Validators.required]
+    },
+    { validators: senhasIguais }
+  );
+
   submitted = false;
   isLoading = false;
   errorMessage: string | null = null;
-
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.registerForm = this.fb.group({
-      nome: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', Validators.required],
-    }, {
-      validator: this.passwordMatchValidator
-    });
-  }
 
   get f() {
     return this.registerForm.controls;
   }
 
-  passwordMatchValidator(formGroup: AbstractControl) {
-    const senha = formGroup.get('senha');
-    const confirmPassword = formGroup.get('confirmPassword');
-
-    if (!senha || !confirmPassword) return null;
-
-    if (confirmPassword.errors && !confirmPassword.errors['mismatch']) {
-      return null;
-    }
-
-    if (senha.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ mismatch: true });
-    } else {
-      confirmPassword.setErrors(null);
-    }
-
-    return null;
+  /** A confirmação só é "diferente" depois que o usuário mexeu nela. */
+  get senhasDiferentes(): boolean {
+    return this.registerForm.hasError('mismatch') && this.f.confirmPassword.touched;
   }
 
+  onSubmit(): void {
+    this.submitted = true;
 
-onSubmit() {
-  this.submitted = true;
-  
-  if (this.registerForm.invalid) {
-    this.registerForm.markAllAsTouched();
-    return;
-  }
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
-  const { nome, email, senha } = this.registerForm.value;
-  this.isLoading = true;
-  this.errorMessage = null;
+    const { nome, email, senha } = this.registerForm.getRawValue();
+    this.isLoading = true;
+    this.errorMessage = null;
 
-  this.authService.register(nome, email, senha).subscribe({
-    next: () => {
-      this.isLoading = false;
-      this.router.navigate(['/login']);
-    },
-    error: (error) => {
-      this.isLoading = false;
-      console.error('Erro ao cadastrar:', error);
-
-      if (error.status === 409) {
-        this.errorMessage = error.error.message || 'Email já está em uso';
-      } else {
-        this.errorMessage = 'Ocorreu um erro ao cadastrar. Tente novamente mais tarde.';
+    this.authService.register(nome, email, senha).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.router.navigate(['/login']);
+      },
+      error: erro => {
+        this.isLoading = false;
+        this.errorMessage = mensagemDeErro(erro, 'Ocorreu um erro ao cadastrar. Tente novamente mais tarde.');
       }
-    }
-  });
-}}
+    });
+  }
+}

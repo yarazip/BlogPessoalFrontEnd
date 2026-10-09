@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { PostagemService } from '../../services/postagem.service';
-import { Postagem } from '../../components/models/Postagem';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DatePipe } from '@angular/common';
-import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
 import { DateBrPipe } from '../../pipes/date-br.pipe';
-
+import { AuthService } from '../../services/auth.service';
+import { PostagemService } from '../../services/postagem.service';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { TruncatePipe } from '../../shared/pipes/truncate.pipe';
+import { Postagem } from '../models/Postagem';
 
 @Component({
   selector: 'app-postagem-list',
@@ -17,60 +16,29 @@ import { DateBrPipe } from '../../pipes/date-br.pipe';
   styleUrls: ['./postagem-list.component.scss']
 })
 export class PostagemListComponent implements OnInit {
+  private readonly postagemService = inject(PostagemService);
+  private readonly authService = inject(AuthService);
+
   postagens: Postagem[] = [];
   isLoading = true;
-
-  constructor(
-    private postagemService: PostagemService,
-    private router: Router
-  ) {}
+  mensagemErro: string | null = null;
 
   ngOnInit(): void {
-    this.loadPostagens();
-  }
+    const usuario = this.authService.getUsuario();
+    if (!usuario) {
+      this.isLoading = false;
+      return;
+    }
 
-  loadPostagens(): void {
-  const user = localStorage.getItem('usuario');
-  if (user) {
-    const usuario = JSON.parse(user);
-    const usuarioId = usuario.id;
-
-    this.postagemService.getByUsuario(usuarioId).subscribe({
-      next: (data) => {
-        this.postagens = data;
+    this.postagemService.getByUsuario(usuario.id).subscribe({
+      next: postagens => {
+        this.postagens = postagens;
         this.isLoading = false;
       },
-      error: () => {
-        alert('Erro ao carregar postagens.');
-        this.isLoading = false;
-      }
-    });
-  } else {
-    alert('Usuário não logado.');
-    this.isLoading = false;
-  }
-}
-
-  excluir(id: number): void {
-  if (confirm('Deseja excluir esta postagem?')) {
-    this.isLoading = true;
-    this.postagemService.delete(id).subscribe({
-      next: () => {
-        this.loadPostagens();
-        alert('Postagem excluída com sucesso!');
-      },
-      error: () => {
-        alert('Erro ao excluir postagem.');
+      error: erro => {
+        this.mensagemErro = mensagemDeErro(erro, 'Erro ao carregar postagens.');
         this.isLoading = false;
       }
     });
   }
-}
-
-
-  editar(id: number): void {
-    this.router.navigate(['/postagens', id]);
-  }
-  
-  
 }

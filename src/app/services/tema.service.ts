@@ -1,16 +1,13 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { Tema } from '../components/models/Tema';
-import { environment } from '../../environments/environment';  
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class TemaService {
-  private apiUrl = `${environment.apiUrl}/temas`;  
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/temas`;
 
   getAll(): Observable<Tema[]> {
     return this.http.get<Tema[]>(this.apiUrl);
@@ -20,12 +17,13 @@ export class TemaService {
     return this.http.get<Tema>(`${this.apiUrl}/${id}`);
   }
 
-  create(tema: Tema): Observable<Tema> {
+  create(tema: Pick<Tema, 'descricao'>): Observable<Tema> {
     return this.http.post<Tema>(this.apiUrl, tema);
   }
 
+  /** A API atualiza por PUT /temas, com o id no corpo (não na URL). */
   update(tema: Tema): Observable<Tema> {
-    return this.http.put<Tema>(`${this.apiUrl}/${tema.id}`, tema);
+    return this.http.put<Tema>(this.apiUrl, tema);
   }
 
   delete(id: number): Observable<void> {

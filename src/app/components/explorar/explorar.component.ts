@@ -1,38 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';  // Para pipe date, ngFor, etc
-import { Postagem } from '../models/Postagem';
-import { PostagemService } from '../../services/postagem.service';
-import { HttpClientModule } from '@angular/common/http'; // Caso o serviço use HttpClient
-import { Nl2brPipe } from '../../shared/pipes/nl2br.pipe';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { DateBrPipe } from '../../pipes/date-br.pipe';
+import { PostagemService } from '../../services/postagem.service';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { Postagem } from '../models/Postagem';
 
 @Component({
   selector: 'app-explorar',
-  templateUrl: './explorar.component.html',
-  styleUrls: ['./explorar.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    HttpClientModule, 
-    Nl2brPipe,
-    DateBrPipe
-  ],
-  providers: [PostagemService] 
+  imports: [CommonModule, DateBrPipe],
+  templateUrl: './explorar.component.html',
+  styleUrls: ['./explorar.component.scss']
 })
 export class ExplorarComponent implements OnInit {
+  private readonly postagemService = inject(PostagemService);
 
   postagens: Postagem[] = [];
+  isLoading = true;
+  mensagemErro: string | null = null;
 
-  constructor(private postagemService: PostagemService) { }
+  readonly fotoPadrao = 'assets/img/sem-foto.svg';
 
   ngOnInit(): void {
-    this.postagemService.listarTodasPostagens().subscribe(
-      (posts) => {
-        this.postagens = posts;
+    this.postagemService.getAll().subscribe({
+      next: postagens => {
+        this.postagens = postagens;
+        this.isLoading = false;
       },
-      (error) => {
-        console.error('Erro ao carregar postagens', error);
+      error: erro => {
+        this.mensagemErro = mensagemDeErro(erro, 'Não foi possível carregar as postagens.');
+        this.isLoading = false;
       }
-    );
+    });
   }
 }

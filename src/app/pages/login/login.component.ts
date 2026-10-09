@@ -1,43 +1,44 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
-  loginForm: FormGroup;
+export class LoginComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly loginForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    senha: ['', Validators.required]
+  });
+
   submitted = false;
   isLoading = false;
   loginError = false;
   errorMessage: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', Validators.required]
-    });
-  }
-
   get f() {
     return this.loginForm.controls;
   }
 
-  onSubmit() {
+  ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.has('expirada')) {
+      this.mostrarErro('Sua sessão expirou. Entre novamente para continuar.');
+    }
+  }
+
+  onSubmit(): void {
     this.submitted = true;
     this.loginError = false;
     this.errorMessage = null;
@@ -48,20 +49,29 @@ export class LoginComponent {
 
     this.isLoading = true;
 
-    const { email, senha } = this.loginForm.value;
-this.authService.login({ email, senha }).subscribe({
-  next: (response) => {
-    console.log('Login bem-sucedido:', response);
-    this.authService.saveAuthData(response);  
-    this.router.navigate(['/dashboard']);
-    this.isLoading = false;
-  },
-      error: (err) => {
-        console.error('Erro no login:', err);
-        this.loginError = true;
-        this.errorMessage = 'E-mail ou senha inválidos!';
+    this.authService.login(this.loginForm.getRawValue()).subscribe({
+      next: resposta => {
+        this.authService.saveAuthData(resposta);
         this.isLoading = false;
+        this.router.navigateByUrl(this.destinoAposLogin());
+      },
+      error: erro => {
+        this.isLoading = false;
+        this.mostrarErro(
+          erro?.status === 401 ? 'E-mail ou senha inválidos!' : mensagemDeErro(erro, 'Não foi possível entrar. Tente novamente.')
+        );
       }
     });
+  }
+
+  /** Volta para a página que exigiu login, aceitando apenas caminhos internos do app. */
+  private destinoAposLogin(): string {
+    const retorno = this.route.snapshot.queryParamMap.get('returnUrl');
+    return retorno && retorno.startsWith('/') && !retorno.startsWith('//') ? retorno : '/dashboard';
+  }
+
+  private mostrarErro(mensagem: string): void {
+    this.loginError = true;
+    this.errorMessage = mensagem;
   }
 }

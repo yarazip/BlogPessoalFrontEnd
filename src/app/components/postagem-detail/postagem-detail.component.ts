@@ -1,71 +1,71 @@
-import { Component, OnInit } from '@angular/core';
-import { PostagemService } from '../../services/postagem.service';
-import { Postagem } from '../../components/models/Postagem';
-import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { DatePipe } from '@angular/common';
-import { Nl2brPipe } from '../../shared/pipes/nl2br.pipe'; // Importação adicionada
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DateBrPipe } from '../../pipes/date-br.pipe';
+import { AuthService } from '../../services/auth.service';
+import { PostagemService } from '../../services/postagem.service';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { Postagem } from '../models/Postagem';
 
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [
-    CommonModule, 
-    DatePipe,
-    Nl2brPipe 
-  ],
+  imports: [CommonModule, DateBrPipe],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })
 export class PostagemDetailComponent implements OnInit {
+  private readonly postagemService = inject(PostagemService);
+  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
   postagem?: Postagem;
   isLoading = true;
+  mensagemErro: string | null = null;
 
-  constructor(
-    private postagemService: PostagemService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadPostagem(Number(id));
-    } else {
-      this.router.navigate(['/postagens']);
-    }
+  /** Só o autor vê as ações de editar e excluir (a API também exige isso). */
+  get ehAutor(): boolean {
+    const usuario = this.authService.getUsuario();
+    return !!usuario && !!this.postagem?.usuario && usuario.id === this.postagem.usuario.id;
   }
 
-  loadPostagem(id: number): void {
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!Number.isInteger(id) || id <= 0) {
+      this.router.navigate(['/postagens']);
+      return;
+    }
+
     this.postagemService.getById(id).subscribe({
-      next: (data) => {
-        this.postagem = data;
+      next: postagem => {
+        this.postagem = postagem;
         this.isLoading = false;
       },
-      error: () => {
-        alert('Postagem não encontrada.');
-        this.router.navigate(['/postagens']);
+      error: erro => {
+        this.mensagemErro = mensagemDeErro(erro, 'Postagem não encontrada.');
         this.isLoading = false;
       }
     });
   }
 
-  excluir(id: number): void {
-    if (confirm('Deseja excluir esta postagem?')) {
-      this.isLoading = true;
-      this.postagemService.delete(id).subscribe({
-        next: () => {
-          alert('Postagem excluída com sucesso!');
-          this.router.navigate(['/postagens']);
-        },
-        error: () => {
-          alert('Erro ao excluir postagem.');
-          this.isLoading = false;
-        }
-      });
-    }
-  }
   editar(id: number): void {
-    this.router.navigate(['postagens', id, 'editar'], { relativeTo: this.route.parent });
-}}
+    this.router.navigate(['/postagens', id, 'editar']);
+  }
+
+  excluir(id: number): void {
+    if (!confirm('Deseja excluir esta postagem?')) {
+      return;
+    }
+
+    this.isLoading = true;
+    this.mensagemErro = null;
+    this.postagemService.delete(id).subscribe({
+      next: () => this.router.navigate(['/postagens']),
+      error: erro => {
+        this.mensagemErro = mensagemDeErro(erro, 'Erro ao excluir postagem.');
+        this.isLoading = false;
+      }
+    });
+  }
+}

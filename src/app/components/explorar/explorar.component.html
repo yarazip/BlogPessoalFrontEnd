@@ -1,24 +1,26 @@
-<head>
-  <link rel="icon" href="../../../../public/favicon.ico" />
-</head>
 <div class="postagens-feed">
-  <div class="postagem" *ngFor="let postagem of postagens">
+  <p *ngIf="isLoading" class="mensagem-info">Carregando postagens...</p>
+  <p *ngIf="mensagemErro" class="mensagem-erro" role="alert">{{ mensagemErro }}</p>
+  <p *ngIf="!isLoading && !mensagemErro && postagens.length === 0" class="mensagem-info">
+    Ainda não há postagens.
+  </p>
 
+  <article class="postagem" *ngFor="let postagem of postagens">
     <div class="postagem-header">
-      <img 
-        [src]="postagem.usuario?.foto" 
-        alt="Foto de {{ postagem.usuario?.nome }}" 
+      <img
+        [src]="postagem.usuario?.foto || fotoPadrao"
+        alt="Foto de {{ postagem.usuario?.nome }}"
         class="foto-perfil"
-      >
-      
+        loading="lazy"
+      />
+
       <div class="info-usuario">
         <h4>{{ postagem.usuario?.nome }}</h4>
-<small>Publicado em: {{ postagem.data | dateBr }}</small>
+        <small>Publicado em: {{ postagem.data | dateBr }}</small>
       </div>
     </div>
 
     <h3>{{ postagem.titulo }}</h3>
-<p [innerHTML]="postagem.texto | nl2br"></p>
-
-  </div>
+    <p class="texto-postagem">{{ postagem.texto }}</p>
+  </article>
 </div>

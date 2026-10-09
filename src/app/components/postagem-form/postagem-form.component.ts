@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
-import { Postagem } from '../models/Postagem';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { LIMITES_POSTAGEM, PostagemRequest } from '../models/Postagem';
 import { Tema } from '../models/Tema';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-postagem-form',
@@ -17,142 +16,105 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./postagem-form.component.scss']
 })
 export class PostagemFormComponent implements OnInit {
-  postagemForm: FormGroup;
+  private readonly fb = inject(FormBuilder);
+  private readonly postagemService = inject(PostagemService);
+  private readonly temaService = inject(TemaService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  readonly limites = LIMITES_POSTAGEM;
+
+  // os limites são os mesmos validados pela API; divergir faz o envio falhar com 400
+  readonly postagemForm = this.fb.group({
+    titulo: ['', [Validators.required, Validators.minLength(LIMITES_POSTAGEM.tituloMin), Validators.maxLength(LIMITES_POSTAGEM.tituloMax)]],
+    texto: ['', [Validators.required, Validators.minLength(LIMITES_POSTAGEM.textoMin), Validators.maxLength(LIMITES_POSTAGEM.textoMax)]],
+    temaId: this.fb.control<number | null>(null, Validators.required)
+  });
+
   isEdit = false;
   postagemId?: number;
   isLoading = false;
   temas: Tema[] = [];
+  semTemas = false;
   errorMessage: string | null = null;
 
-  constructor(
-    private fb: FormBuilder,
-    private postagemService: PostagemService,
-    private temaService: TemaService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService
-  ) {
-   this.postagemForm = this.fb.group({
-  titulo: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-  texto: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000000)]],
-  temaId: [null, Validators.required]
-});
+  get titulo() {
+    return this.postagemForm.controls.titulo;
+  }
+  get texto() {
+    return this.postagemForm.controls.texto;
+  }
+  get temaId() {
+    return this.postagemForm.controls.temaId;
   }
 
   ngOnInit(): void {
     this.carregarTemas();
-    this.verificarEdicao();
+
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (Number.isInteger(id) && id > 0) {
+      this.isEdit = true;
+      this.postagemId = id;
+      this.carregarPostagem(id);
+    }
   }
 
-  carregarTemas(): void {
+  cancelar(): void {
+    this.router.navigate(['/postagens']);
+  }
+
+  onSubmit(): void {
+    if (this.postagemForm.invalid || this.isLoading) {
+      this.postagemForm.markAllAsTouched();
+      return;
+    }
+
+    const { titulo, texto, temaId } = this.postagemForm.getRawValue();
+    const dados: PostagemRequest = { titulo: titulo!, texto: texto!, idTema: temaId! };
+
     this.isLoading = true;
-    this.temaService.getAll().subscribe({
-      next: (temas) => {
-        this.temas = temas.length > 0 ? temas : this.getTemasPredefinidos();
-        this.isLoading = false;
-      },
-      error: () => {
-        this.temas = this.getTemasPredefinidos();
+    this.errorMessage = null;
+
+    const operacao = this.isEdit
+      ? this.postagemService.update(this.postagemId!, dados)
+      : this.postagemService.create(dados);
+
+    operacao.subscribe({
+      next: () => this.router.navigate(['/postagens']),
+      error: erro => {
+        this.errorMessage = mensagemDeErro(erro, 'Erro ao salvar postagem. Tente novamente.');
         this.isLoading = false;
       }
     });
   }
-get titulo() {
-  return this.postagemForm.get('titulo');
-}
 
-get texto() {
-  return this.postagemForm.get('texto');
-}
-
-get temaId() {
-  return this.postagemForm.get('temaId');
-}
-cancelar(): void {
-  this.router.navigate(['/postagens']);
-}
-
-  private getTemasPredefinidos(): Tema[] {
-    return [
-      { id: 1, descricao: 'Tecnologia' },
-      { id: 2, descricao: 'Educação' },
-      { id: 3, descricao: 'Saúde' },
-      { id: 4, descricao: 'Esportes' },
-      { id: 5, descricao: 'Entretenimento' },
-      { id: 6, descricao: 'Ciência' },
-      { id: 7, descricao: 'Política' },
-      { id: 8, descricao: 'Meio Ambiente' },
-      { id: 9, descricao: 'Arte' },
-      { id: 10, descricao: 'Negócios' }
-    ];
+  private carregarTemas(): void {
+    this.temaService.getAll().subscribe({
+      next: temas => {
+        this.temas = temas;
+        this.semTemas = temas.length === 0;
+      },
+      error: erro => {
+        this.errorMessage = mensagemDeErro(erro, 'Não foi possível carregar os temas.');
+      }
+    });
   }
 
-  verificarEdicao(): void {
-    
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id && !isNaN(+id)) {
-      this.isEdit = true;
-      this.postagemId = +id;
-      this.carregarPostagem();
-    }
-  }
-
-  carregarPostagem(): void {
-    if (!this.postagemId) return;
-
+  private carregarPostagem(id: number): void {
     this.isLoading = true;
-    this.postagemService.getById(this.postagemId).subscribe({
-      next: (postagem) => {
+    this.postagemService.getById(id).subscribe({
+      next: postagem => {
         this.postagemForm.patchValue({
           titulo: postagem.titulo,
           texto: postagem.texto,
-          temaId: postagem.tema?.id || null
+          temaId: postagem.tema?.id ?? null
         });
         this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Erro ao carregar postagem:', err);
-        this.errorMessage = 'Erro ao carregar postagem.';
+      error: erro => {
+        this.errorMessage = mensagemDeErro(erro, 'Erro ao carregar postagem.');
         this.isLoading = false;
       }
     });
   }
-
-onSubmit(): void {
-  if (this.postagemForm.invalid || this.isLoading) return;
-
-const usuarioId = this.authService.getUsuario()?.id;
-if (!usuarioId) {
-  this.errorMessage = 'Usuário não autenticado. Faça login novamente.';
-  return;
-}
-
-
-
-  this.isLoading = true;
-  this.errorMessage = null;
-
-  const formValue = this.postagemForm.value;
-const postagem = {
-  ...(this.isEdit && { id: this.postagemId }),
-  titulo: formValue.titulo,
-  texto: formValue.texto,
-  idTema: formValue.temaId
-};
-
-
-
-  const operacao = this.isEdit
-    ? this.postagemService.update(postagem)
-    : this.postagemService.create(postagem);
-
-  operacao.subscribe({
-    next: () => this.router.navigate(['/postagens']),
-    error: () => {
-      this.errorMessage = 'Erro ao salvar postagem. Tente novamente.';
-      this.isLoading = false;
-    }
-  });
-}
-
 }

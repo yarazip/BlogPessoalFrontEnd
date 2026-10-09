@@ -1,22 +1,15 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Postagem } from '../components/models/Postagem';
-import { environment } from '../../environments/environment';  
+import { environment } from '../../environments/environment';
+import { Postagem, PostagemRequest } from '../components/models/Postagem';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PostagemService {
-  private apiUrl = `${environment.apiUrl}/postagens`;  
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/postagens`;
 
   getAll(): Observable<Postagem[]> {
-    return this.http.get<Postagem[]>(this.apiUrl);
-  }
-
-  listarTodasPostagens(): Observable<Postagem[]> {
     return this.http.get<Postagem[]>(this.apiUrl);
   }
 
@@ -24,19 +17,20 @@ export class PostagemService {
     return this.http.get<Postagem>(`${this.apiUrl}/${id}`);
   }
 
-  create(postagem: Postagem): Observable<Postagem> {
+  getByUsuario(usuarioId: number): Observable<Postagem[]> {
+    const params = new HttpParams().set('autor', usuarioId);
+    return this.http.get<Postagem[]>(`${this.apiUrl}/filtro`, { params });
+  }
+
+  create(postagem: PostagemRequest): Observable<Postagem> {
     return this.http.post<Postagem>(this.apiUrl, postagem);
   }
 
-  update(postagem: Postagem): Observable<Postagem> {
-    return this.http.put<Postagem>(`${this.apiUrl}/${postagem.id}`, postagem);
+  update(id: number, postagem: PostagemRequest): Observable<Postagem> {
+    return this.http.put<Postagem>(`${this.apiUrl}/${id}`, postagem);
   }
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  getByUsuario(usuarioId: number): Observable<Postagem[]> {
-    return this.http.get<Postagem[]>(`${this.apiUrl}/filtro?autor=${usuarioId}`);
   }
 }
