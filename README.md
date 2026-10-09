@@ -50,6 +50,8 @@ No Windows, se o Chrome não for encontrado: `set CHROME_BIN=C:\Program Files\Go
 - **Sessão:** o login devolve um JWT, guardado no `localStorage` (sem o prefixo `Bearer`). O `authInterceptor`
   o envia **somente** para a API e nunca no login/cadastro. Uma resposta 401 a uma requisição autenticada
   encerra a sessão e leva ao login com um aviso. O `authGuard` também rejeita tokens expirados.
+- **Listagens paginadas:** o Explorar e "Minhas postagens" usam `GET /postagens/pagina` (10 por vez, mais
+  recentes primeiro) com o botão "Carregar mais". Exige o back-end com esse endpoint.
 - **Erros da API** seguem o padrão RFC 7807 (`detail`, `errors` por campo, `requestId` nos erros 500);
   `mensagemDeErro()` os converte em texto para o usuário.
 - **Validações** dos formulários espelham as da API (título 5–100, texto 10–1000, senha 8–72 caracteres).
