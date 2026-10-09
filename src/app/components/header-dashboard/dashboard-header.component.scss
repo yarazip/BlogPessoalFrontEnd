@@ -169,7 +169,7 @@ header {
     display: flex;
     align-items: center;
 
-    i {
+    app-icon {
       margin-right: 0.5rem;
     }
 
@@ -251,17 +251,17 @@ header {
     color: white;
   }
 
-  i {
+  app-icon {
     position: absolute;
     transition: all 0.3s ease;
   }
 
-  .fa-moon {
+  .icon-moon {
     opacity: var(--moon-opacity, 1);
     transform: var(--moon-transform, scale(1));
   }
 
-  .fa-sun {
+  .icon-sun {
     opacity: var(--sun-opacity, 0);
     transform: var(--sun-transform, scale(0.5));
   }

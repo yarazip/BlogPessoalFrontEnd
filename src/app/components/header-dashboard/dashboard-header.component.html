@@ -20,7 +20,7 @@
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
         >
-          <i class="fas fa-user"></i> Perfil
+          <app-icon name="user" /> Perfil
         </a>
       </div>
 
@@ -41,11 +41,11 @@
         class="theme-toggle"
         aria-label="Alternar tema"
       >
-        <i class="fas fa-moon"></i>
-        <i class="fas fa-sun"></i>
+        <app-icon name="moon" class="icon-moon" />
+        <app-icon name="sun" class="icon-sun" />
       </button>
       <button class="logout-btn" (click)="logout()" aria-label="Sair">
-        <i class="fas fa-sign-out-alt"></i>
+        <app-icon name="logout" />
         <span class="logout-text">Sair</span>
       </button>
     </div>

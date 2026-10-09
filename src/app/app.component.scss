@@ -173,28 +173,6 @@ body {
     margin-bottom: 20px;
 }
 
-.read-more {
-    color: var(--accent-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-}
-
-.read-more:hover {
-    color: var(--dark-grey);
-}
-
-.read-more::after {
-    content: '→';
-    margin-left: 5px;
-    transition: margin-left 0.3s ease;
-}
-
-.read-more:hover::after {
-    margin-left: 10px;
-}
 
 .single-post {
     background-color: var(--highlights);
