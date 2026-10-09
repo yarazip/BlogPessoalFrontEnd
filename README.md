@@ -60,8 +60,8 @@ No Windows, se o Chrome não for encontrado: `set CHROME_BIN=C:\Program Files\Go
 
 ## Deploy (Netlify)
 
-O diretório publicado é `dist/blogify` (o `outputPath.browser` está vazio de propósito, para o build
-não criar a subpasta `browser`). O `netlify.toml` define o redirecionamento da SPA e os **cabeçalhos de segurança**, incluindo uma
+O build gera `dist/blogify/browser`, que é o diretório publicado (definido no `netlify.toml`; o plugin
+`@netlify/angular-runtime` do Netlify exige esse caminho). O `netlify.toml` define o redirecionamento da SPA e os **cabeçalhos de segurança**, incluindo uma
 Content-Security-Policy restrita. Ao mudar a URL da API em `environment.prod.ts`, atualize também o
 `connect-src` da CSP. O build de produção desliga o "critical CSS inline" (`inlineCritical: false` em
 `angular.json`) porque ele depende de um `onload` inline que a CSP bloqueia.

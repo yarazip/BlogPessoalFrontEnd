@@ -25,10 +25,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": {
-              "base": "dist/blogify",
-              "browser": ""
-            },
+            "outputPath": "dist/blogify",
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
