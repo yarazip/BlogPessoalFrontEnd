@@ -3,7 +3,29 @@ import { Observable, of, throwError } from 'rxjs';
 import { PostagemService } from '../../services/postagem.service';
 import { Pagina } from '../../models/Pagina';
 import { Postagem } from '../../models/Postagem';
+import { OBSERVADOR_DE_INTERSECAO } from '../../shared/sentinela/sentinela.directive';
 import { ExplorarComponent } from './explorar.component';
+
+/** Observador falso: o teste decide quando "o usuário rolou até o fim da lista". */
+class ObservadorFalso {
+  static instancias: ObservadorFalso[] = [];
+
+  constructor(private readonly aoObservar: IntersectionObserverCallback) {
+    ObservadorFalso.instancias.push(this);
+  }
+
+  observe(): void {
+    /* o teste dispara a rolagem manualmente, via rolarAteOFim() */
+  }
+
+  disconnect(): void {
+    /* nada a liberar no falso */
+  }
+
+  rolarAteOFim(): void {
+    this.aoObservar([{ isIntersecting: true } as IntersectionObserverEntry], this as unknown as IntersectionObserver);
+  }
+}
 
 describe('ExplorarComponent', () => {
   let fixture: ComponentFixture<ExplorarComponent>;
@@ -34,10 +56,14 @@ describe('ExplorarComponent', () => {
   };
 
   beforeEach(() => {
+    ObservadorFalso.instancias = [];
     service = jasmine.createSpyObj('PostagemService', ['getPagina']);
     TestBed.configureTestingModule({
       imports: [ExplorarComponent],
-      providers: [{ provide: PostagemService, useValue: service }]
+      providers: [
+        { provide: PostagemService, useValue: service },
+        { provide: OBSERVADOR_DE_INTERSECAO, useValue: ObservadorFalso as unknown as typeof IntersectionObserver }
+      ]
     });
   });
 
@@ -78,8 +104,21 @@ describe('ExplorarComponent', () => {
     expect(el.querySelector('[role="alert"]')!.textContent).toContain('Não foi possível carregar as postagens');
   });
 
-  describe('paginação', () => {
-    const botao = () => (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('.btn-carregar-mais');
+  it('mostra o autor, o título, o texto e o tema (sem as aspas antigas do banco)', () => {
+    const el = criar(of(pagina([{ ...postagem('texto da postagem'), tema: { id: 1, descricao: "'Tecnologia'" } }], 0, true)));
+
+    expect(el.querySelector('.autor')!.textContent).toBe('Ana');
+    expect(el.querySelector('.post-titulo')!.textContent).toBe('Título 1');
+    expect(el.querySelector('.post-tema')!.textContent).toBe('#Tecnologia');
+  });
+
+  describe('rolagem infinita', () => {
+    const rolarAteOFim = () => {
+      ObservadorFalso.instancias[ObservadorFalso.instancias.length - 1].rolarAteOFim();
+      fixture.detectChanges();
+    };
+    const titulos = () =>
+      Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('article h3')).map(h => h.textContent);
 
     it('pede a primeira página com o tamanho padrão', () => {
       criar(of(pagina([postagem('a')], 0, true)));
@@ -87,17 +126,24 @@ describe('ExplorarComponent', () => {
       expect(service.getPagina).toHaveBeenCalledOnceWith({ page: 0, size: 10 });
     });
 
-    it('só mostra "Carregar mais" enquanto houver mais páginas', () => {
+    it('só observa o fim da lista enquanto houver mais páginas', () => {
       criar(of(pagina([postagem('a')], 0, false)));
-      expect(botao()).not.toBeNull();
+      expect(ObservadorFalso.instancias.length).toBe(1);
 
       TestBed.resetTestingModule();
-      TestBed.configureTestingModule({ imports: [ExplorarComponent], providers: [{ provide: PostagemService, useValue: service }] });
+      ObservadorFalso.instancias = [];
+      TestBed.configureTestingModule({
+        imports: [ExplorarComponent],
+        providers: [
+          { provide: PostagemService, useValue: service },
+          { provide: OBSERVADOR_DE_INTERSECAO, useValue: ObservadorFalso as unknown as typeof IntersectionObserver }
+        ]
+      });
       criar(of(pagina([postagem('a')], 0, true)));
-      expect(botao()).toBeNull();
+      expect(ObservadorFalso.instancias.length).toBe(0);
     });
 
-    it('acrescenta a próxima página ao feed, sem repetir nem perder itens', () => {
+    it('ao rolar até o fim, acrescenta a próxima página sem repetir nem perder itens', () => {
       service.getPagina.and.returnValues(
         of(pagina([postagem('um', 1), postagem('dois', 2)], 0, false)),
         of(pagina([postagem('três', 3)], 1, true))
@@ -105,13 +151,11 @@ describe('ExplorarComponent', () => {
       fixture = TestBed.createComponent(ExplorarComponent);
       fixture.detectChanges();
 
-      botao()!.click();
-      fixture.detectChanges();
+      rolarAteOFim();
 
       expect(service.getPagina.calls.allArgs()).toEqual([[{ page: 0, size: 10 }], [{ page: 1, size: 10 }]]);
-      const titulos = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('article h3')).map(h => h.textContent);
-      expect(titulos).toEqual(['Título 1', 'Título 2', 'Título 3']);
-      expect(botao()).toBeNull();
+      expect(titulos()).toEqual(['Título 1', 'Título 2', 'Título 3']);
+      expect(ObservadorFalso.instancias.length).toBe(1); // a última página some com o observador
     });
 
     it('um erro ao carregar mais mantém o que já estava na tela e permite tentar de novo', () => {
@@ -123,19 +167,31 @@ describe('ExplorarComponent', () => {
       fixture = TestBed.createComponent(ExplorarComponent);
       fixture.detectChanges();
 
-      botao()!.click();
-      fixture.detectChanges();
+      rolarAteOFim();
 
       const el = fixture.nativeElement as HTMLElement;
-      expect(el.querySelectorAll('article').length).toBe(1);
+      expect(titulos()).toEqual(['Título 1']);
       expect(el.querySelector('[role="alert"]')).not.toBeNull();
-      expect(botao()).not.toBeNull();
 
-      botao()!.click();
+      el.querySelector<HTMLButtonElement>('.feed-tentar')!.click();
       fixture.detectChanges();
 
-      expect(el.querySelectorAll('article').length).toBe(2);
+      expect(titulos()).toEqual(['Título 1', 'Título 2']);
       expect(el.querySelector('[role="alert"]')).toBeNull();
+    });
+
+    it('depois de um erro, rolar de novo não repete a busca sozinho', () => {
+      service.getPagina.and.returnValues(
+        of(pagina([postagem('um', 1)], 0, false)),
+        throwError(() => new Error('falhou'))
+      );
+      fixture = TestBed.createComponent(ExplorarComponent);
+      fixture.detectChanges();
+      rolarAteOFim();
+
+      fixture.componentInstance.carregarMais();
+
+      expect(service.getPagina).toHaveBeenCalledTimes(2);
     });
   });
 });

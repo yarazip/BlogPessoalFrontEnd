@@ -1,40 +1,50 @@
-<div class="postagens-feed">
+<section class="feed" aria-label="Feed de postagens">
   @if (isLoading) {
-    <p class="mensagem-info">Carregando postagens...</p>
+    <p class="feed-aviso">Carregando postagens...</p>
   }
+
   @if (mensagemErro) {
-    <p class="mensagem-erro" role="alert">{{ mensagemErro }}</p>
+    <div class="feed-aviso feed-erro" role="alert">
+      <p>{{ mensagemErro }}</p>
+      <button type="button" class="feed-tentar" (click)="tentarDeNovo()">Tentar de novo</button>
+    </div>
   }
+
   @if (!isLoading && !mensagemErro && postagens.length === 0) {
-    <p class="mensagem-info">
-      Ainda não há postagens.
-    </p>
+    <p class="feed-aviso">Ainda não há postagens.</p>
   }
 
   @for (postagem of postagens; track postagem.id) {
-    <article class="postagem">
-      <div class="postagem-header">
-        <img
-          [src]="postagem.usuario?.foto || fotoPadrao"
-          alt="Foto de {{ postagem.usuario?.nome }}"
-          class="foto-perfil"
-          loading="lazy"
-        />
+    <article class="post">
+      <img
+        [src]="postagem.usuario?.foto || fotoPadrao"
+        alt="Foto de {{ postagem.usuario?.nome }}"
+        class="foto-perfil"
+        loading="lazy"
+      />
 
-        <div class="info-usuario">
-          <h4>{{ postagem.usuario?.nome }}</h4>
-          <small>Publicado em: {{ postagem.data | dateBr }}</small>
-        </div>
+      <div class="post-corpo">
+        <header class="post-cabecalho">
+          <h4 class="autor">{{ postagem.usuario?.nome }}</h4>
+          <span class="meta">· {{ postagem.data | dateBr: 'dd/MM/yyyy' }}</span>
+        </header>
+
+        <h3 class="post-titulo">{{ postagem.titulo }}</h3>
+        <p class="texto-postagem">{{ postagem.texto }}</p>
+
+        @if (postagem.tema) {
+          <span class="post-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
+        }
       </div>
-
-      <h3>{{ postagem.titulo }}</h3>
-      <p class="texto-postagem">{{ postagem.texto }}</p>
     </article>
   }
 
-  @if (haMais) {
-    <button type="button" class="btn-carregar-mais" [disabled]="carregandoMais" (click)="carregarMais()">
-      {{ carregandoMais ? "Carregando..." : "Carregar mais" }}
-    </button>
+  @if (haMais && !mensagemErro) {
+    <!-- Rolar até aqui carrega o próximo trecho do feed -->
+    <div appSentinela (visivel)="carregarMais()" class="feed-sentinela">
+      @if (carregandoMais) {
+        <span class="feed-aviso">Carregando...</span>
+      }
+    </div>
   }
-</div>
+</section>

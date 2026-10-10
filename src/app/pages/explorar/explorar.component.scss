@@ -1,118 +1,114 @@
-/* explorar.component.scss */
+/* Feed em coluna única, sem cartões: cada postagem é uma linha separada por um filete fino. */
+$largura-do-feed: 600px;
 
-$container-max-width: 900px;
-$desktop-padding: 40px;
-$mobile-padding: 20px;
-
-
-
-
-.postagens-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 60px;
-  width: 100%;
+.feed {
+  max-width: $largura-do-feed;
+  min-height: 70vh;
   margin: 0 auto;
-  padding-top: 2.5rem; /* o espaço do cabeçalho fixo é reservado pelo app.component */
+  border-inline: 1px solid var(--header-border);
+
+  @media (max-width: 600px) {
+    border-inline: none;
+  }
 }
 
-.postagem {
-  background-color: var(--card-bg);
-  border-radius: 16px;
-  padding: 40px;
-  box-shadow: 0 6px 16px var(--shadow-color);
-  transition: all 0.3s ease;
-  width: 100%;
-  box-sizing: border-box;
+.post {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--header-border);
+  transition: background-color 0.15s ease;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 24px var(--shadow-color);
+    background-color: var(--secondary-color);
   }
-
-  @media (max-width: 768px) {
-    padding: 30px $mobile-padding;
-    border-radius: 12px;
-  }
-}
-
-.postagem h3 {
-  font-size: clamp(1.5rem, 2vw, 2rem); 
-  margin-bottom: 25px;
-  color: var(--text-color);
-  line-height: 1.3;
-}
-
-.postagem p {
-  color: var(--text-color);
-  margin-bottom: 30px;
-  line-height: 1.8;
-  font-size: clamp(1rem, 1.2vw, 1.2rem); 
-}
-
-.postagem small {
-  display: block;
-  color: var(--primary-color);
-  margin-top: 25px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  font-size: clamp(0.8rem, 1vw, 1rem); 
-
-  .dark-mode & {
-    border-top-color: rgba(255, 255, 255, 0.1);
-  }
-}
-
-.postagem-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
 }
 
 .foto-perfil {
-  width: 50px;
-  height: 50px;
+  flex: none;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--primary-color);
-
-  @media (max-width: 480px) {
-    width: 40px;
-    height: 40px;
-  }
 }
 
-.info-usuario {
-  h4 {
-    margin: 0;
-    font-size: 1rem;
+.post-corpo {
+  flex: 1;
+  min-width: 0; /* deixa palavras longas quebrarem em vez de alargar a coluna */
+}
+
+.post-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+}
+
+.autor {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.post-titulo {
+  margin: 4px 0 2px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--text-color);
+  overflow-wrap: anywhere;
+}
+
+.texto-postagem {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.post-tema {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--primary-color);
+}
+
+.feed-aviso {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.feed-erro {
+  p {
+    margin: 0 0 12px;
     color: var(--text-color);
   }
+}
 
-  small {
-    color: var(--primary-color);
-    font-size: 0.8rem;
-    border-top: none;
-    padding-top: 0;
-    margin-top: 4px;
-    display: block;
+.feed-tentar {
+  padding: 8px 20px;
+  border: 1px solid var(--text-color);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--secondary-color);
   }
 }
 
-@media (max-width: 600px) {
-
-  .postagens-feed {
-    gap: 40px;
-  }
-}
-
-@media (max-width: 400px) {
-  .postagem {
-    padding: 25px 15px;
-  }
-
-  .postagem-header {
-    gap: 10px;
-  }
+.feed-sentinela {
+  min-height: 1px;
+  text-align: center;
 }
