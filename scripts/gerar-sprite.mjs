@@ -8,14 +8,17 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
-const origem = join(raiz, 'node_modules/@fortawesome/fontawesome-free/svgs/solid');
+const origem = join(raiz, 'node_modules/@fortawesome/fontawesome-free/svgs');
 const destino = join(raiz, 'src/assets/icons/sprite.svg');
 
-/** nome usado no app -> arquivo do Font Awesome (solid) */
+/** nome usado no app -> arquivo do Font Awesome, em solid/ (padrão) ou brands/ (marcas) */
 const ICONES = {
   'arrow-left': 'arrow-left',
   camera: 'camera',
   edit: 'pen-to-square',
+  envelope: 'envelope',
+  github: 'brands/github',
+  linkedin: 'brands/linkedin',
   list: 'list',
   logout: 'right-from-bracket',
   moon: 'moon',
@@ -27,7 +30,8 @@ const ICONES = {
 };
 
 const simbolos = Object.entries(ICONES).map(([nome, arquivo]) => {
-  const svg = readFileSync(join(origem, `${arquivo}.svg`), 'utf8');
+  const caminho = arquivo.includes('/') ? arquivo : `solid/${arquivo}`;
+  const svg = readFileSync(join(origem, `${caminho}.svg`), 'utf8');
   const viewBox = /viewBox="([^"]+)"/.exec(svg)?.[1];
   const caminhos = [...svg.matchAll(/<path\b[^>]*\bd="([^"]+)"[^>]*\/>/g)].map(m => m[1]);
   if (!viewBox || caminhos.length === 0) {
