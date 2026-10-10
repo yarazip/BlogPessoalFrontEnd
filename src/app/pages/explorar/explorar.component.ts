@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
+import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { Postagem } from '../../models/Postagem';
@@ -10,7 +10,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-explorar',
   standalone: true,
-  imports: [CommonModule, DateBrPipe],
+  imports: [DateBrPipe, SentinelaDirective],
   templateUrl: './explorar.component.html',
   styleUrls: ['./explorar.component.scss']
 })
@@ -31,11 +31,21 @@ export class ExplorarComponent implements OnInit {
     this.carregar();
   }
 
-  /** Busca a próxima página e a acrescenta ao feed. */
+  /** Busca a próxima página e a acrescenta ao feed (chamado ao rolar até o fim da lista). */
   carregarMais(): void {
-    if (!this.carregandoMais && this.haMais) {
+    if (!this.carregandoMais && this.haMais && !this.mensagemErro) {
       this.carregar();
     }
+  }
+
+  /** Repete a última busca que falhou, sem perder o que já está na tela. */
+  tentarDeNovo(): void {
+    this.carregar();
+  }
+
+  /** Alguns temas antigos foram gravados com aspas no banco (ex.: 'Tecnologia'); aqui elas não aparecem. */
+  nomeDoTema(descricao = ''): string {
+    return descricao.replace(/^['"]+|['"]+$/g, '');
   }
 
   private carregar(): void {
