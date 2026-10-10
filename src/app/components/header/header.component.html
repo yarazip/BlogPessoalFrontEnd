@@ -10,9 +10,15 @@
         <a routerLink="/" fragment="home" (click)="closeMobileMenu()">Página Inicial</a>
         <a routerLink="/" fragment="sobre" (click)="closeMobileMenu()">Sobre</a>
         <a routerLink="/" fragment="recursos" (click)="closeMobileMenu()">Recursos</a>
+
+        <!-- Só aparece no menu do celular; no desktop os botões ficam em .header-buttons -->
+        <div class="nav-acoes">
+          <a routerLink="/login" class="login-btn" (click)="closeMobileMenu()">Entrar</a>
+          <a routerLink="/register" class="get-started-btn" (click)="closeMobileMenu()">Começar</a>
+        </div>
       </div>
 
-      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Menu">
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" aria-label="Menu" [attr.aria-expanded]="isMobileMenuOpen">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>

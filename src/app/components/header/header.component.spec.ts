@@ -17,9 +17,29 @@ describe('HeaderComponent', () => {
   afterEach(() => document.body.classList.remove('menu-open'));
 
   it('os links do menu são links reais (alcançáveis pelo teclado) para as seções da home', () => {
-    const links = Array.from(element.querySelectorAll<HTMLAnchorElement>('.nav-links a'));
+    const links = Array.from(element.querySelectorAll<HTMLAnchorElement>('.nav-links > a'));
 
     expect(links.map(a => a.getAttribute('href'))).toEqual(['/#home', '/#sobre', '/#recursos']);
+  });
+
+  it('o menu mobile também oferece Entrar e Começar, e clicar neles fecha o menu', () => {
+    const acoes = Array.from(element.querySelectorAll<HTMLAnchorElement>('.nav-acoes a'));
+    expect(acoes.map(a => a.getAttribute('href'))).toEqual(['/login', '/register']);
+
+    fixture.componentInstance.openMobileMenu();
+    acoes[0].click();
+
+    expect(fixture.componentInstance.isMobileMenuOpen).toBeFalse();
+  });
+
+  it('o botão do menu informa se o menu está aberto (aria-expanded)', () => {
+    const botao = element.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!;
+    expect(botao.getAttribute('aria-expanded')).toBe('false');
+
+    fixture.componentInstance.openMobileMenu();
+    fixture.detectChanges();
+
+    expect(botao.getAttribute('aria-expanded')).toBe('true');
   });
 
   it('abre e fecha o menu mobile, travando a rolagem do corpo', () => {
