@@ -1,33 +1,35 @@
 <header>
   <div class="header-container">
-    <a routerLink="/" class="logo-link">
+    <a routerLink="/explorar" class="logo-link">
       <div class="logo blogfy-logo">BLOG<span>ify</span></div>
     </a>
 
     <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
       <div class="nav-links">
-        <a
-          routerLink="/dashboard"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          >Insights</a
-        >
-
-        <a routerLink="/postagens" routerLinkActive="active">Postagens</a>
-        <a routerLink="/explorar" routerLinkActive="active">Feed</a>
+        <a routerLink="/explorar" routerLinkActive="active" (click)="closeMobileMenu()">Feed</a>
+        <a routerLink="/postagens" routerLinkActive="active" (click)="closeMobileMenu()">Postagens</a>
         <a
           routerLink="/perfil"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()"
         >
           <app-icon name="user" /> Perfil
         </a>
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeMobileMenu()"
+          >Insights</a
+        >
       </div>
 
       <button
         class="mobile-menu-toggle"
         (click)="toggleMobileMenu()"
         aria-label="Menu"
+        [attr.aria-expanded]="isMobileMenuOpen"
       >
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>

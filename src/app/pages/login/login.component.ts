@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit {
   /** Volta para a página que exigiu login, aceitando apenas caminhos internos do app. */
   private destinoAposLogin(): string {
     const retorno = this.route.snapshot.queryParamMap.get('returnUrl');
-    return retorno && retorno.startsWith('/') && !retorno.startsWith('//') ? retorno : '/dashboard';
+    return retorno && retorno.startsWith('/') && !retorno.startsWith('//') ? retorno : '/explorar';
   }
 
   private mostrarErro(mensagem: string): void {

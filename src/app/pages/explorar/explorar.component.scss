@@ -1,21 +1,53 @@
-/* Feed em coluna única, sem cartões: cada postagem é uma linha separada por um filete fino. */
-$largura-do-feed: 600px;
-
+/* Feed em coluna única, sem cartões: cada postagem é uma linha separada por um filete fino.
+   Medidas por faixa de largura (mobile first), definidas como variáveis para o resto do arquivo:
+     até 359px  celular estreito: tudo mais justo
+     360-599px  celular: coluna ocupa a tela, sem bordas laterais
+     600-1023px tablet: coluna de 600px centralizada, com bordas
+     1024-1439  desktop: coluna de 680px, foto e texto maiores
+     1440+      tela larga: coluna de 720px */
 .feed {
-  max-width: $largura-do-feed;
+  --feed-largura: 100%;
+  --post-espaco: 16px;
+  --post-intervalo: 12px;
+  --foto-tamanho: 40px;
+  --texto-tamanho: 0.95rem;
+  --titulo-tamanho: 1.05rem;
+
+  max-width: var(--feed-largura);
   min-height: 70vh;
   margin: 0 auto;
-  border-inline: 1px solid var(--header-border);
 
-  @media (max-width: 600px) {
-    border-inline: none;
+  @media (max-width: 359px) {
+    --post-espaco: 12px;
+    --post-intervalo: 10px;
+    --foto-tamanho: 36px;
+    --texto-tamanho: 0.9rem;
+    --titulo-tamanho: 1rem;
+  }
+
+  @media (min-width: 600px) {
+    --feed-largura: 600px;
+    border-inline: 1px solid var(--header-border);
+  }
+
+  @media (min-width: 1024px) {
+    --feed-largura: 680px;
+    --post-espaco: 20px;
+    --post-intervalo: 16px;
+    --foto-tamanho: 48px;
+    --texto-tamanho: 1rem;
+    --titulo-tamanho: 1.15rem;
+  }
+
+  @media (min-width: 1440px) {
+    --feed-largura: 720px;
   }
 }
 
 .post {
   display: flex;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--post-intervalo);
+  padding: var(--post-espaco);
   border-bottom: 1px solid var(--header-border);
   transition: background-color 0.15s ease;
 
@@ -26,8 +58,8 @@ $largura-do-feed: 600px;
 
 .foto-perfil {
   flex: none;
-  width: 40px;
-  height: 40px;
+  width: var(--foto-tamanho);
+  height: var(--foto-tamanho);
   border-radius: 50%;
   object-fit: cover;
 }
@@ -58,7 +90,7 @@ $largura-do-feed: 600px;
 
 .post-titulo {
   margin: 4px 0 2px;
-  font-size: 1.05rem;
+  font-size: var(--titulo-tamanho);
   font-weight: 700;
   line-height: 1.35;
   color: var(--text-color);
@@ -67,7 +99,7 @@ $largura-do-feed: 600px;
 
 .texto-postagem {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: var(--texto-tamanho);
   line-height: 1.5;
   color: var(--text-color);
   white-space: pre-line;

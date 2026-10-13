@@ -46,14 +46,14 @@ describe('LoginComponent', () => {
     expect(component.submitted).toBeTrue();
   });
 
-  it('salva a sessão e vai para o dashboard', () => {
+  it('salva a sessão e vai direto para o feed', () => {
     auth.login.and.returnValue(of(resposta));
     iniciar();
 
     entrar();
 
     expect(auth.saveAuthData).toHaveBeenCalledWith(resposta);
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/explorar');
   });
 
   it('volta para a página que exigiu o login', () => {
@@ -74,7 +74,7 @@ describe('LoginComponent', () => {
 
       entrar();
 
-      expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/explorar');
     }
   });
 

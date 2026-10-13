@@ -21,6 +21,11 @@ export class DashboardHeaderComponent {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
+  /** Fecha o painel do celular; chamado ao tocar num item para a página nova não ficar coberta. */
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
   toggleTheme(): void {
     this.themeService.toggleTheme();
   }
