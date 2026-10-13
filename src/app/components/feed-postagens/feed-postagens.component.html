@@ -38,9 +38,9 @@
         </header>
 
         @if (postagem.titulo) {
-          <h3 class="post-titulo"><a [routerLink]="['/postagens', postagem.id]">{{ postagem.titulo }}</a></h3>
+          <h3 class="post-titulo" [style.font-family]="pilhaDe(postagem.fonte)" [style.font-weight]="pesoDoTituloDe(postagem.fonte)"><a [routerLink]="['/postagens', postagem.id]">{{ postagem.titulo }}</a></h3>
         }
-        <p class="texto-postagem" [class.resumido]="postagem.resumido">{{ postagem.texto }}</p>
+        <p class="texto-postagem" [class.resumido]="postagem.resumido" [style.font-family]="pilhaDe(postagem.fonte)">{{ postagem.texto }}</p>
         @if (postagem.resumido) {
           <a class="ler-mais" [routerLink]="['/postagens', postagem.id]">Ler mais</a>
         }

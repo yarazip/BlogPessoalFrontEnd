@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
 import { PostagemFormComponent } from './postagem-form.component';
@@ -9,6 +10,7 @@ import { PostagemFormComponent } from './postagem-form.component';
 describe('PostagemFormComponent', () => {
   let postagens: jasmine.SpyObj<PostagemService>;
   let temas: jasmine.SpyObj<TemaService>;
+  let fontes: jasmine.SpyObj<FonteService>;
   let router: jasmine.SpyObj<Router>;
   let fixture: ComponentFixture<PostagemFormComponent>;
 
@@ -18,6 +20,7 @@ describe('PostagemFormComponent', () => {
       providers: [
         { provide: PostagemService, useValue: postagens },
         { provide: TemaService, useValue: temas },
+        { provide: FonteService, useValue: fontes },
         { provide: Router, useValue: router },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } } }
       ]
@@ -30,6 +33,7 @@ describe('PostagemFormComponent', () => {
   beforeEach(() => {
     postagens = jasmine.createSpyObj('PostagemService', ['create', 'update', 'getById']);
     temas = jasmine.createSpyObj('TemaService', ['getAll']);
+    fontes = jasmine.createSpyObj('FonteService', ['carregar', 'carregarTodas']);
     temas.getAll.and.returnValue(of([{ id: 2, descricao: 'Java' }]));
     router = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'], { events: of() });
   });
@@ -69,7 +73,7 @@ describe('PostagemFormComponent', () => {
   it('cria a postagem enviando idTema', () => {
     postagens.create.and.returnValue(of({ id: 9, titulo: 't', texto: 'x' }));
     const c = criar();
-    c.postagemForm.setValue({ titulo: 'Título ok', texto: 'Texto com tamanho válido', temaId: 2 });
+    c.postagemForm.setValue({ titulo: 'Título ok', texto: 'Texto com tamanho válido', temaId: 2, fonte: null });
 
     c.onSubmit();
 
@@ -77,7 +81,8 @@ describe('PostagemFormComponent', () => {
       tipo: 'BLOG',
       titulo: 'Título ok',
       texto: 'Texto com tamanho válido',
-      idTema: 2
+      idTema: 2,
+      fonte: null
     });
     expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
   });
@@ -90,7 +95,7 @@ describe('PostagemFormComponent', () => {
     const c = criar('5');
 
     expect(c.isEdit).toBeTrue();
-    expect(c.postagemForm.getRawValue()).toEqual({ titulo: 'Antigo título', texto: 'Texto antigo válido', temaId: 2 });
+    expect(c.postagemForm.getRawValue()).toEqual({ titulo: 'Antigo título', texto: 'Texto antigo válido', temaId: 2, fonte: null });
 
     c.postagemForm.patchValue({ titulo: 'Novo título' });
     c.onSubmit();
@@ -99,7 +104,111 @@ describe('PostagemFormComponent', () => {
       tipo: 'BLOG',
       titulo: 'Novo título',
       texto: 'Texto antigo válido',
-      idTema: 2
+      idTema: 2,
+      fonte: null
+    });
+  });
+
+  describe('fonte do rascunho', () => {
+    const opcoes = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.fonte-opcao'));
+
+    it('oferece a fonte padrão do site e as 7 fontes, cada uma mostrada na própria fonte', () => {
+      criar();
+      fixture.detectChanges();
+
+      expect(opcoes().length).toBe(8);
+      expect(opcoes()[0].textContent).toContain('Padrão do site');
+      const nomes = opcoes().slice(1).map(o => o.querySelector('.fonte-nome')!.textContent!.trim());
+      expect(nomes).toEqual(['Instrument Serif', 'Fraunces', 'Righteous', 'Rye', 'Mea Culpa', 'Rubik Vinyl', 'Rampart One']);
+      expect((opcoes()[4].querySelector('.fonte-nome') as HTMLElement).style.fontFamily).toContain('Rye');
+    });
+
+    it('começa na fonte padrão do site', () => {
+      const c = criar();
+      fixture.detectChanges();
+
+      expect(c.fonte.value).toBeNull();
+      expect(opcoes()[0].classList).toContain('escolhida');
+    });
+
+    it('pede ao serviço as fontes ao abrir o formulário de um rascunho novo', () => {
+      criar();
+
+      expect(fontes.carregarTodas).toHaveBeenCalledTimes(1);
+    });
+
+    it('escolher uma fonte envia a fonte junto com o rascunho', () => {
+      postagens.create.and.returnValue(of({ id: 9, titulo: 't', texto: 'x' }));
+      const c = criar();
+      c.postagemForm.setValue({ titulo: 'Título ok', texto: 'Texto com tamanho válido', temaId: 2, fonte: 'RYE' });
+
+      c.onSubmit();
+
+      expect(postagens.create).toHaveBeenCalledOnceWith({
+        tipo: 'BLOG',
+        titulo: 'Título ok',
+        texto: 'Texto com tamanho válido',
+        idTema: 2,
+        fonte: 'RYE'
+      });
+    });
+
+    it('clicar numa opção escolhe a fonte e marca a opção', () => {
+      const c = criar();
+      fixture.detectChanges();
+
+      (opcoes()[2].querySelector('input') as HTMLInputElement).click();
+      fixture.detectChanges();
+
+      expect(c.fonte.value).toBe('FRAUNCES');
+      expect(opcoes()[2].classList).toContain('escolhida');
+      expect(opcoes()[0].classList).not.toContain('escolhida');
+    });
+
+    it('o que se digita já aparece na fonte escolhida (prévia ao vivo)', () => {
+      const c = criar();
+      c.fonte.setValue('MEA_CULPA');
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+
+      expect((el.querySelector('#titulo') as HTMLElement).style.fontFamily).toContain('Mea Culpa');
+      expect((el.querySelector('#texto') as HTMLElement).style.fontFamily).toContain('Mea Culpa');
+
+      c.fonte.setValue(null);
+      fixture.detectChanges();
+      expect((el.querySelector('#titulo') as HTMLElement).style.fontFamily).toBe('');
+    });
+
+    it('na edição, carrega a fonte já escolhida e a mantém ao salvar', () => {
+      postagens.getById.and.returnValue(
+        of({ id: 5, tipo: 'BLOG', titulo: 'Antigo título', texto: 'Texto antigo válido', tema: { id: 2, descricao: 'Java' }, fonte: 'RAMPART_ONE' })
+      );
+      postagens.update.and.returnValue(of({ id: 5, titulo: 't', texto: 'x' }));
+      const c = criar('5');
+
+      expect(c.fonte.value).toBe('RAMPART_ONE');
+      expect(fontes.carregarTodas).toHaveBeenCalled();
+
+      c.onSubmit();
+
+      expect(postagens.update).toHaveBeenCalledOnceWith(5, jasmine.objectContaining({ tipo: 'BLOG', fonte: 'RAMPART_ONE' }));
+    });
+
+    it('um rascunho sem fonte (o padrão do site) volta como nulo na edição', () => {
+      postagens.getById.and.returnValue(
+        of({ id: 5, tipo: 'BLOG', titulo: 'Antigo título', texto: 'Texto antigo válido', tema: { id: 2, descricao: 'Java' } })
+      );
+
+      expect(criar('5').fonte.value).toBeNull();
+    });
+
+    it('o rabisco (comentário) não tem seletor de fonte nem baixa as fontes', () => {
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Comentário antigo', tema: null }));
+      criar('8');
+      fixture.detectChanges();
+
+      expect((fixture.nativeElement as HTMLElement).querySelector('.fonte-grupo')).toBeNull();
+      expect(fontes.carregarTodas).not.toHaveBeenCalled();
     });
   });
 
@@ -164,7 +273,7 @@ describe('PostagemFormComponent', () => {
       throwError(() => new HttpErrorResponse({ status: 400, error: { errors: { titulo: 'O título é obrigatório' } } }))
     );
     const c = criar();
-    c.postagemForm.setValue({ titulo: 'Título ok', texto: 'Texto com tamanho válido', temaId: 2 });
+    c.postagemForm.setValue({ titulo: 'Título ok', texto: 'Texto com tamanho válido', temaId: 2, fonte: null });
 
     c.onSubmit();
 

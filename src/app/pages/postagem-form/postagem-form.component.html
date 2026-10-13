@@ -17,6 +17,7 @@
         <input
           type="text"
           id="titulo"
+          [style.font-family]="pilhaDe(fonte.value)"
           formControlName="titulo"
           placeholder="Digite um título para sua postagem"
           [class.is-invalid]="titulo.invalid && (titulo.dirty || titulo.touched)"
@@ -41,6 +42,7 @@
           <label for="texto">{{ isComentario ? 'Rabisco' : 'Conteúdo' }} *</label>
           <textarea
             id="texto"
+            [style.font-family]="pilhaDe(fonte.value)"
             formControlName="texto"
             [attr.rows]="isComentario ? 3 : 14"
             [attr.maxlength]="limiteTexto"
@@ -87,6 +89,25 @@
             </div>
           }
         </div>
+
+        <fieldset class="form-group fonte-grupo">
+          <legend>Fonte</legend>
+          <p class="fonte-ajuda">O que você escrever aparece nessa fonte para quem ler.</p>
+          <div class="fonte-opcoes">
+            <label class="fonte-opcao" [class.escolhida]="fonte.value === null">
+              <input type="radio" formControlName="fonte" [value]="null" />
+              <span class="fonte-amostra">Aa</span>
+              <span class="fonte-nome">Padrão do site</span>
+            </label>
+            @for (f of fontes; track f.id) {
+              <label class="fonte-opcao" [class.escolhida]="fonte.value === f.id">
+                <input type="radio" formControlName="fonte" [value]="f.id" />
+                <span class="fonte-amostra" [style.font-family]="f.pilha">Aa</span>
+                <span class="fonte-nome" [style.font-family]="f.pilha">{{ f.nome }}</span>
+              </label>
+            }
+          </div>
+        </fieldset>
         }
 
         <div class="form-actions">
