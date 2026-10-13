@@ -4,8 +4,10 @@ import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
 import { ReacoesComponent } from '../reacoes/reacoes.component';
 import { AuthService } from '../../services/auth.service';
+import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
 import { Postagem } from '../../models/Postagem';
 
 const POSTAGENS_POR_PAGINA = 10;
@@ -25,6 +27,11 @@ const POSTAGENS_POR_PAGINA = 10;
 export class FeedPostagensComponent implements OnInit {
   private readonly postagemService = inject(PostagemService);
   private readonly authService = inject(AuthService);
+  private readonly fontes = inject(FonteService);
+
+  /** Para o template: a fonte escolhida pela autora (nulo = a padrão do site, sem estilo). */
+  readonly pilhaDe = pilhaDe;
+  readonly pesoDoTituloDe = pesoDoTituloDe;
 
   readonly autor = input<number>();
   readonly mensagemVazia = input('Ainda não há postagens.');
@@ -55,6 +62,7 @@ export class FeedPostagensComponent implements OnInit {
 
   /** Coloca uma postagem recém-criada no topo, sem recarregar a lista. */
   adicionarNoTopo(postagem: Postagem): void {
+    this.fontes.carregar(postagem.fonte);
     this.postagens = [postagem, ...this.postagens];
   }
 
@@ -99,6 +107,7 @@ export class FeedPostagensComponent implements OnInit {
 
     this.postagemService.getPagina(opcoes).subscribe({
       next: pagina => {
+        pagina.conteudo.forEach(p => this.fontes.carregar(p.fonte));
         this.postagens = [...this.postagens, ...pagina.conteudo];
         this.haMais = !pagina.ultima;
         this.proximaPagina = pagina.pagina + 1;

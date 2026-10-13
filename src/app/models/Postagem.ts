@@ -1,3 +1,4 @@
+import { FontePostagem } from './Fonte';
 import { Tema } from './Tema';
 import { Usuario } from './Usuario';
 
@@ -27,6 +28,8 @@ export interface Postagem {
   data?: Date | string;
   tema?: Tema | null;
   usuario?: Usuario;
+  /** Fonte escolhida pela autora (só no rascunho); ausente ou nula = a padrão do site. */
+  fonte?: FontePostagem | null;
   /** Ausentes em respostas antigas da API: contam como zero. */
   curtidas?: number;
   descurtidas?: number;
@@ -39,6 +42,8 @@ export interface PostagemRequest {
   titulo?: string;
   texto: string;
   idTema?: number;
+  /** Só no rascunho; nulo volta para a fonte padrão do site. */
+  fonte?: FontePostagem | null;
 }
 
 /** Limites do blog validados pela API (mantenha em sincronia com PostagemRequestDTO.LIMITES). */

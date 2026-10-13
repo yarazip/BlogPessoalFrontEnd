@@ -4,6 +4,7 @@ import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } fr
 import { Observable, of, throwError } from 'rxjs';
 import { Postagem } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
+import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { PostagemDetailComponent } from './postagem-detail.component';
 
@@ -12,6 +13,7 @@ describe('PostagemDetailComponent', () => {
   let el: HTMLElement;
   let service: jasmine.SpyObj<PostagemService>;
   let auth: jasmine.SpyObj<AuthService>;
+  let fontes: jasmine.SpyObj<FonteService>;
   let router: Router;
   // a rota é um objeto simples que cada teste ajusta antes de criar o componente
   let rota: { snapshot: { paramMap: ParamMap } };
@@ -39,6 +41,7 @@ describe('PostagemDetailComponent', () => {
     rota = { snapshot: { paramMap: convertToParamMap({}) } };
     service = jasmine.createSpyObj('PostagemService', ['getById', 'delete']);
     auth = jasmine.createSpyObj('AuthService', ['getUsuario']);
+    fontes = jasmine.createSpyObj('FonteService', ['carregar', 'carregarTodas']);
     auth.getUsuario.and.returnValue(null);
     TestBed.configureTestingModule({
       imports: [PostagemDetailComponent],
@@ -46,6 +49,7 @@ describe('PostagemDetailComponent', () => {
         provideRouter([]),
         { provide: PostagemService, useValue: service },
         { provide: AuthService, useValue: auth },
+        { provide: FonteService, useValue: fontes },
         { provide: ActivatedRoute, useValue: rota }
       ]
     });
@@ -62,6 +66,22 @@ describe('PostagemDetailComponent', () => {
     expect(el.querySelector('.detalhe-data')!.textContent).toBe('09/10/2026 15:30');
     expect(el.querySelector('.detalhe-tema')!.textContent).toBe('#Tecnologia');
     expect(el.querySelector('.detalhe-texto')!.textContent).toBe('Linha 1\nLinha 2 do texto completo');
+  });
+
+  it('o rascunho aparece na fonte escolhida pela autora e a fonte é pedida ao serviço', () => {
+    abrir('7', of(blog({ fonte: 'FRAUNCES' })));
+
+    expect((el.querySelector('.detalhe-titulo') as HTMLElement).style.fontFamily).toContain('Fraunces');
+    expect((el.querySelector('.detalhe-titulo') as HTMLElement).style.fontWeight).toBe('700');
+    expect((el.querySelector('.detalhe-texto') as HTMLElement).style.fontFamily).toContain('Fraunces');
+    expect(fontes.carregar).toHaveBeenCalledWith('FRAUNCES');
+  });
+
+  it('sem fonte escolhida, vale o visual padrão do site', () => {
+    abrir('7', of(blog({ fonte: null })));
+
+    expect((el.querySelector('.detalhe-titulo') as HTMLElement).style.fontFamily).toBe('');
+    expect((el.querySelector('.detalhe-texto') as HTMLElement).style.fontFamily).toBe('');
   });
 
   it('mostra os botões de curtir e descurtir com os totais', () => {

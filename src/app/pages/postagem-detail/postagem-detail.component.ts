@@ -4,8 +4,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { AuthService } from '../../services/auth.service';
+import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
 import { Postagem } from '../../models/Postagem';
 
 @Component({
@@ -18,6 +20,11 @@ import { Postagem } from '../../models/Postagem';
 export class PostagemDetailComponent implements OnInit {
   private readonly postagemService = inject(PostagemService);
   private readonly authService = inject(AuthService);
+  private readonly fontes = inject(FonteService);
+
+  /** Para o template: a fonte escolhida pela autora (nulo = a padrão do site, sem estilo). */
+  readonly pilhaDe = pilhaDe;
+  readonly pesoDoTituloDe = pesoDoTituloDe;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -42,6 +49,7 @@ export class PostagemDetailComponent implements OnInit {
 
     this.postagemService.getById(id).subscribe({
       next: postagem => {
+        this.fontes.carregar(postagem.fonte);
         this.postagem = postagem;
         this.isLoading = false;
       },

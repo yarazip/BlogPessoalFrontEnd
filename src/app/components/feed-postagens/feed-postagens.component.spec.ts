@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { Pagina } from '../../models/Pagina';
 import { Postagem } from '../../models/Postagem';
@@ -42,6 +43,7 @@ describe('FeedPostagensComponent', () => {
   let fixture: ComponentFixture<FeedPostagensComponent>;
   let service: jasmine.SpyObj<PostagemService>;
   let auth: jasmine.SpyObj<AuthService>;
+  let fontes: jasmine.SpyObj<FonteService>;
 
   const postagem = (texto: string, id = 1): Postagem => ({
     id,
@@ -71,6 +73,7 @@ describe('FeedPostagensComponent', () => {
     ObservadorFalso.instancias = [];
     service = jasmine.createSpyObj('PostagemService', ['getPagina', 'delete']);
     auth = jasmine.createSpyObj('AuthService', ['getUsuario']);
+    fontes = jasmine.createSpyObj('FonteService', ['carregar', 'carregarTodas']);
     auth.getUsuario.and.returnValue(null);
     TestBed.configureTestingModule({
       imports: [FeedPostagensComponent],
@@ -78,6 +81,7 @@ describe('FeedPostagensComponent', () => {
         roteador,
         { provide: PostagemService, useValue: service },
         { provide: AuthService, useValue: auth },
+        { provide: FonteService, useValue: fontes },
         { provide: OBSERVADOR_DE_INTERSECAO, useValue: ObservadorFalso as unknown as typeof IntersectionObserver }
       ]
     });
@@ -180,6 +184,40 @@ describe('FeedPostagensComponent', () => {
 
       const textos = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.texto-postagem')).map(t => t.textContent);
       expect(textos).toEqual(['novinho', 'antigo']);
+    });
+  });
+
+  describe('fonte do rascunho', () => {
+    const blogCom = (fonte: Postagem['fonte'], id = 5): Postagem => ({
+      id, tipo: 'BLOG', titulo: 'Título do rascunho', texto: 'Texto do rascunho', fonte, usuario: { id: 1, nome: 'Ana' }
+    });
+    const titulo = (el: HTMLElement) => el.querySelector('.post-titulo') as HTMLElement;
+    const texto = (el: HTMLElement) => el.querySelector('.texto-postagem') as HTMLElement;
+
+    it('o título e o texto aparecem na fonte escolhida pela autora', () => {
+      const el = criar(of(pagina([blogCom('MEA_CULPA')], 0, true)));
+
+      expect(titulo(el).style.fontFamily).toContain('Mea Culpa');
+      expect(texto(el).style.fontFamily).toContain('Mea Culpa');
+    });
+
+    it('fontes de peso único mostram o título sem negrito sintetizado; a Fraunces usa o negrito de verdade', () => {
+      expect(titulo(criar(of(pagina([blogCom('RYE')], 0, true)))).style.fontWeight).toBe('400');
+      expect(titulo(criar(of(pagina([blogCom('FRAUNCES', 6)], 0, true)))).style.fontWeight).toBe('700');
+    });
+
+    it('sem fonte escolhida, nenhum estilo é aplicado e vale o visual padrão do site', () => {
+      const el = criar(of(pagina([blogCom(null)], 0, true)));
+
+      expect(titulo(el).style.fontFamily).toBe('');
+      expect(titulo(el).style.fontWeight).toBe('');
+      expect(texto(el).style.fontFamily).toBe('');
+    });
+
+    it('pede ao serviço cada fonte usada na página', () => {
+      criar(of(pagina([blogCom('RYE', 1), blogCom('FRAUNCES', 2), blogCom(null, 3)], 0, true)));
+
+      expect(fontes.carregar.calls.allArgs()).toEqual([['RYE'], ['FRAUNCES'], [null]]);
     });
   });
 

@@ -2,9 +2,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { FONTES, FontePostagem, pilhaDe } from '../../models/Fonte';
 import { LIMITE_COMENTARIO, LIMITES_POSTAGEM, PostagemRequest } from '../../models/Postagem';
 import { Tema } from '../../models/Tema';
 
@@ -22,14 +24,20 @@ export class PostagemFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  private readonly fonteService = inject(FonteService);
+
   readonly limites = LIMITES_POSTAGEM;
+  readonly fontes = FONTES;
+  readonly pilhaDe = pilhaDe;
   readonly limiteComentario = LIMITE_COMENTARIO;
 
   // os limites são os mesmos validados pela API; divergir faz o envio falhar com 400
   readonly postagemForm = this.fb.group({
     titulo: ['', [Validators.required, Validators.minLength(LIMITES_POSTAGEM.tituloMin), Validators.maxLength(LIMITES_POSTAGEM.tituloMax)]],
     texto: ['', [Validators.required, Validators.minLength(LIMITES_POSTAGEM.textoMin), Validators.maxLength(LIMITES_POSTAGEM.textoMax)]],
-    temaId: this.fb.control<number | null>(null, Validators.required)
+    temaId: this.fb.control<number | null>(null, Validators.required),
+    // só o rascunho (blog) escolhe fonte; nulo = a padrão do site
+    fonte: this.fb.control<FontePostagem | null>(null)
   });
 
   isEdit = false;
@@ -55,6 +63,9 @@ export class PostagemFormComponent implements OnInit {
   get temaId() {
     return this.postagemForm.controls.temaId;
   }
+  get fonte() {
+    return this.postagemForm.controls.fonte;
+  }
 
   ngOnInit(): void {
     this.carregarTemas();
@@ -64,6 +75,8 @@ export class PostagemFormComponent implements OnInit {
       this.isEdit = true;
       this.postagemId = id;
       this.carregarPostagem(id);
+    } else {
+      this.fonteService.carregarTodas(); // o seletor mostra cada opção na própria fonte
     }
   }
 
@@ -77,11 +90,11 @@ export class PostagemFormComponent implements OnInit {
       return;
     }
 
-    const { titulo, texto, temaId } = this.postagemForm.getRawValue();
+    const { titulo, texto, temaId, fonte } = this.postagemForm.getRawValue();
     // a criação por aqui é sempre de blog (comentários nascem na caixa do feed); a edição mantém o tipo
     const dados: PostagemRequest = this.isComentario
       ? { tipo: 'COMENTARIO', texto: texto! }
-      : { tipo: 'BLOG', titulo: titulo!, texto: texto!, idTema: temaId! };
+      : { tipo: 'BLOG', titulo: titulo!, texto: texto!, idTema: temaId!, fonte };
 
     this.isLoading = true;
     this.errorMessage = null;
@@ -126,11 +139,14 @@ export class PostagemFormComponent implements OnInit {
       next: postagem => {
         if (postagem.tipo === 'COMENTARIO') {
           this.usarRegrasDeComentario();
+        } else {
+          this.fonteService.carregarTodas();
         }
         this.postagemForm.patchValue({
           titulo: postagem.titulo ?? '',
           texto: postagem.texto,
-          temaId: postagem.tema?.id ?? null
+          temaId: postagem.tema?.id ?? null,
+          fonte: postagem.fonte ?? null
         });
         this.isLoading = false;
       },

@@ -21,10 +21,10 @@
     </header>
 
     @if (postagem.titulo) {
-      <h1 class="detalhe-titulo">{{ postagem.titulo }}</h1>
+      <h1 class="detalhe-titulo" [style.font-family]="pilhaDe(postagem.fonte)" [style.font-weight]="pesoDoTituloDe(postagem.fonte)">{{ postagem.titulo }}</h1>
     }
 
-    <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'">{{ postagem.texto }}</div>
+    <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'" [style.font-family]="pilhaDe(postagem.fonte)">{{ postagem.texto }}</div>
 
     @if (postagem.tema) {
       <span class="detalhe-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
