@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { paraMeuPerfil } from './guards/meu-perfil';
 
 export const routes: Routes = [
   {
@@ -35,22 +36,22 @@ export const routes: Routes = [
     title: 'Rasura - Insights'
   },
   {
+    // atalho para a própria página: leva ao perfil de quem está logado (ou ao login, voltando depois)
     path: 'perfil',
-    loadComponent: () => import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
-    canActivate: [authGuard],
-    title: 'Rasura - Perfil'
+    pathMatch: 'full',
+    redirectTo: paraMeuPerfil('/perfil')
   },
   {
-    // perfil público de qualquer pessoa: sem guarda, qualquer um pode ver
+    // o perfil é uma página só, com as postagens da pessoa; público, sem guarda
     path: 'perfil/:id',
-    loadComponent: () => import('./pages/perfil-publico/perfil-publico.component').then(m => m.PerfilPublicoComponent),
+    loadComponent: () => import('./pages/perfil/perfil.component').then(m => m.PerfilComponent),
     title: 'Rasura - Perfil'
   },
   {
+    // antiga "Minhas postagens": agora vive dentro do perfil
     path: 'postagens',
-    loadComponent: () => import('./pages/postagem-list/postagem-list.component').then(m => m.PostagemListComponent),
-    canActivate: [authGuard],
-    title: 'Rasura - Postagens'
+    pathMatch: 'full',
+    redirectTo: paraMeuPerfil('/postagens')
   },
   {
     path: 'postagens/nova',

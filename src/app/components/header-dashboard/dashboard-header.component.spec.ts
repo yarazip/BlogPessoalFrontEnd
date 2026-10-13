@@ -9,7 +9,8 @@ describe('DashboardHeaderComponent', () => {
 
   beforeEach(() => {
     localStorage.clear();
-    auth = jasmine.createSpyObj('AuthService', ['logout']);
+    auth = jasmine.createSpyObj('AuthService', ['logout', 'getUsuario']);
+    auth.getUsuario.and.returnValue({ id: 24 });
     TestBed.configureTestingModule({
       imports: [DashboardHeaderComponent],
       providers: [provideRouter([]), { provide: AuthService, useValue: auth }]
@@ -19,10 +20,10 @@ describe('DashboardHeaderComponent', () => {
     el = fixture.nativeElement;
   });
 
-  it('o menu começa pelo Feed e deixa Insights por último', () => {
+  it('o menu começa pelo Feed, tem o Perfil (com as postagens dentro) e deixa Insights por último', () => {
     const itens = Array.from(el.querySelectorAll<HTMLAnchorElement>('.nav-links a')).map(a => a.getAttribute('href'));
 
-    expect(itens).toEqual(['/explorar', '/postagens', '/perfil', '/dashboard']);
+    expect(itens).toEqual(['/explorar', '/perfil/24', '/dashboard']);
   });
 
   it('o logo leva ao feed, não à página de entrada pública', () => {

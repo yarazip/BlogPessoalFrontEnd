@@ -18,6 +18,11 @@ export class DashboardHeaderComponent {
 
   isMobileMenuOpen = false;
 
+  /** Id de quem está logado, para o link do próprio perfil (a página guarda perfil e postagens juntos). */
+  get idDoUsuario(): number | string {
+    return this.authService.getUsuario()?.id ?? '';
+  }
+
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }

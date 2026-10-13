@@ -1,71 +1,138 @@
-import { IconComponent } from '../../shared/icon/icon.component';
-
 import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { LIMITE_BIO } from '../../models/Perfil';
-import { AuthService, Usuario } from '../../services/auth.service';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CompositorComentarioComponent } from '../../components/compositor-comentario/compositor-comentario.component';
+import { FeedPostagensComponent } from '../../components/feed-postagens/feed-postagens.component';
+import { LIMITE_BIO, Perfil } from '../../models/Perfil';
+import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
+import { TAMANHO_MAXIMO_FOTO, TIPOS_FOTO_PERMITIDOS } from '../../shared/foto';
+import { IconComponent } from '../../shared/icon/icon.component';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 
-/** Formatos aceitos pela API (SVG fica de fora de propósito: pode conter scripts). */
-export const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
-export const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
-
+/**
+ * A página da pessoa: foto, nome, bio, quantidade de postagens e as postagens dela. É pública. Quando o
+ * perfil é o de quem está logado, a mesma página vira o lugar de editar: troca de foto, edição da bio,
+ * atalho para um rascunho novo, caixa de rabisco e o menu de três pontinhos em cada postagem.
+ */
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [IconComponent, ReactiveFormsModule, RouterLink],
+  imports: [FeedPostagensComponent, CompositorComentarioComponent, IconComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
 export class PerfilComponent implements OnInit {
-  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
   private readonly perfilService = inject(PerfilService);
+  private readonly authService = inject(AuthService);
 
+  readonly fotoPadrao = 'assets/img/sem-foto.svg';
   readonly limiteBio = LIMITE_BIO;
+  readonly tiposDeFoto = TIPOS_FOTO_PERMITIDOS.join(',');
+
   // mesmo limite validado pela API (BioRequestDTO); texto vazio apaga a bio
   readonly bio = new FormControl('', { nonNullable: true, validators: [Validators.maxLength(LIMITE_BIO)] });
   // o <form> precisa de um FormGroup: é ele que faz o Angular impedir o envio nativo (recarregar a página)
   readonly bioForm = new FormGroup({ bio: this.bio });
 
-  usuario: Usuario | null = null;
-  enviando = false;
+  perfil: Perfil | null = null;
+  carregando = true;
   mensagemErro: string | null = null;
+
+  editandoBio = false;
   salvandoBio = false;
-  bioSalva = false;
   erroBio: string | null = null;
 
-  ngOnInit(): void {
-    this.usuario = this.authService.getUsuario();
-    this.carregarBio();
+  enviandoFoto = false;
+  erroFoto: string | null = null;
+
+  /** O perfil aberto é o de quem está logado: aparecem as ações de edição. */
+  get ehOProprioPerfil(): boolean {
+    return this.perfil !== null && this.authService.isLoggedIn() && this.authService.getUsuario()?.id === this.perfil.id;
   }
 
-  /** A bio não fica na sessão (localStorage); vem do perfil público. Se falhar, o campo fica vazio. */
-  private carregarBio(): void {
-    if (!this.usuario) {
+  /** O e-mail não vem do perfil público (é dado pessoal); só a própria pessoa o vê, da sessão. */
+  get emailDaSessao(): string | null {
+    return this.ehOProprioPerfil ? (this.authService.getUsuario()?.email ?? null) : null;
+  }
+
+  get mensagemDeListaVazia(): string {
+    return this.ehOProprioPerfil
+      ? 'Você ainda não publicou nada. Faça um rabisco acima ou escreva um rascunho.'
+      : 'Esta pessoa ainda não publicou nada.';
+  }
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => this.carregar(Number(params.get('id'))));
+  }
+
+  carregar(id: number): void {
+    this.perfil = null;
+    this.mensagemErro = null;
+    this.editandoBio = false;
+    this.erroFoto = null;
+
+    if (!Number.isInteger(id) || id <= 0) {
+      this.carregando = false;
+      this.mensagemErro = 'Perfil não encontrado.';
       return;
     }
-    this.perfilService.getPerfil(this.usuario.id).subscribe({
-      next: perfil => this.bio.setValue(perfil.bio ?? ''),
-      error: () => this.bio.setValue('')
+
+    this.carregando = true;
+    this.perfilService.getPerfil(id).subscribe({
+      next: perfil => {
+        this.perfil = perfil;
+        this.carregando = false;
+      },
+      error: erro => {
+        this.mensagemErro = erro?.status === 404 ? 'Perfil não encontrado.' : mensagemDeErro(erro, 'Não foi possível carregar o perfil.');
+        this.carregando = false;
+      }
     });
   }
 
+  // ---- contagem de postagens (acompanha o que a pessoa publica e apaga nesta mesma página)
+
+  aoPublicar(): void {
+    this.somarPostagens(1);
+  }
+
+  aoRemover(): void {
+    this.somarPostagens(-1);
+  }
+
+  private somarPostagens(delta: number): void {
+    if (this.perfil) {
+      this.perfil = { ...this.perfil, totalPostagens: Math.max(0, this.perfil.totalPostagens + delta) };
+    }
+  }
+
+  // ---- bio
+
+  editarBio(): void {
+    this.bio.setValue(this.perfil?.bio ?? '');
+    this.erroBio = null;
+    this.editandoBio = true;
+  }
+
+  cancelarBio(): void {
+    this.editandoBio = false;
+    this.erroBio = null;
+  }
+
   salvarBio(): void {
-    if (!this.usuario || this.bio.invalid || this.salvandoBio) {
+    if (!this.perfil || this.bio.invalid || this.salvandoBio) {
       return;
     }
 
     this.salvandoBio = true;
-    this.bioSalva = false;
     this.erroBio = null;
 
-    this.perfilService.atualizarBio(this.usuario.id, this.bio.value).subscribe({
+    this.perfilService.atualizarBio(this.perfil.id, this.bio.value).subscribe({
       next: perfil => {
-        this.bio.setValue(perfil.bio ?? '');
-        this.bio.markAsPristine();
-        this.bioSalva = true;
+        this.perfil = { ...this.perfil!, bio: perfil.bio ?? null };
+        this.editandoBio = false;
         this.salvandoBio = false;
       },
       error: erro => {
@@ -75,34 +142,36 @@ export class PerfilComponent implements OnInit {
     });
   }
 
+  // ---- foto
+
   onFileSelected(evento: Event): void {
     const entrada = evento.target as HTMLInputElement;
     const arquivo = entrada.files?.[0];
     entrada.value = ''; // permite escolher o mesmo arquivo de novo depois de um erro
-    this.mensagemErro = null;
+    this.erroFoto = null;
 
-    if (!arquivo || !this.usuario) {
+    if (!arquivo || !this.perfil) {
       return;
     }
     if (!TIPOS_FOTO_PERMITIDOS.includes(arquivo.type)) {
-      this.mensagemErro = 'Formato não suportado. Envie JPG, PNG, WEBP, GIF ou AVIF.';
+      this.erroFoto = 'Formato não suportado. Envie JPG, PNG, WEBP, GIF ou AVIF.';
       return;
     }
     if (arquivo.size > TAMANHO_MAXIMO_FOTO) {
-      this.mensagemErro = 'Arquivo muito grande. O tamanho máximo permitido é 5MB.';
+      this.erroFoto = 'Arquivo muito grande. O tamanho máximo permitido é 5MB.';
       return;
     }
 
-    this.enviando = true;
-    this.authService.atualizarFoto(this.usuario.id, arquivo).subscribe({
+    this.enviandoFoto = true;
+    this.authService.atualizarFoto(this.perfil.id, arquivo).subscribe({
       next: resposta => {
-        this.usuario = { ...this.usuario!, foto: resposta.foto };
+        this.perfil = { ...this.perfil!, foto: resposta.foto };
         this.authService.updateUsuario({ foto: resposta.foto });
-        this.enviando = false;
+        this.enviandoFoto = false;
       },
       error: erro => {
-        this.mensagemErro = mensagemDeErro(erro, 'Não foi possível atualizar a foto. Tente novamente.');
-        this.enviando = false;
+        this.erroFoto = mensagemDeErro(erro, 'Não foi possível atualizar a foto. Tente novamente.');
+        this.enviandoFoto = false;
       }
     });
   }
