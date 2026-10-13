@@ -20,6 +20,7 @@ const ICONES = {
   'arrow-left': 'arrow-left',
   camera: 'camera',
   edit: 'pen-to-square',
+  ellipsis: 'ellipsis',
   envelope: 'envelope',
   github: 'brands/github',
   linkedin: 'brands/linkedin',

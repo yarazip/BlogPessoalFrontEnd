@@ -1,0 +1,20 @@
+<div class="menu-postagem">
+  <button
+    #botao
+    type="button"
+    class="menu-botao"
+    aria-haspopup="menu"
+    [attr.aria-expanded]="aberto"
+    [attr.aria-label]="nomeDoBotao"
+    (click)="alternar()"
+  >
+    <app-icon name="ellipsis" />
+  </button>
+
+  @if (aberto) {
+    <div class="menu-lista" role="menu">
+      <a #item role="menuitem" class="menu-item" [routerLink]="['/postagens', postagemId(), 'editar']" (click)="fechar()">Editar</a>
+      <button #item type="button" role="menuitem" class="menu-item menu-item-perigo" (click)="pedirExclusao()">Excluir</button>
+    </div>
+  }
+</div>

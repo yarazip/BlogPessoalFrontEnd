@@ -1,0 +1,64 @@
+.menu-postagem {
+  position: relative;
+}
+
+.menu-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible,
+  &[aria-expanded='true'] {
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+  }
+}
+
+.menu-lista {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  padding: 6px;
+  border: 1px solid var(--header-border);
+  border-radius: 12px;
+  background-color: var(--bg-color);
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+.menu-item {
+  display: block;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--secondary-color);
+    outline: none;
+  }
+}
+
+.menu-item-perigo {
+  color: #d93025;
+}
