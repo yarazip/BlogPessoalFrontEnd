@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, OnInit, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
@@ -36,6 +36,8 @@ export class FeedPostagensComponent implements OnInit {
 
   readonly autor = input<number>();
   readonly mensagemVazia = input('Ainda não há postagens.');
+  /** Avisa a página que uma postagem foi excluída daqui (ex.: o perfil atualiza a contagem). */
+  readonly removida = output<Postagem>();
 
   postagens: Postagem[] = [];
   isLoading = true;
@@ -85,6 +87,7 @@ export class FeedPostagensComponent implements OnInit {
     this.postagemService.delete(postagem.id).subscribe({
       next: () => {
         this.postagens = this.postagens.filter(p => p.id !== postagem.id);
+        this.removida.emit(postagem);
       },
       error: erro => {
         this.erroAcao = mensagemDeErro(erro, 'Não foi possível excluir a postagem.');

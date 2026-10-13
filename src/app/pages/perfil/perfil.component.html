@@ -1,53 +1,80 @@
-@if (usuario) {
-  <div class="profile-container">
-    <div class="profile-header">
-      <div class="profile-avatar">
-        <img [src]="usuario.foto || 'assets/img/sem-foto.svg'" alt="Foto de {{ usuario.nome }}" />
-        <label class="edit-avatar-btn" title="Alterar foto">
-          <input
-            type="file"
-            hidden
-            accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-            [disabled]="enviando"
-            (change)="onFileSelected($event)"
-            />
+@if (carregando) {
+  <p class="perfil-aviso">Carregando perfil...</p>
+}
+
+@if (mensagemErro) {
+  <div class="perfil-aviso" role="alert">
+    <p>{{ mensagemErro }}</p>
+    <a routerLink="/explorar">Voltar ao feed</a>
+  </div>
+}
+
+@if (perfil) {
+  <app-feed-postagens #feed [autor]="perfil.id" [mensagemVazia]="mensagemDeListaVazia" (removida)="aoRemover()">
+    <header class="perfil-topo">
+      <div class="perfil-foto-area">
+        <img class="perfil-foto" [src]="perfil.foto || fotoPadrao" alt="Foto de {{ perfil.nome }}" />
+        @if (ehOProprioPerfil) {
+          <button type="button" class="perfil-trocar-foto" aria-label="Alterar foto" [disabled]="enviandoFoto" (click)="arquivoDeFoto.click()">
             <app-icon name="camera" />
-          </label>
-        </div>
-        <div class="profile-info">
-          <h2>{{ usuario.nome }}</h2>
-          <p>{{ usuario.email }}</p>
-          <a class="ver-publico" [routerLink]="['/perfil', usuario.id]">Ver meu perfil público</a>
-          @if (enviando) {
-            <p class="mensagem-info">Enviando foto...</p>
-          }
-          @if (mensagemErro) {
-            <p class="mensagem-erro" role="alert">{{ mensagemErro }}</p>
-          }
-        </div>
+          </button>
+          <input #arquivoDeFoto type="file" hidden [accept]="tiposDeFoto" (change)="onFileSelected($event)" />
+        }
       </div>
 
-      <form class="bio-form" [formGroup]="bioForm" (ngSubmit)="salvarBio()">
-        <label for="bio">Sobre você</label>
-        <textarea
-          id="bio"
-          rows="3"
-          formControlName="bio"
-          [maxlength]="limiteBio"
-          placeholder="Conte em poucas palavras quem você é"
-          (input)="bioSalva = false"
-        ></textarea>
-        <small class="contador">{{ bio.value.length }}/{{ limiteBio }}</small>
+      <div class="perfil-dados">
+        <h2 class="perfil-nome">{{ perfil.nome }}</h2>
+        @if (emailDaSessao) {
+          <p class="perfil-email">{{ emailDaSessao }} <small>(só você vê)</small></p>
+        }
+        <p class="perfil-contagem">
+          {{ perfil.totalPostagens }} {{ perfil.totalPostagens === 1 ? 'postagem' : 'postagens' }}
+        </p>
 
-        <button type="submit" class="btn-salvar" [disabled]="salvandoBio">
-          {{ salvandoBio ? 'Salvando...' : 'Salvar bio' }}
-        </button>
-        @if (bioSalva) {
-          <p class="mensagem-info" role="status">Bio salva.</p>
+        @if (enviandoFoto) {
+          <p class="perfil-info" role="status">Enviando foto...</p>
         }
-        @if (erroBio) {
-          <p class="mensagem-erro" role="alert">{{ erroBio }}</p>
+        @if (erroFoto) {
+          <p class="perfil-erro" role="alert">{{ erroFoto }}</p>
         }
-      </form>
-    </div>
-  }
+
+        @if (editandoBio) {
+          <form class="bio-form" [formGroup]="bioForm" (ngSubmit)="salvarBio()">
+            <label for="bio" class="visually-hidden">Sobre você</label>
+            <textarea
+              id="bio"
+              rows="3"
+              formControlName="bio"
+              [maxlength]="limiteBio"
+              placeholder="Conte em poucas palavras quem você é"
+            ></textarea>
+            <small class="contador">{{ bio.value.length }}/{{ limiteBio }}</small>
+            @if (erroBio) {
+              <p class="perfil-erro" role="alert">{{ erroBio }}</p>
+            }
+            <div class="bio-acoes">
+              <button type="submit" class="botao-contorno" [disabled]="salvandoBio">{{ salvandoBio ? 'Salvando...' : 'Salvar bio' }}</button>
+              <button type="button" class="botao-texto" (click)="cancelarBio()">Cancelar</button>
+            </div>
+          </form>
+        } @else {
+          @if (perfil.bio) {
+            <p class="perfil-bio">{{ perfil.bio }}</p>
+          } @else {
+            <p class="perfil-bio perfil-bio-vazia">Sem bio ainda.</p>
+          }
+          @if (ehOProprioPerfil) {
+            <div class="perfil-acoes">
+              <button type="button" class="botao-contorno" (click)="editarBio()">{{ perfil.bio ? 'Editar bio' : 'Adicionar bio' }}</button>
+              <a class="botao-contorno" routerLink="/postagens/nova"><app-icon name="plus" /> Novo rascunho</a>
+            </div>
+          }
+        }
+      </div>
+    </header>
+
+    @if (ehOProprioPerfil) {
+      <app-compositor-comentario (publicado)="aoPublicar(); feed.adicionarNoTopo($event)" />
+    }
+  </app-feed-postagens>
+}

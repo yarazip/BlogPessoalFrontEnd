@@ -7,11 +7,9 @@
     <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
       <div class="nav-links">
         <a routerLink="/explorar" routerLinkActive="active" (click)="closeMobileMenu()">Feed</a>
-        <a routerLink="/postagens" routerLinkActive="active" (click)="closeMobileMenu()">Postagens</a>
         <a
-          routerLink="/perfil"
+          [routerLink]="['/perfil', idDoUsuario]"
           routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: true }"
           (click)="closeMobileMenu()"
         >
           <app-icon name="user" /> Perfil
