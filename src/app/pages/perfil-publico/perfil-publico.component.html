@@ -1,0 +1,33 @@
+@if (carregando) {
+  <p class="perfil-aviso">Carregando perfil...</p>
+}
+
+@if (mensagemErro) {
+  <div class="perfil-aviso" role="alert">
+    <p>{{ mensagemErro }}</p>
+    <a routerLink="/explorar">Voltar ao feed</a>
+  </div>
+}
+
+@if (perfil) {
+  <app-feed-postagens [autor]="perfil.id" mensagemVazia="Esta pessoa ainda não publicou nada.">
+    <header class="perfil-topo">
+      <img class="perfil-foto" [src]="perfil.foto || fotoPadrao" alt="Foto de {{ perfil.nome }}" />
+
+      <div class="perfil-dados">
+        <h2 class="perfil-nome">{{ perfil.nome }}</h2>
+        <p class="perfil-contagem">
+          {{ perfil.totalPostagens }} {{ perfil.totalPostagens === 1 ? 'postagem' : 'postagens' }}
+        </p>
+        @if (perfil.bio) {
+          <p class="perfil-bio">{{ perfil.bio }}</p>
+        } @else {
+          <p class="perfil-bio perfil-bio-vazia">Sem bio ainda.</p>
+        }
+        @if (ehOProprioPerfil) {
+          <a class="perfil-editar" routerLink="/perfil">Editar perfil</a>
+        }
+      </div>
+    </header>
+  </app-feed-postagens>
+}

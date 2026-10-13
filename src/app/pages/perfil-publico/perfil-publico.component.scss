@@ -1,0 +1,73 @@
+/* O cabeçalho do perfil é projetado no topo da coluna do feed, que já define largura e bordas. */
+.perfil-topo {
+  display: flex;
+  gap: 16px;
+  padding: 24px 16px;
+  border-bottom: 1px solid var(--header-border);
+}
+
+.perfil-foto {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.perfil-dados {
+  min-width: 0;
+}
+
+.perfil-nome {
+  margin: 0;
+  font-size: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.perfil-contagem {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.perfil-bio {
+  margin: 10px 0 0;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.perfil-bio-vazia {
+  color: var(--text-muted);
+}
+
+.perfil-editar {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 16px;
+  border: 1px solid var(--text-color);
+  border-radius: 999px;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--secondary-color);
+  }
+}
+
+.perfil-aviso {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--text-muted);
+
+  p {
+    margin: 0 0 12px;
+    color: var(--text-color);
+  }
+
+  a {
+    color: var(--text-color);
+  }
+}

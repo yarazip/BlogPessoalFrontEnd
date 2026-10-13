@@ -17,6 +17,7 @@
         <div class="profile-info">
           <h2>{{ usuario.nome }}</h2>
           <p>{{ usuario.email }}</p>
+          <a class="ver-publico" [routerLink]="['/perfil', usuario.id]">Ver meu perfil público</a>
           @if (enviando) {
             <p class="mensagem-info">Enviando foto...</p>
           }
@@ -25,5 +26,28 @@
           }
         </div>
       </div>
+
+      <form class="bio-form" [formGroup]="bioForm" (ngSubmit)="salvarBio()">
+        <label for="bio">Sobre você</label>
+        <textarea
+          id="bio"
+          rows="3"
+          formControlName="bio"
+          [maxlength]="limiteBio"
+          placeholder="Conte em poucas palavras quem você é"
+          (input)="bioSalva = false"
+        ></textarea>
+        <small class="contador">{{ bio.value.length }}/{{ limiteBio }}</small>
+
+        <button type="submit" class="btn-salvar" [disabled]="salvandoBio">
+          {{ salvandoBio ? 'Salvando...' : 'Salvar bio' }}
+        </button>
+        @if (bioSalva) {
+          <p class="mensagem-info" role="status">Bio salva.</p>
+        }
+        @if (erroBio) {
+          <p class="mensagem-erro" role="alert">{{ erroBio }}</p>
+        }
+      </form>
     </div>
   }
