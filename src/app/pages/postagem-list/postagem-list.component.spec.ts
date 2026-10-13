@@ -1,22 +1,36 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
-import { Pagina } from '../../models/Pagina';
-import { Postagem } from '../../models/Postagem';
 import { PostagemListComponent } from './postagem-list.component';
 
-describe('PostagemListComponent', () => {
+describe('PostagemListComponent (Minhas postagens)', () => {
   let service: jasmine.SpyObj<PostagemService>;
   let auth: jasmine.SpyObj<AuthService>;
 
-  const post = (id: number): Postagem => ({ id, titulo: `Post ${id}`, texto: 'Texto', data: '2024-01-10T15:30:00Z' });
-  const pagina = (conteudo: Postagem[], numero: number, ultima: boolean): Pagina<Postagem> => ({
-    conteudo, pagina: numero, tamanho: 10, totalElementos: conteudo.length, totalPaginas: 2, ultima
-  });
+  const montar = () => {
+    service.getPagina.and.returnValue(
+      of({
+        conteudo: [
+          { id: 1, tipo: 'COMENTARIO', texto: 'Meu comentário', usuario: { id: 5, nome: 'Eu' } },
+          { id: 2, tipo: 'BLOG', titulo: 'Meu blog', texto: 'Texto do blog', usuario: { id: 5, nome: 'Eu' } }
+        ],
+        pagina: 0,
+        tamanho: 10,
+        totalElementos: 2,
+        totalPaginas: 1,
+        ultima: true
+      })
+    );
+    const fixture = TestBed.createComponent(PostagemListComponent);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  };
 
-  const criar = () => {
+  beforeEach(() => {
+    service = jasmine.createSpyObj('PostagemService', ['getPagina', 'delete']);
+    auth = jasmine.createSpyObj('AuthService', ['getUsuario']);
     TestBed.configureTestingModule({
       imports: [PostagemListComponent],
       providers: [
@@ -25,59 +39,40 @@ describe('PostagemListComponent', () => {
         { provide: AuthService, useValue: auth }
       ]
     });
-    const fixture = TestBed.createComponent(PostagemListComponent);
-    fixture.detectChanges();
-    return fixture;
-  };
-
-  beforeEach(() => {
-    service = jasmine.createSpyObj('PostagemService', ['getPagina']);
-    auth = jasmine.createSpyObj('AuthService', ['getUsuario']);
-    auth.getUsuario.and.returnValue({ id: 7, nome: 'Ana' });
   });
 
-  it('lista só as postagens do usuário logado (filtro autor) na primeira página', () => {
-    service.getPagina.and.returnValue(of(pagina([post(1)], 0, true)));
+  it('lista só as postagens da pessoa logada (filtro por autor), comentários e blogs juntos', () => {
+    auth.getUsuario.and.returnValue({ id: 5 });
 
-    const fixture = criar();
+    const el = montar();
 
-    expect(service.getPagina).toHaveBeenCalledOnceWith({ page: 0, size: 10, autor: 7 });
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Post 1');
+    expect(service.getPagina).toHaveBeenCalledOnceWith({ page: 0, size: 10, autor: 5 });
+    expect(el.querySelectorAll('article').length).toBe(2);
+    expect(el.querySelector('.minhas-topo h2')!.textContent).toBe('Minhas postagens');
   });
 
-  it('carrega mais acrescentando à lista', () => {
-    service.getPagina.and.returnValues(of(pagina([post(1)], 0, false)), of(pagina([post(2)], 1, true)));
-    const fixture = criar();
-    const el = fixture.nativeElement as HTMLElement;
+  it('cada postagem traz Editar e Excluir', () => {
+    auth.getUsuario.and.returnValue({ id: 5 });
 
-    el.querySelector<HTMLButtonElement>('.btn-carregar-mais')!.click();
-    fixture.detectChanges();
+    const el = montar();
 
-    expect(service.getPagina.calls.mostRecent().args[0]).toEqual({ page: 1, size: 10, autor: 7 });
-    expect(el.querySelectorAll('.post-card').length).toBe(2);
-    expect(el.querySelector('.btn-carregar-mais')).toBeNull();
+    expect(el.querySelectorAll('.post-acoes').length).toBe(2);
   });
 
-  it('mostra "nenhuma postagem" quando não há nada', () => {
-    service.getPagina.and.returnValue(of(pagina([], 0, true)));
+  it('tem o atalho para escrever uma postagem de blog', () => {
+    auth.getUsuario.and.returnValue({ id: 5 });
 
-    expect((criar().nativeElement as HTMLElement).textContent).toContain('Nenhuma postagem encontrada');
+    const el = montar();
+
+    expect(el.querySelector('.minhas-nova')!.getAttribute('href')).toBe('/postagens/nova');
   });
 
-  it('mostra o erro da API sem a mensagem de lista vazia', () => {
-    service.getPagina.and.returnValue(throwError(() => new Error('falhou')));
-
-    const texto = (criar().nativeElement as HTMLElement).textContent!;
-
-    expect(texto).toContain('Erro ao carregar postagens');
-    expect(texto).not.toContain('Nenhuma postagem encontrada');
-  });
-
-  it('sem usuário logado não chama a API', () => {
+  it('sem sessão não monta a lista nem chama a API', () => {
     auth.getUsuario.and.returnValue(null);
 
-    criar();
+    const el = montar();
 
     expect(service.getPagina).not.toHaveBeenCalled();
+    expect(el.querySelector('article')).toBeNull();
   });
 });

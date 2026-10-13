@@ -1,7 +1,7 @@
 
 <div class="postagem-container">
   <div class="card">
-    <h2>{{ isEdit ? 'Editar' : 'Nova' }} Postagem</h2>
+    <h2>{{ isEdit ? (isComentario ? 'Editar comentário' : 'Editar postagem') : 'Nova postagem de blog' }}</h2>
 
     @if (errorMessage) {
       <div class="alert alert-danger" role="alert">
@@ -10,7 +10,8 @@
     }
 
     <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
-      <!-- Campo Título -->
+      <!-- Campo Título (só no blog) -->
+      @if (!isComentario) {
       <div class="form-group">
         <label for="titulo">Título *</label>
         <input
@@ -34,13 +35,15 @@
             </div>
           }
         </div>
+      }
 
         <div class="form-group">
-          <label for="texto">Conteúdo *</label>
+          <label for="texto">{{ isComentario ? 'Comentário' : 'Conteúdo' }} *</label>
           <textarea
             id="texto"
             formControlName="texto"
-            rows="6"
+            [attr.rows]="isComentario ? 3 : 14"
+            [attr.maxlength]="limiteTexto"
             placeholder="Escreva o conteúdo da sua postagem"
             [class.is-invalid]="texto.invalid && (texto.dirty || texto.touched)"
           ></textarea>
@@ -53,12 +56,14 @@
                 <span>Mínimo {{ limites.textoMin }} caracteres</span>
               }
               @if (texto.errors?.['maxlength']) {
-                <span>Máximo {{ limites.textoMax }} caracteres</span>
+                <span>Máximo {{ limiteTexto }} caracteres</span>
               }
             </div>
           }
+          <small class="contador-texto">{{ (texto.value ?? '').length }}/{{ limiteTexto }}</small>
         </div>
 
+        @if (!isComentario) {
         <div class="form-group">
           <label for="tema">Tema *</label>
           <select
@@ -82,6 +87,7 @@
             </div>
           }
         </div>
+        }
 
         <div class="form-actions">
           <button

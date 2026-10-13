@@ -1,0 +1,25 @@
+<form class="compositor" [formGroup]="form" (ngSubmit)="publicar()">
+  <img class="compositor-foto" [src]="foto" alt="" />
+
+  <div class="compositor-campo">
+    <label for="comentario" class="visually-hidden">Escreva um comentário</label>
+    <textarea
+      id="comentario"
+      formControlName="texto"
+      rows="2"
+      placeholder="O que você está pensando?"
+      [attr.maxlength]="limite"
+    ></textarea>
+
+    @if (erro) {
+      <p class="compositor-erro" role="alert">{{ erro }}</p>
+    }
+
+    <div class="compositor-rodape">
+      <span class="compositor-contador" [class.perto-do-limite]="restantes <= 20" aria-live="polite">{{ restantes }}</span>
+      <button type="submit" class="compositor-publicar" [disabled]="!podePublicar">
+        {{ enviando ? 'Publicando...' : 'Publicar' }}
+      </button>
+    </div>
+  </div>
+</form>

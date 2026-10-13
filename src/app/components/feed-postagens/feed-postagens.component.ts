@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
+import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { Postagem } from '../../models/Postagem';
@@ -22,15 +23,19 @@ const POSTAGENS_POR_PAGINA = 10;
  */
 export class FeedPostagensComponent implements OnInit {
   private readonly postagemService = inject(PostagemService);
+  private readonly authService = inject(AuthService);
 
   readonly autor = input<number>();
   readonly mensagemVazia = input('Ainda não há postagens.');
+  /** Mostra Editar e Excluir nas postagens da própria pessoa logada (a API também exige ser a autora). */
+  readonly gerenciar = input(false);
 
   postagens: Postagem[] = [];
   isLoading = true;
   carregandoMais = false;
   haMais = false;
   mensagemErro: string | null = null;
+  erroAcao: string | null = null;
 
   private proximaPagina = 0;
 
@@ -45,6 +50,32 @@ export class FeedPostagensComponent implements OnInit {
     if (!this.carregandoMais && this.haMais && !this.mensagemErro) {
       this.carregar();
     }
+  }
+
+  /** Coloca uma postagem recém-criada no topo, sem recarregar a lista. */
+  adicionarNoTopo(postagem: Postagem): void {
+    this.postagens = [postagem, ...this.postagens];
+  }
+
+  ehMinha(postagem: Postagem): boolean {
+    const eu = this.authService.getUsuario();
+    return !!eu && !!postagem.usuario && eu.id === postagem.usuario.id;
+  }
+
+  excluir(postagem: Postagem): void {
+    if (postagem.id === undefined || !confirm('Deseja excluir esta postagem?')) {
+      return;
+    }
+
+    this.erroAcao = null;
+    this.postagemService.delete(postagem.id).subscribe({
+      next: () => {
+        this.postagens = this.postagens.filter(p => p.id !== postagem.id);
+      },
+      error: erro => {
+        this.erroAcao = mensagemDeErro(erro, 'Não foi possível excluir a postagem.');
+      }
+    });
   }
 
   /** Repete a última busca que falhou, sem perder o que já está na tela. */

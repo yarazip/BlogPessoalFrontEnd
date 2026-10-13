@@ -1,0 +1,85 @@
+.compositor {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--header-border);
+}
+
+.compositor-foto {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.compositor-campo {
+  flex: 1;
+  min-width: 0;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  outline: none;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1.4;
+  resize: none;
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+.compositor-erro {
+  margin: 4px 0;
+  color: #d93025;
+  font-size: 0.9rem;
+}
+
+.compositor-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.compositor-contador {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+
+  &.perto-do-limite {
+    color: #d93025;
+    font-weight: 600;
+  }
+}
+
+.compositor-publicar {
+  padding: 6px 18px;
+  border: none;
+  border-radius: 999px;
+  background: var(--text-color);
+  color: var(--bg-color);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

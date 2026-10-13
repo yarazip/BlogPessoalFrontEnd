@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
 import { Pagina } from '../../models/Pagina';
 import { Postagem } from '../../models/Postagem';
@@ -40,6 +41,7 @@ describe('FeedPostagensComponent', () => {
   const roteador = provideRouter([]);
   let fixture: ComponentFixture<FeedPostagensComponent>;
   let service: jasmine.SpyObj<PostagemService>;
+  let auth: jasmine.SpyObj<AuthService>;
 
   const postagem = (texto: string, id = 1): Postagem => ({
     id,
@@ -67,12 +69,15 @@ describe('FeedPostagensComponent', () => {
 
   beforeEach(() => {
     ObservadorFalso.instancias = [];
-    service = jasmine.createSpyObj('PostagemService', ['getPagina']);
+    service = jasmine.createSpyObj('PostagemService', ['getPagina', 'delete']);
+    auth = jasmine.createSpyObj('AuthService', ['getUsuario']);
+    auth.getUsuario.and.returnValue(null);
     TestBed.configureTestingModule({
       imports: [FeedPostagensComponent],
       providers: [
         roteador,
         { provide: PostagemService, useValue: service },
+        { provide: AuthService, useValue: auth },
         { provide: OBSERVADOR_DE_INTERSECAO, useValue: ObservadorFalso as unknown as typeof IntersectionObserver }
       ]
     });
@@ -129,6 +134,113 @@ describe('FeedPostagensComponent', () => {
     expect(el.querySelector('.autor a')!.getAttribute('href')).toBe('/perfil/1');
     expect(el.querySelector('.foto-link')!.getAttribute('href')).toBe('/perfil/1');
     expect(el.querySelector('.foto-link')!.getAttribute('aria-label')).toBe('Perfil de Ana');
+  });
+
+  describe('tipos de postagem', () => {
+    const comentario = (texto: string, id = 1): Postagem => ({ id, tipo: 'COMENTARIO', texto, data: '2024-01-10T15:30:00Z', usuario: { id: 1, nome: 'Ana' } });
+    const blog = (id = 2, extra: Partial<Postagem> = {}): Postagem => ({
+      id, tipo: 'BLOG', titulo: 'Título do blog', texto: 'Prévia do texto', data: '2024-01-10T15:30:00Z', usuario: { id: 1, nome: 'Ana' }, ...extra
+    });
+
+    it('comentário aparece só com o texto: sem título e sem "Ler mais"', () => {
+      const el = criar(of(pagina([comentario('Um comentário curto')], 0, true)));
+
+      expect(el.querySelector('.post-titulo')).toBeNull();
+      expect(el.querySelector('.ler-mais')).toBeNull();
+      expect(el.querySelector('.texto-postagem')!.textContent).toBe('Um comentário curto');
+    });
+
+    it('blog tem o título como link para a leitura completa', () => {
+      const el = criar(of(pagina([blog(7)], 0, true)));
+
+      expect(el.querySelector('.post-titulo a')!.getAttribute('href')).toBe('/postagens/7');
+      expect(el.querySelector('.ler-mais')).toBeNull();
+      expect(el.querySelector('.texto-postagem.resumido')).toBeNull();
+    });
+
+    it('blog resumido mostra reticências e o link "Ler mais" para a postagem', () => {
+      const el = criar(of(pagina([blog(7, { resumido: true })], 0, true)));
+
+      expect(el.querySelector('.texto-postagem')!.classList).toContain('resumido');
+      expect(el.querySelector('.ler-mais')!.getAttribute('href')).toBe('/postagens/7');
+      expect(el.querySelector('.ler-mais')!.textContent).toContain('Ler mais');
+    });
+
+    it('postagem sem tipo (resposta antiga da API) é tratada como blog: o título aparece', () => {
+      const el = criar(of(pagina([postagem('texto antigo', 3)], 0, true)));
+
+      expect(el.querySelector('.post-titulo')!.textContent).toBe('Título 3');
+    });
+
+    it('adicionarNoTopo coloca a postagem nova antes das que já estavam', () => {
+      criar(of(pagina([comentario('antigo', 1)], 0, true)));
+
+      fixture.componentInstance.adicionarNoTopo(comentario('novinho', 9));
+      fixture.detectChanges();
+
+      const textos = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.texto-postagem')).map(t => t.textContent);
+      expect(textos).toEqual(['novinho', 'antigo']);
+    });
+  });
+
+  describe('editar e excluir (gerenciar)', () => {
+    const minha = (id: number): Postagem => ({ id, tipo: 'COMENTARIO', texto: 'minha ' + id, usuario: { id: 5, nome: 'Eu' } });
+    const deOutra = (id: number): Postagem => ({ id, tipo: 'COMENTARIO', texto: 'dela ' + id, usuario: { id: 6, nome: 'Outra' } });
+
+    const abrir = (gerenciar: boolean, posts: Postagem[]) => {
+      auth.getUsuario.and.returnValue({ id: 5 });
+      service.getPagina.and.returnValue(of(pagina(posts, 0, true)));
+      fixture = TestBed.createComponent(FeedPostagensComponent);
+      fixture.componentRef.setInput('gerenciar', gerenciar);
+      fixture.detectChanges();
+      return fixture.nativeElement as HTMLElement;
+    };
+
+    it('sem "gerenciar" não mostra ações, nem nas minhas', () => {
+      expect(abrir(false, [minha(1)]).querySelector('.post-acoes')).toBeNull();
+    });
+
+    it('com "gerenciar" mostra Editar e Excluir só nas minhas postagens', () => {
+      const el = abrir(true, [minha(1), deOutra(2)]);
+
+      const acoes = el.querySelectorAll('.post-acoes');
+      expect(acoes.length).toBe(1);
+      expect(acoes[0].querySelector('a')!.getAttribute('href')).toBe('/postagens/1/editar');
+    });
+
+    it('Excluir pede confirmação, apaga na API e tira da lista', () => {
+      spyOn(window, 'confirm').and.returnValue(true);
+      service.delete.and.returnValue(of(undefined));
+      const el = abrir(true, [minha(1), minha(2)]);
+
+      el.querySelectorAll<HTMLButtonElement>('.post-acoes button')[0].click();
+      fixture.detectChanges();
+
+      expect(service.delete).toHaveBeenCalledOnceWith(1);
+      expect(Array.from(el.querySelectorAll('.texto-postagem')).map(t => t.textContent)).toEqual(['minha 2']);
+    });
+
+    it('se a pessoa não confirma, nada é apagado', () => {
+      spyOn(window, 'confirm').and.returnValue(false);
+      const el = abrir(true, [minha(1)]);
+
+      el.querySelector<HTMLButtonElement>('.post-acoes button')!.click();
+
+      expect(service.delete).not.toHaveBeenCalled();
+      expect(el.querySelectorAll('article').length).toBe(1);
+    });
+
+    it('se a API recusar, a postagem continua na lista e o erro aparece', () => {
+      spyOn(window, 'confirm').and.returnValue(true);
+      service.delete.and.returnValue(throwError(() => new Error('falhou')));
+      const el = abrir(true, [minha(1)]);
+
+      el.querySelector<HTMLButtonElement>('.post-acoes button')!.click();
+      fixture.detectChanges();
+
+      expect(el.querySelectorAll('article').length).toBe(1);
+      expect(el.querySelector('[role="alert"]')!.textContent).toContain('Não foi possível excluir');
+    });
   });
 
   describe('feed de uma pessoa (perfil)', () => {
@@ -193,6 +305,7 @@ describe('FeedPostagensComponent', () => {
         providers: [
           roteador,
           { provide: PostagemService, useValue: service },
+          { provide: AuthService, useValue: auth },
           { provide: OBSERVADOR_DE_INTERSECAO, useValue: ObservadorFalso as unknown as typeof IntersectionObserver }
         ]
       });
