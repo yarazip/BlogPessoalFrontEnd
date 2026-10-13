@@ -1,0 +1,52 @@
+.reacoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-top: 10px;
+}
+
+.reacao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  margin-left: -6px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+
+  // os desenhos são traços finos: 1.5rem deixa o rabisco legível
+  app-icon {
+    font-size: 1.5rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+  }
+}
+
+.reacao-curtir.ativa {
+  color: #e24b4a;
+}
+
+.reacao-descurtir.ativa {
+  color: var(--text-color);
+}
+
+.contagem {
+  min-width: 1ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.reacoes-erro {
+  font-size: 0.85rem;
+  color: #d93025;
+}

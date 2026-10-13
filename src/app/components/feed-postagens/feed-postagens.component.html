@@ -49,6 +49,15 @@
           <span class="post-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
         }
 
+        @if (postagem.id !== undefined) {
+          <app-reacoes
+            [postagemId]="postagem.id"
+            [curtidas]="postagem.curtidas ?? 0"
+            [descurtidas]="postagem.descurtidas ?? 0"
+            [minhaReacao]="postagem.minhaReacao"
+          />
+        }
+
         @if (gerenciar() && ehMinha(postagem)) {
           <div class="post-acoes">
             <a [routerLink]="['/postagens', postagem.id, 'editar']" [attr.aria-label]="'Editar a postagem ' + (postagem.titulo || postagem.texto)">Editar</a>

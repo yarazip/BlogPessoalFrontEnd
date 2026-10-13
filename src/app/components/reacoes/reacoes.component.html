@@ -1,0 +1,29 @@
+<div class="reacoes" role="group" aria-label="Reações">
+  <button
+    type="button"
+    class="reacao reacao-curtir"
+    [class.ativa]="curtiu"
+    [attr.aria-pressed]="curtiu"
+    [attr.aria-label]="rotuloCurtir"
+    (click)="alternar('CURTIDA')"
+  >
+    <app-icon [name]="curtiu ? 'coracao-cheio' : 'coracao'" />
+    <span class="contagem">{{ estado.curtidas }}</span>
+  </button>
+
+  <button
+    type="button"
+    class="reacao reacao-descurtir"
+    [class.ativa]="descurtiu"
+    [attr.aria-pressed]="descurtiu"
+    [attr.aria-label]="rotuloDescurtir"
+    (click)="alternar('DESCURTIDA')"
+  >
+    <app-icon [name]="descurtiu ? 'coracao-partido-cheio' : 'coracao-partido'" />
+    <span class="contagem">{{ estado.descurtidas }}</span>
+  </button>
+
+  @if (erro) {
+    <span class="reacoes-erro" role="alert">{{ erro }}</span>
+  }
+</div>

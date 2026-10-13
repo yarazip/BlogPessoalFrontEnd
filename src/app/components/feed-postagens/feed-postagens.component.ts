@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
+import { ReacoesComponent } from '../reacoes/reacoes.component';
 import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
@@ -12,7 +13,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-feed-postagens',
   standalone: true,
-  imports: [DateBrPipe, SentinelaDirective, RouterLink],
+  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent],
   templateUrl: './feed-postagens.component.html',
   styleUrls: ['./feed-postagens.component.scss']
 })

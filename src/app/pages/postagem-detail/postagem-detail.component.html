@@ -30,6 +30,15 @@
       <span class="detalhe-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
     }
 
+    @if (postagem.id !== undefined) {
+      <app-reacoes
+        [postagemId]="postagem.id"
+        [curtidas]="postagem.curtidas ?? 0"
+        [descurtidas]="postagem.descurtidas ?? 0"
+        [minhaReacao]="postagem.minhaReacao"
+      />
+    }
+
     @if (ehAutor) {
       <div class="detalhe-acoes">
         <button type="button" (click)="editar(postagem.id!)">

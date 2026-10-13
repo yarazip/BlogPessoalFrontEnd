@@ -4,6 +4,16 @@ import { Usuario } from './Usuario';
 /** COMENTARIO: texto curto, sem título, direto no feed. BLOG: título e texto longo, com prévia no feed. */
 export type TipoPostagem = 'COMENTARIO' | 'BLOG';
 
+/** Reação de uma pessoa a uma postagem: uma por pessoa; tocar de novo no mesmo botão retira. */
+export type TipoReacao = 'CURTIDA' | 'DESCURTIDA';
+
+/** Totais públicos de reações e a reação de quem está logado (ausente para visitante ou sem reação). */
+export interface Reacoes {
+  curtidas: number;
+  descurtidas: number;
+  minhaReacao?: TipoReacao | null;
+}
+
 /** Postagem como a API devolve. */
 export interface Postagem {
   id?: number;
@@ -17,6 +27,10 @@ export interface Postagem {
   data?: Date | string;
   tema?: Tema | null;
   usuario?: Usuario;
+  /** Ausentes em respostas antigas da API: contam como zero. */
+  curtidas?: number;
+  descurtidas?: number;
+  minhaReacao?: TipoReacao | null;
 }
 
 /** Dados enviados para criar ou atualizar uma postagem. */
