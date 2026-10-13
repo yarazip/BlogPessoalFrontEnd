@@ -156,21 +156,33 @@ header {
     }
   }
 
+  // Menu do celular: painel em coluna logo abaixo da barra fixa (os 4 itens não cabem numa linha
+  // em telas estreitas e ficavam cortados nas bordas)
   @media (max-width: 768px) {
     position: absolute;
-    top: 70px;
+    top: 100%;
+    left: 0;
     right: 0;
-    width: 100%;
     background-color: var(--bg-color);
-    flex-direction: row;
-    gap: 1.5rem;
-    padding: 1.5rem 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0.5rem 1rem 1rem;
     border-bottom: 1px solid var(--header-border);
+    box-shadow: 0 10px 15px -3px var(--shadow-color);
     transform: translateY(-200%);
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease;
     z-index: 999;
+
+    a {
+      padding: 14px 0;
+
+      &::after {
+        bottom: 8px;
+      }
+    }
   }
 }
 
