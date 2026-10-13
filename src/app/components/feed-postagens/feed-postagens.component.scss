@@ -137,8 +137,10 @@
   content: '…';
 }
 
+/* Bloco com a largura do texto: o tema (#Tecnologia) desce para a linha de baixo em vez de ficar colado. */
 .ler-mais {
-  display: inline-block;
+  display: block;
+  width: fit-content;
   margin-top: 6px;
   font-size: 0.9rem;
   font-weight: 600;

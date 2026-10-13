@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { OpcoesDePagina, Pagina } from '../models/Pagina';
-import { Postagem, PostagemRequest } from '../models/Postagem';
+import { Postagem, PostagemRequest, Reacoes, TipoReacao } from '../models/Postagem';
 
 @Injectable({ providedIn: 'root' })
 export class PostagemService {
@@ -31,6 +31,14 @@ export class PostagemService {
 
   update(id: number, postagem: PostagemRequest): Observable<Postagem> {
     return this.http.put<Postagem>(`${this.apiUrl}/${id}`, postagem);
+  }
+
+  /**
+   * Define a reação da pessoa logada a uma postagem: CURTIDA, DESCURTIDA ou null para retirar.
+   * Devolve os totais atualizados.
+   */
+  reagir(id: number, tipo: TipoReacao | null): Observable<Reacoes> {
+    return this.http.put<Reacoes>(`${this.apiUrl}/${id}/reacao`, { tipo });
   }
 
   delete(id: number): Observable<void> {

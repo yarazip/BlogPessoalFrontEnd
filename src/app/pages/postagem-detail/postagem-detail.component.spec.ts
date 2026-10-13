@@ -64,6 +64,14 @@ describe('PostagemDetailComponent', () => {
     expect(el.querySelector('.detalhe-texto')!.textContent).toBe('Linha 1\nLinha 2 do texto completo');
   });
 
+  it('mostra os botões de curtir e descurtir com os totais', () => {
+    abrir('7', of(blog({ curtidas: 5, descurtidas: 1, minhaReacao: 'DESCURTIDA' })));
+
+    const numeros = Array.from(el.querySelectorAll('app-reacoes .contagem')).map(n => n.textContent);
+    expect(numeros).toEqual(['5', '1']);
+    expect(el.querySelector('.reacao-descurtir')!.classList).toContain('ativa');
+  });
+
   it('preserva as quebras de linha por CSS, sem inserir <br>', () => {
     abrir('7');
     const texto = el.querySelector('.detalhe-texto') as HTMLElement;

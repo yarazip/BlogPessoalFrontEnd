@@ -183,6 +183,25 @@ describe('FeedPostagensComponent', () => {
     });
   });
 
+  describe('curtir e descurtir', () => {
+    const comReacoes = (extra: Partial<Postagem>): Postagem => ({ id: 4, tipo: 'COMENTARIO', texto: 'com reações', usuario: { id: 2, nome: 'Bia' }, ...extra });
+
+    it('cada postagem mostra os botões com os totais, inclusive o de descurtidas', () => {
+      const el = criar(of(pagina([comReacoes({ curtidas: 12, descurtidas: 3, minhaReacao: 'CURTIDA' })], 0, true)));
+
+      const numeros = Array.from(el.querySelectorAll('app-reacoes .contagem')).map(n => n.textContent);
+      expect(numeros).toEqual(['12', '3']);
+      expect(el.querySelector('.reacao-curtir')!.classList).toContain('ativa');
+    });
+
+    it('resposta antiga da API, sem os campos novos, conta como zero', () => {
+      const el = criar(of(pagina([comReacoes({})], 0, true)));
+
+      const numeros = Array.from(el.querySelectorAll('app-reacoes .contagem')).map(n => n.textContent);
+      expect(numeros).toEqual(['0', '0']);
+    });
+  });
+
   describe('editar e excluir (gerenciar)', () => {
     const minha = (id: number): Postagem => ({ id, tipo: 'COMENTARIO', texto: 'minha ' + id, usuario: { id: 5, nome: 'Eu' } });
     const deOutra = (id: number): Postagem => ({ id, tipo: 'COMENTARIO', texto: 'dela ' + id, usuario: { id: 6, nome: 'Outra' } });

@@ -5,6 +5,10 @@
 export const ICON_NAMES = [
   'arrow-left',
   'camera',
+  'coracao',
+  'coracao-cheio',
+  'coracao-partido',
+  'coracao-partido-cheio',
   'edit',
   'envelope',
   'github',

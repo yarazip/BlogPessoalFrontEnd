@@ -1,4 +1,5 @@
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ReacoesComponent } from '../../components/reacoes/reacoes.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
@@ -10,7 +11,7 @@ import { Postagem } from '../../models/Postagem';
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [DateBrPipe, IconComponent, RouterLink],
+  imports: [DateBrPipe, IconComponent, RouterLink, ReacoesComponent],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })
