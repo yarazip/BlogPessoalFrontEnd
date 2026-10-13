@@ -1,36 +1,44 @@
-<div class="post-detail-container">
+<article class="detalhe">
+  <a class="detalhe-voltar" routerLink="/explorar">Voltar ao feed</a>
+
   @if (isLoading) {
-    <div class="text-center">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Carregando...</span>
-      </div>
-    </div>
+    <p class="detalhe-aviso">Carregando...</p>
   }
 
   @if (mensagemErro) {
-    <div class="mensagem-erro" role="alert">{{ mensagemErro }}</div>
+    <div class="detalhe-aviso" role="alert">{{ mensagemErro }}</div>
   }
 
   @if (!isLoading && postagem) {
-    <div class="post-content">
-      <div class="post-header">
-        <h1>{{ postagem.titulo }}</h1>
-        <div class="post-meta">
-          <span class="badge">{{ postagem.tema?.descricao || 'Sem tema' }}</span>
-          <span>{{ postagem.data | dateBr }}</span>
-        </div>
+    <header class="detalhe-autor">
+      <a class="detalhe-foto" [routerLink]="['/perfil', postagem.usuario?.id]" [attr.aria-label]="'Perfil de ' + postagem.usuario?.nome">
+        <img [src]="postagem.usuario?.foto || fotoPadrao" alt="Foto de {{ postagem.usuario?.nome }}" />
+      </a>
+      <div>
+        <a class="detalhe-nome" [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a>
+        <span class="detalhe-data">{{ postagem.data | dateBr }}</span>
       </div>
-      <div class="card-text mb-4 texto-postagem">{{ postagem.texto }}</div>
-      @if (ehAutor) {
-        <div class="post-actions">
-          <button type="button" (click)="editar(postagem.id!)" class="btn btn-warning">
-            <app-icon name="edit" /> Editar
-          </button>
-          <button type="button" (click)="excluir(postagem.id!)" class="btn btn-danger">
-            <app-icon name="trash" /> Excluir
-          </button>
-        </div>
-      }
-    </div>
+    </header>
+
+    @if (postagem.titulo) {
+      <h1 class="detalhe-titulo">{{ postagem.titulo }}</h1>
+    }
+
+    <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'">{{ postagem.texto }}</div>
+
+    @if (postagem.tema) {
+      <span class="detalhe-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
+    }
+
+    @if (ehAutor) {
+      <div class="detalhe-acoes">
+        <button type="button" (click)="editar(postagem.id!)">
+          <app-icon name="edit" /> Editar
+        </button>
+        <button type="button" (click)="excluir(postagem.id!)">
+          <app-icon name="trash" /> Excluir
+        </button>
+      </div>
+    }
   }
-</div>
+</article>

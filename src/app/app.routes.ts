@@ -65,10 +65,10 @@ export const routes: Routes = [
     title: 'Blogify - Editar Postagem'
   },
   {
+    // leitura pública: qualquer pessoa pode abrir o link de uma postagem (editar e excluir seguem exigindo login)
     path: 'postagens/:id',
     loadComponent: () => import('./pages/postagem-detail/postagem-detail.component').then(m => m.PostagemDetailComponent),
-    canActivate: [authGuard],
-    title: 'Blogify - Detalhes da Postagem'
+    title: 'Blogify - Postagem'
   },
 
   { path: '**', redirectTo: '', pathMatch: 'full' }

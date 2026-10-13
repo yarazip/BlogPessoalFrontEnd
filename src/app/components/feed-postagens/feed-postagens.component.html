@@ -1,6 +1,10 @@
 <section class="feed" aria-label="Feed de postagens">
   <ng-content />
 
+  @if (erroAcao) {
+    <p class="feed-aviso feed-erro" role="alert">{{ erroAcao }}</p>
+  }
+
   @if (isLoading) {
     <p class="feed-aviso">Carregando postagens...</p>
   }
@@ -33,11 +37,23 @@
           <span class="meta">· {{ postagem.data | dateBr: 'dd/MM/yyyy' }}</span>
         </header>
 
-        <h3 class="post-titulo">{{ postagem.titulo }}</h3>
-        <p class="texto-postagem">{{ postagem.texto }}</p>
+        @if (postagem.titulo) {
+          <h3 class="post-titulo"><a [routerLink]="['/postagens', postagem.id]">{{ postagem.titulo }}</a></h3>
+        }
+        <p class="texto-postagem" [class.resumido]="postagem.resumido">{{ postagem.texto }}</p>
+        @if (postagem.resumido) {
+          <a class="ler-mais" [routerLink]="['/postagens', postagem.id]">Ler mais</a>
+        }
 
         @if (postagem.tema) {
           <span class="post-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
+        }
+
+        @if (gerenciar() && ehMinha(postagem)) {
+          <div class="post-acoes">
+            <a [routerLink]="['/postagens', postagem.id, 'editar']" [attr.aria-label]="'Editar a postagem ' + (postagem.titulo || postagem.texto)">Editar</a>
+            <button type="button" (click)="excluir(postagem)" [attr.aria-label]="'Excluir a postagem ' + (postagem.titulo || postagem.texto)">Excluir</button>
+          </div>
         }
       </div>
     </article>

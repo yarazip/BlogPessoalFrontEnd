@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { PostagemService } from '../../services/postagem.service';
@@ -10,6 +10,7 @@ describe('PostagemFormComponent', () => {
   let postagens: jasmine.SpyObj<PostagemService>;
   let temas: jasmine.SpyObj<TemaService>;
   let router: jasmine.SpyObj<Router>;
+  let fixture: ComponentFixture<PostagemFormComponent>;
 
   const criar = (id: string | null = null) => {
     TestBed.configureTestingModule({
@@ -21,7 +22,7 @@ describe('PostagemFormComponent', () => {
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } } }
       ]
     });
-    const fixture = TestBed.createComponent(PostagemFormComponent);
+    fixture = TestBed.createComponent(PostagemFormComponent);
     fixture.detectChanges();
     return fixture.componentInstance;
   };
@@ -33,18 +34,22 @@ describe('PostagemFormComponent', () => {
     router = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl'], { events: of() });
   });
 
-  it('valida com os mesmos limites da API (título 5-100, texto 10-1000)', () => {
+  it('valida com os mesmos limites da API (blog: título 5-100, texto 10-10000)', () => {
     const c = criar();
 
     c.postagemForm.patchValue({ titulo: 'abcd', texto: 'curto', temaId: 2 });
     expect(c.titulo.errors?.['minlength']).toBeTruthy();
     expect(c.texto.errors?.['minlength']).toBeTruthy();
 
-    c.postagemForm.patchValue({ titulo: 'a'.repeat(101), texto: 'x'.repeat(1001) });
+    c.postagemForm.patchValue({ titulo: 'a'.repeat(101), texto: 'x'.repeat(10001) });
     expect(c.titulo.errors?.['maxlength']).toBeTruthy();
     expect(c.texto.errors?.['maxlength']).toBeTruthy();
 
     c.postagemForm.patchValue({ titulo: 'Título ok', texto: 'Texto com tamanho válido' });
+    expect(c.postagemForm.valid).toBeTrue();
+
+    // o blog aceita até 10.000 caracteres (antes eram 1.000)
+    c.postagemForm.patchValue({ texto: 'x'.repeat(10000) });
     expect(c.postagemForm.valid).toBeTrue();
   });
 
@@ -68,7 +73,12 @@ describe('PostagemFormComponent', () => {
 
     c.onSubmit();
 
-    expect(postagens.create).toHaveBeenCalledWith({ titulo: 'Título ok', texto: 'Texto com tamanho válido', idTema: 2 });
+    expect(postagens.create).toHaveBeenCalledWith({
+      tipo: 'BLOG',
+      titulo: 'Título ok',
+      texto: 'Texto com tamanho válido',
+      idTema: 2
+    });
     expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
   });
 
@@ -85,7 +95,68 @@ describe('PostagemFormComponent', () => {
     c.postagemForm.patchValue({ titulo: 'Novo título' });
     c.onSubmit();
 
-    expect(postagens.update).toHaveBeenCalledWith(5, { titulo: 'Novo título', texto: 'Texto antigo válido', idTema: 2 });
+    expect(postagens.update).toHaveBeenCalledWith(5, {
+      tipo: 'BLOG',
+      titulo: 'Novo título',
+      texto: 'Texto antigo válido',
+      idTema: 2
+    });
+  });
+
+  describe('editando um comentário', () => {
+    const abrirComentario = () => {
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Comentário antigo', tema: null }));
+      postagens.update.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', texto: 'Comentário novo' }));
+      return criar('8');
+    };
+
+    it('usa as regras do comentário: só o texto, até 280 caracteres, sem título nem tema', () => {
+      const c = abrirComentario();
+
+      expect(c.isComentario).toBeTrue();
+      expect(c.limiteTexto).toBe(280);
+      expect(c.titulo.valid).toBeTrue();
+      expect(c.temaId.valid).toBeTrue();
+
+      c.texto.setValue('x'.repeat(281));
+      expect(c.texto.errors?.['maxlength']).toBeTruthy();
+      c.texto.setValue('x'.repeat(280));
+      expect(c.postagemForm.valid).toBeTrue();
+    });
+
+    it('envia COMENTARIO sem título nem tema', () => {
+      const c = abrirComentario();
+      c.texto.setValue('Comentário novo');
+
+      c.onSubmit();
+
+      expect(postagens.update).toHaveBeenCalledOnceWith(8, { tipo: 'COMENTARIO', texto: 'Comentário novo' });
+      expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
+    });
+
+    it('na tela não aparecem os campos de título e tema, e o título da página diz comentário', () => {
+      abrirComentario();
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+
+      expect(el.querySelector('#titulo')).toBeNull();
+      expect(el.querySelector('#tema')).toBeNull();
+      expect(el.querySelector('#texto')).not.toBeNull();
+      expect(el.querySelector('h2')!.textContent).toBe('Editar comentário');
+      expect(el.querySelector('.contador-texto')!.textContent).toBe('17/280');
+    });
+
+    it('o blog continua com título, tema e contador até 10000', () => {
+      const c = criar();
+      c.postagemForm.patchValue({ texto: 'abc' });
+      fixture.detectChanges();
+      const el = fixture.nativeElement as HTMLElement;
+
+      expect(el.querySelector('#titulo')).not.toBeNull();
+      expect(el.querySelector('#tema')).not.toBeNull();
+      expect(el.querySelector('h2')!.textContent).toBe('Nova postagem de blog');
+      expect(el.querySelector('.contador-texto')!.textContent).toBe('3/10000');
+    });
   });
 
   it('mostra o erro devolvido pela API e libera o botão', () => {

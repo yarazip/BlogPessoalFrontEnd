@@ -182,3 +182,10 @@
     }
   }
 }
+
+.contador-texto {
+  display: block;
+  margin-top: 4px;
+  text-align: right;
+  color: var(--text-muted);
+}

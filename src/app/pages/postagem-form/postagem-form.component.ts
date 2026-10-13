@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
-import { LIMITES_POSTAGEM, PostagemRequest } from '../../models/Postagem';
+import { LIMITE_COMENTARIO, LIMITES_POSTAGEM, PostagemRequest } from '../../models/Postagem';
 import { Tema } from '../../models/Tema';
 
 @Component({
@@ -23,6 +23,7 @@ export class PostagemFormComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly limites = LIMITES_POSTAGEM;
+  readonly limiteComentario = LIMITE_COMENTARIO;
 
   // os limites são os mesmos validados pela API; divergir faz o envio falhar com 400
   readonly postagemForm = this.fb.group({
@@ -32,11 +33,18 @@ export class PostagemFormComponent implements OnInit {
   });
 
   isEdit = false;
+  /** Editando um comentário: só o texto (até 280 caracteres), sem título nem tema. */
+  isComentario = false;
   postagemId?: number;
   isLoading = false;
   temas: Tema[] = [];
   semTemas = false;
   errorMessage: string | null = null;
+
+  /** Limite do texto do tipo em edição (o blog aceita bem mais que o comentário). */
+  get limiteTexto(): number {
+    return this.isComentario ? this.limiteComentario : this.limites.textoMax;
+  }
 
   get titulo() {
     return this.postagemForm.controls.titulo;
@@ -70,7 +78,10 @@ export class PostagemFormComponent implements OnInit {
     }
 
     const { titulo, texto, temaId } = this.postagemForm.getRawValue();
-    const dados: PostagemRequest = { titulo: titulo!, texto: texto!, idTema: temaId! };
+    // a criação por aqui é sempre de blog (comentários nascem na caixa do feed); a edição mantém o tipo
+    const dados: PostagemRequest = this.isComentario
+      ? { tipo: 'COMENTARIO', texto: texto! }
+      : { tipo: 'BLOG', titulo: titulo!, texto: texto!, idTema: temaId! };
 
     this.isLoading = true;
     this.errorMessage = null;
@@ -86,6 +97,15 @@ export class PostagemFormComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /** Comentário não tem título nem tema obrigatórios, e o texto vai só até 280 caracteres. */
+  private usarRegrasDeComentario(): void {
+    this.isComentario = true;
+    this.titulo.clearValidators();
+    this.temaId.clearValidators();
+    this.texto.setValidators([Validators.required, Validators.maxLength(LIMITE_COMENTARIO)]);
+    [this.titulo, this.temaId, this.texto].forEach(c => c.updateValueAndValidity());
   }
 
   private carregarTemas(): void {
@@ -104,8 +124,11 @@ export class PostagemFormComponent implements OnInit {
     this.isLoading = true;
     this.postagemService.getById(id).subscribe({
       next: postagem => {
+        if (postagem.tipo === 'COMENTARIO') {
+          this.usarRegrasDeComentario();
+        }
         this.postagemForm.patchValue({
-          titulo: postagem.titulo,
+          titulo: postagem.titulo ?? '',
           texto: postagem.texto,
           temaId: postagem.tema?.id ?? null
         });

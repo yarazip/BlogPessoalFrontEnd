@@ -1,7 +1,6 @@
 import { IconComponent } from '../../shared/icon/icon.component';
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
@@ -11,7 +10,7 @@ import { Postagem } from '../../models/Postagem';
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [CommonModule, DateBrPipe, IconComponent],
+  imports: [DateBrPipe, IconComponent, RouterLink],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })
@@ -20,6 +19,8 @@ export class PostagemDetailComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  readonly fotoPadrao = 'assets/img/sem-foto.svg';
 
   postagem?: Postagem;
   isLoading = true;
@@ -34,7 +35,7 @@ export class PostagemDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!Number.isInteger(id) || id <= 0) {
-      this.router.navigate(['/postagens']);
+      this.router.navigate(['/explorar']);
       return;
     }
 
@@ -48,6 +49,11 @@ export class PostagemDetailComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /** Alguns temas antigos foram gravados com aspas no banco (ex.: 'Tecnologia'); aqui elas não aparecem. */
+  nomeDoTema(descricao = ''): string {
+    return descricao.replace(/^['"]+|['"]+$/g, '');
   }
 
   editar(id: number): void {
