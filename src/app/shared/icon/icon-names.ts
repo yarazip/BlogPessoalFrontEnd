@@ -10,6 +10,7 @@ export const ICON_NAMES = [
   'coracao-partido',
   'coracao-partido-cheio',
   'edit',
+  'ellipsis',
   'envelope',
   'github',
   'linkedin',

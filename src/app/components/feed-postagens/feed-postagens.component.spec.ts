@@ -240,37 +240,69 @@ describe('FeedPostagensComponent', () => {
     });
   });
 
-  describe('editar e excluir (gerenciar)', () => {
+  describe('menu de três pontinhos (editar e excluir)', () => {
     const minha = (id: number): Postagem => ({ id, tipo: 'COMENTARIO', texto: 'minha ' + id, usuario: { id: 5, nome: 'Eu' } });
     const deOutra = (id: number): Postagem => ({ id, tipo: 'COMENTARIO', texto: 'dela ' + id, usuario: { id: 6, nome: 'Outra' } });
 
-    const abrir = (gerenciar: boolean, posts: Postagem[]) => {
-      auth.getUsuario.and.returnValue({ id: 5 });
+    const abrir = (posts: Postagem[], logada = true) => {
+      auth.getUsuario.and.returnValue(logada ? { id: 5 } : null);
       service.getPagina.and.returnValue(of(pagina(posts, 0, true)));
       fixture = TestBed.createComponent(FeedPostagensComponent);
-      fixture.componentRef.setInput('gerenciar', gerenciar);
       fixture.detectChanges();
       return fixture.nativeElement as HTMLElement;
     };
+    const abrirMenu = (el: HTMLElement, indice = 0) => {
+      el.querySelectorAll<HTMLButtonElement>('.menu-botao')[indice].click();
+      fixture.detectChanges();
+    };
+    const itensDoMenu = (el: HTMLElement) => Array.from(el.querySelectorAll<HTMLElement>('.menu-item'));
 
-    it('sem "gerenciar" não mostra ações, nem nas minhas', () => {
-      expect(abrir(false, [minha(1)]).querySelector('.post-acoes')).toBeNull();
+    it('as minhas postagens têm o menu, em qualquer feed; as das outras pessoas não', () => {
+      const el = abrir([minha(1), deOutra(2)]);
+
+      expect(el.querySelectorAll('app-menu-postagem').length).toBe(1);
+      expect(el.querySelectorAll('article')[0].querySelector('app-menu-postagem')).not.toBeNull();
+      expect(el.querySelectorAll('article')[1].querySelector('app-menu-postagem')).toBeNull();
     });
 
-    it('com "gerenciar" mostra Editar e Excluir só nas minhas postagens', () => {
-      const el = abrir(true, [minha(1), deOutra(2)]);
+    it('visitante não vê o menu em nenhuma postagem', () => {
+      expect(abrir([minha(1), deOutra(2)], false).querySelector('app-menu-postagem')).toBeNull();
+    });
 
-      const acoes = el.querySelectorAll('.post-acoes');
-      expect(acoes.length).toBe(1);
-      expect(acoes[0].querySelector('a')!.getAttribute('href')).toBe('/postagens/1/editar');
+    it('os links soltos de Editar e Excluir deixaram de existir', () => {
+      expect(abrir([minha(1)]).querySelector('.post-acoes')).toBeNull();
+    });
+
+    it('o menu abre com Editar (para o formulário da postagem) e Excluir', () => {
+      const el = abrir([minha(1)]);
+
+      abrirMenu(el);
+
+      expect(itensDoMenu(el).map(i => i.textContent!.trim())).toEqual(['Editar', 'Excluir']);
+      expect(itensDoMenu(el)[0].getAttribute('href')).toBe('/postagens/1/editar');
+    });
+
+    it('o botão do menu diz de qual postagem é', () => {
+      const el = abrir([{ ...minha(1), tipo: 'BLOG', titulo: 'Meu título' }]);
+
+      expect(el.querySelector('.menu-botao')!.getAttribute('aria-label')).toBe('Opções da postagem: Meu título');
+    });
+
+    it('o cabeçalho das minhas postagens ganha folga para o botão', () => {
+      const el = abrir([minha(1), deOutra(2)]);
+
+      const cabecalhos = el.querySelectorAll('.post-cabecalho');
+      expect(cabecalhos[0].classList).toContain('com-menu');
+      expect(cabecalhos[1].classList).not.toContain('com-menu');
     });
 
     it('Excluir pede confirmação, apaga na API e tira da lista', () => {
       spyOn(window, 'confirm').and.returnValue(true);
       service.delete.and.returnValue(of(undefined));
-      const el = abrir(true, [minha(1), minha(2)]);
+      const el = abrir([minha(1), minha(2)]);
 
-      el.querySelectorAll<HTMLButtonElement>('.post-acoes button')[0].click();
+      abrirMenu(el, 0);
+      itensDoMenu(el)[1].click();
       fixture.detectChanges();
 
       expect(service.delete).toHaveBeenCalledOnceWith(1);
@@ -279,9 +311,10 @@ describe('FeedPostagensComponent', () => {
 
     it('se a pessoa não confirma, nada é apagado', () => {
       spyOn(window, 'confirm').and.returnValue(false);
-      const el = abrir(true, [minha(1)]);
+      const el = abrir([minha(1)]);
 
-      el.querySelector<HTMLButtonElement>('.post-acoes button')!.click();
+      abrirMenu(el);
+      itensDoMenu(el)[1].click();
 
       expect(service.delete).not.toHaveBeenCalled();
       expect(el.querySelectorAll('article').length).toBe(1);
@@ -290,9 +323,10 @@ describe('FeedPostagensComponent', () => {
     it('se a API recusar, a postagem continua na lista e o erro aparece', () => {
       spyOn(window, 'confirm').and.returnValue(true);
       service.delete.and.returnValue(throwError(() => new Error('falhou')));
-      const el = abrir(true, [minha(1)]);
+      const el = abrir([minha(1)]);
 
-      el.querySelector<HTMLButtonElement>('.post-acoes button')!.click();
+      abrirMenu(el);
+      itensDoMenu(el)[1].click();
       fixture.detectChanges();
 
       expect(el.querySelectorAll('article').length).toBe(1);

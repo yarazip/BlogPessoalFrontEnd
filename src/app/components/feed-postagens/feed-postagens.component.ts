@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
+import { MenuPostagemComponent } from '../menu-postagem/menu-postagem.component';
 import { ReacoesComponent } from '../reacoes/reacoes.component';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
@@ -15,7 +16,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-feed-postagens',
   standalone: true,
-  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent],
+  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent],
   templateUrl: './feed-postagens.component.html',
   styleUrls: ['./feed-postagens.component.scss']
 })
@@ -35,8 +36,6 @@ export class FeedPostagensComponent implements OnInit {
 
   readonly autor = input<number>();
   readonly mensagemVazia = input('Ainda não há postagens.');
-  /** Mostra Editar e Excluir nas postagens da própria pessoa logada (a API também exige ser a autora). */
-  readonly gerenciar = input(false);
 
   postagens: Postagem[] = [];
   isLoading = true;
@@ -66,6 +65,12 @@ export class FeedPostagensComponent implements OnInit {
     this.postagens = [postagem, ...this.postagens];
   }
 
+  /** Trecho da postagem para o nome do menu lido por leitores de tela. */
+  rotuloDe(postagem: Postagem): string {
+    return (postagem.titulo || postagem.texto).slice(0, 50);
+  }
+
+  /** O menu de três pontinhos (Editar e Excluir) aparece nas postagens da própria pessoa; a API também exige. */
   ehMinha(postagem: Postagem): boolean {
     const eu = this.authService.getUsuario();
     return !!eu && !!postagem.usuario && eu.id === postagem.usuario.id;

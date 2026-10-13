@@ -32,7 +32,11 @@
       </a>
 
       <div class="post-corpo">
-        <header class="post-cabecalho">
+        @if (ehMinha(postagem) && postagem.id !== undefined) {
+          <app-menu-postagem class="post-menu" [postagemId]="postagem.id" [rotulo]="rotuloDe(postagem)" (excluir)="excluir(postagem)" />
+        }
+
+        <header class="post-cabecalho" [class.com-menu]="ehMinha(postagem)">
           <h4 class="autor"><a [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a></h4>
           <span class="meta">· {{ postagem.data | dateBr: 'dd/MM/yyyy' }}</span>
         </header>
@@ -56,13 +60,6 @@
             [descurtidas]="postagem.descurtidas ?? 0"
             [minhaReacao]="postagem.minhaReacao"
           />
-        }
-
-        @if (gerenciar() && ehMinha(postagem)) {
-          <div class="post-acoes">
-            <a [routerLink]="['/postagens', postagem.id, 'editar']" [attr.aria-label]="'Editar a postagem ' + (postagem.titulo || postagem.texto)">Editar</a>
-            <button type="button" (click)="excluir(postagem)" [attr.aria-label]="'Excluir a postagem ' + (postagem.titulo || postagem.texto)">Excluir</button>
-          </div>
         }
       </div>
     </article>

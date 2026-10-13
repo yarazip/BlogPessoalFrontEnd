@@ -51,12 +51,12 @@ describe('PostagemListComponent (Minhas postagens)', () => {
     expect(el.querySelector('.minhas-topo h2')!.textContent).toBe('Minhas postagens');
   });
 
-  it('cada postagem traz Editar e Excluir', () => {
+  it('cada postagem traz o menu de três pontinhos (Editar e Excluir)', () => {
     auth.getUsuario.and.returnValue({ id: 5 });
 
     const el = montar();
 
-    expect(el.querySelectorAll('.post-acoes').length).toBe(2);
+    expect(el.querySelectorAll('app-menu-postagem').length).toBe(2);
   });
 
   it('tem o atalho para escrever uma postagem de blog', () => {

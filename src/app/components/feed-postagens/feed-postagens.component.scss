@@ -65,6 +65,7 @@
 }
 
 .post-corpo {
+  position: relative;
   flex: 1;
   min-width: 0; /* deixa palavras longas quebrarem em vez de alargar a coluna */
 }
@@ -153,30 +154,6 @@
   }
 }
 
-.post-acoes {
-  display: flex;
-  gap: 16px;
-  margin-top: 10px;
-  font-size: 0.85rem;
-
-  a,
-  button {
-    padding: 0;
-    border: none;
-    background: none;
-    color: var(--text-muted);
-    font: inherit;
-    cursor: pointer;
-    text-decoration: none;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--text-color);
-      text-decoration: underline;
-    }
-  }
-}
-
 .post-tema {
   display: inline-block;
   margin-top: 10px;
@@ -214,4 +191,15 @@
 .feed-sentinela {
   min-height: 1px;
   text-align: center;
+}
+
+/* Três pontinhos no canto de cima, à direita; o cabeçalho ganha folga para o nome não passar por baixo. */
+.post-menu {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+}
+
+.post-cabecalho.com-menu {
+  padding-right: 32px;
 }
