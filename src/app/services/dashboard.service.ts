@@ -23,7 +23,7 @@ export class DashboardService {
     return this.http.get<{ quantidade: number }>(`${this.apiUrl}/postagens/count`).pipe(map(r => r.quantidade));
   }
 
-  /** Novidades oficiais do Blogify, as mais recentes primeiro (leitura pública). */
+  /** Novidades oficiais da Rasura, as mais recentes primeiro (leitura pública). */
   getAvisos(): Observable<Aviso[]> {
     return this.http.get<Aviso[]>(`${this.apiUrl}/avisos`);
   }

@@ -2,6 +2,7 @@
 import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { LogoComponent } from '../../shared/logo/logo.component';
 import { AuthService } from '../../services/auth.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 
@@ -15,7 +16,7 @@ function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })

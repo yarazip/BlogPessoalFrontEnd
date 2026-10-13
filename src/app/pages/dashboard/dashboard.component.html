@@ -1,5 +1,5 @@
 <header class="insights-topo">
-  <h2>Insights do <span class="blogify-logo2">BLOG<span>ify</span></span></h2>
+  <h2>Insights da <app-logo /></h2>
   <p>Números oficiais do site e novidades do produto.</p>
 </header>
 
@@ -10,11 +10,11 @@
 <div class="dashboard-container">
   <section class="stats-section">
     <div class="card">
-      <h3><span class="blogify-logo2">BLOG<span>ify</span></span> LOVERS</h3>
+      <h3>Pessoas na <app-logo /></h3>
       <p class="stat-value">{{ userCount }}</p>
     </div>
     <div class="card">
-      <h3>Postagens feitas no <span class="blogify-logo2">BLOG<span>ify</span></span> </h3>
+      <h3>Postagens feitas na <app-logo /></h3>
       <p class="stat-value">{{ postCount }}</p>
     </div>
   </section>
@@ -27,7 +27,7 @@
   </div>
 
   <section class="novidades" aria-labelledby="titulo-novidades">
-    <h3 id="titulo-novidades">Novidades do Blogify</h3>
+    <h3 id="titulo-novidades">Novidades da Rasura</h3>
 
     @if (admin) {
       <form class="novidade-form" [formGroup]="avisoForm" (ngSubmit)="publicar()">

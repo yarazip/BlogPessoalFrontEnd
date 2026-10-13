@@ -42,16 +42,6 @@ body {
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
-.blogfy-logo {
-  font-family: 'Syncopate', sans-serif !important;
-  font-weight: 700 !important;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  
-  span {
-    font-weight: 400 !important;
-  }
-}
 
 .logo {
   font-family: var(--logo-font);

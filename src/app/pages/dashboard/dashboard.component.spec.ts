@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { DashboardComponent } from './dashboard.component';
 
-describe('DashboardComponent (Insights do Blogify)', () => {
+describe('DashboardComponent (Insights da Rasura)', () => {
   let fixture: ComponentFixture<DashboardComponent>;
   let el: HTMLElement;
   let service: jasmine.SpyObj<DashboardService>;

@@ -1,4 +1,4 @@
-/** Novidade ou aviso oficial do Blogify, como a API devolve (GET /api/avisos). */
+/** Novidade ou aviso oficial da Rasura, como a API devolve (GET /api/avisos). */
 export interface Aviso {
   id: number;
   titulo: string;

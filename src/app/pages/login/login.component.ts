@@ -2,13 +2,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { LogoComponent } from '../../shared/logo/logo.component';
 import { AuthService } from '../../services/auth.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
