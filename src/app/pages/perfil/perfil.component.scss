@@ -75,3 +75,58 @@
   color: #777;
   margin: 5px 0 0;
 }
+
+
+.ver-publico {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.bio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 600px;
+  margin: 0 auto;
+
+  label {
+    font-weight: 600;
+  }
+
+  textarea {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--header-border);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font: inherit;
+    resize: vertical;
+  }
+
+  .contador {
+    align-self: flex-end;
+    color: var(--text-muted);
+  }
+
+  .btn-salvar {
+    align-self: flex-start;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--text-color);
+    border-radius: 999px;
+    background: none;
+    color: var(--text-color);
+    font: inherit;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: var(--secondary-color);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+}

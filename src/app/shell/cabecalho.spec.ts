@@ -31,6 +31,11 @@ describe('cabeçalho do esqueleto', () => {
       }
     });
 
+    it('perfil público (/perfil/:id): logado vê o cabeçalho do usuário; visitante, o público', () => {
+      expect(deveMostrarCabecalhoDoUsuario('/perfil/5', true)).toBeTrue();
+      expect(deveMostrarCabecalhoDoUsuario('/perfil/5', false)).toBeFalse();
+    });
+
     it('sem sessão, nunca mostra o cabeçalho do usuário', () => {
       for (const url of ['/', '/login', '/explorar', '/dashboard', '/postagens']) {
         expect(deveMostrarCabecalhoDoUsuario(url, false)).withContext(url).toBeFalse();

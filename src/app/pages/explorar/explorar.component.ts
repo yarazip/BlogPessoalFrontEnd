@@ -1,71 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
-import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
-import { PostagemService } from '../../services/postagem.service';
-import { mensagemDeErro } from '../../shared/mensagem-de-erro';
-import { Postagem } from '../../models/Postagem';
+import { Component } from '@angular/core';
+import { FeedPostagensComponent } from '../../components/feed-postagens/feed-postagens.component';
 
-const POSTAGENS_POR_PAGINA = 10;
-
+/** Feed com as postagens de todo mundo, das mais recentes para as mais antigas. */
 @Component({
   selector: 'app-explorar',
   standalone: true,
-  imports: [DateBrPipe, SentinelaDirective],
-  templateUrl: './explorar.component.html',
-  styleUrls: ['./explorar.component.scss']
+  imports: [FeedPostagensComponent],
+  template: '<app-feed-postagens />'
 })
-export class ExplorarComponent implements OnInit {
-  private readonly postagemService = inject(PostagemService);
-
-  postagens: Postagem[] = [];
-  isLoading = true;
-  carregandoMais = false;
-  haMais = false;
-  mensagemErro: string | null = null;
-
-  private proximaPagina = 0;
-
-  readonly fotoPadrao = 'assets/img/sem-foto.svg';
-
-  ngOnInit(): void {
-    this.carregar();
-  }
-
-  /** Busca a próxima página e a acrescenta ao feed (chamado ao rolar até o fim da lista). */
-  carregarMais(): void {
-    if (!this.carregandoMais && this.haMais && !this.mensagemErro) {
-      this.carregar();
-    }
-  }
-
-  /** Repete a última busca que falhou, sem perder o que já está na tela. */
-  tentarDeNovo(): void {
-    this.carregar();
-  }
-
-  /** Alguns temas antigos foram gravados com aspas no banco (ex.: 'Tecnologia'); aqui elas não aparecem. */
-  nomeDoTema(descricao = ''): string {
-    return descricao.replace(/^['"]+|['"]+$/g, '');
-  }
-
-  private carregar(): void {
-    const primeira = this.proximaPagina === 0;
-    this.mensagemErro = null;
-    this.carregandoMais = !primeira;
-
-    this.postagemService.getPagina({ page: this.proximaPagina, size: POSTAGENS_POR_PAGINA }).subscribe({
-      next: pagina => {
-        this.postagens = [...this.postagens, ...pagina.conteudo];
-        this.haMais = !pagina.ultima;
-        this.proximaPagina = pagina.pagina + 1;
-        this.isLoading = false;
-        this.carregandoMais = false;
-      },
-      error: erro => {
-        this.mensagemErro = mensagemDeErro(erro, 'Não foi possível carregar as postagens.');
-        this.isLoading = false;
-        this.carregandoMais = false;
-      }
-    });
-  }
-}
+export class ExplorarComponent {}

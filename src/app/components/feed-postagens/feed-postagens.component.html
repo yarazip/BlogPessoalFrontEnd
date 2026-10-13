@@ -1,4 +1,6 @@
 <section class="feed" aria-label="Feed de postagens">
+  <ng-content />
+
   @if (isLoading) {
     <p class="feed-aviso">Carregando postagens...</p>
   }
@@ -11,21 +13,23 @@
   }
 
   @if (!isLoading && !mensagemErro && postagens.length === 0) {
-    <p class="feed-aviso">Ainda não há postagens.</p>
+    <p class="feed-aviso">{{ mensagemVazia() }}</p>
   }
 
   @for (postagem of postagens; track postagem.id) {
     <article class="post">
-      <img
-        [src]="postagem.usuario?.foto || fotoPadrao"
-        alt="Foto de {{ postagem.usuario?.nome }}"
-        class="foto-perfil"
-        loading="lazy"
-      />
+      <a class="foto-link" [routerLink]="['/perfil', postagem.usuario?.id]" [attr.aria-label]="'Perfil de ' + postagem.usuario?.nome">
+        <img
+          [src]="postagem.usuario?.foto || fotoPadrao"
+          alt="Foto de {{ postagem.usuario?.nome }}"
+          class="foto-perfil"
+          loading="lazy"
+        />
+      </a>
 
       <div class="post-corpo">
         <header class="post-cabecalho">
-          <h4 class="autor">{{ postagem.usuario?.nome }}</h4>
+          <h4 class="autor"><a [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a></h4>
           <span class="meta">· {{ postagem.data | dateBr: 'dd/MM/yyyy' }}</span>
         </header>
 

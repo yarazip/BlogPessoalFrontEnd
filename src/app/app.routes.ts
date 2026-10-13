@@ -41,6 +41,12 @@ export const routes: Routes = [
     title: 'Blogify - Perfil'
   },
   {
+    // perfil público de qualquer pessoa: sem guarda, qualquer um pode ver
+    path: 'perfil/:id',
+    loadComponent: () => import('./pages/perfil-publico/perfil-publico.component').then(m => m.PerfilPublicoComponent),
+    title: 'Blogify - Perfil'
+  },
+  {
     path: 'postagens',
     loadComponent: () => import('./pages/postagem-list/postagem-list.component').then(m => m.PostagemListComponent),
     canActivate: [authGuard],
