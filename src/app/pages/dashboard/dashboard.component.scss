@@ -1,8 +1,15 @@
-.welcome {
-  padding: 1rem;
+.insights-topo {
+  padding: 1.5rem 1rem 0.5rem;
   text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: clamp(1.5rem, 4vw, 2rem);
+
+  h2 {
+    margin-bottom: 0.4rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  p {
+    color: var(--text-muted);
+  }
 }
 
 .blogify-logo2 {
@@ -27,52 +34,6 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-.actions-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 1rem;
-  padding: 0 1rem;
-}
-
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  border: none;
-  background: var(--secondary-color);
-  color: var(--text-color);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  font-size: 0.95rem;
-  min-width: 140px;
-  text-align: center;
-}
-
-.action-btn app-icon {
-  font-size: 1rem;
-}
-
-.action-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.action-btn.primary {
-  background: var(--primary-color);
-  color: white;
-}
-
-.action-btn.primary:hover {
-  background: var(--btn-hover);
 }
 
 .stats-section {
@@ -180,21 +141,6 @@
 }
 
 @media (max-width: 576px) {
-  .welcome {
-    padding-left: 0;
-    text-align: center;
-  }
-  
-  .actions-section {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .action-btn {
-    width: 100%;
-    max-width: 250px;
-  }
-  
   .stats-section {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -223,5 +169,130 @@
   .card h3 {
     font-size: 0.95rem;
     margin-bottom: 0.5rem;
+  }
+}
+
+.novidades {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+
+  > h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.2rem;
+  }
+}
+
+.novidade-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--header-border);
+  border-radius: 12px;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  input,
+  textarea {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--header-border);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font: inherit;
+    resize: vertical;
+  }
+
+  .contador {
+    align-self: flex-end;
+    color: var(--text-muted);
+  }
+}
+
+.btn-publicar,
+.btn-tentar {
+  align-self: flex-start;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--text-color);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--secondary-color);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.novidades-aviso {
+  padding: 1.25rem 0;
+  text-align: center;
+  color: var(--text-muted);
+
+  p {
+    margin: 0 0 0.75rem;
+    color: var(--text-color);
+  }
+}
+
+.novidade {
+  padding: 1rem 0;
+  border-top: 1px solid var(--header-border);
+}
+
+.novidade-cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+
+  h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+.novidade-data {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.novidade-texto {
+  margin: 0.4rem 0 0;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.novidade-excluir {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-color);
   }
 }

@@ -32,7 +32,7 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard],
-    title: 'Blogify - Dashboard'
+    title: 'Blogify - Insights'
   },
   {
     path: 'perfil',

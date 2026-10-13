@@ -1,12 +1,14 @@
 import { IconComponent } from '../../shared/icon/icon.component';
-
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, effect, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ArcElement, Chart, Legend, PieController, Title, Tooltip } from 'chart.js';
 import { catchError, forkJoin, of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { DashboardService, StatsResponse } from '../../services/dashboard.service';
 import { ThemeService } from '../../services/theme.service';
+import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
+import { Aviso, LIMITES_AVISO } from '../../models/Aviso';
 
 // Registra só o que o gráfico de pizza usa (em vez de todo o Chart.js)
 Chart.register(PieController, ArcElement, Tooltip, Legend, Title);
@@ -23,7 +25,7 @@ const CORES_ESCURO = [
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IconComponent],
+  imports: [ReactiveFormsModule, DateBrPipe, IconComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -31,11 +33,24 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly dashboardService = inject(DashboardService);
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
-  private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
 
   @ViewChild('activityChart') activityChart?: ElementRef<HTMLCanvasElement>;
 
-  usuario = this.authService.getUsuario();
+  readonly limites = LIMITES_AVISO;
+  readonly admin = this.authService.isAdmin();
+
+  // mesmos limites validados pela API; divergir faz a publicação falhar com 400
+  readonly avisoForm = this.fb.nonNullable.group({
+    titulo: ['', [Validators.required, Validators.maxLength(LIMITES_AVISO.tituloMax)]],
+    texto: ['', [Validators.required, Validators.maxLength(LIMITES_AVISO.textoMax)]]
+  });
+
+  avisos: Aviso[] = [];
+  carregandoAvisos = true;
+  erroAvisos: string | null = null;
+  publicando = false;
+  erroPublicacao: string | null = null;
   userCount = 0;
   postCount = 0;
   loading = true;
@@ -52,6 +67,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.carregarContadores();
+    this.carregarAvisos();
   }
 
   ngAfterViewInit(): void {
@@ -62,12 +78,56 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.chart?.destroy();
   }
 
-  goToPostagens(): void {
-    this.router.navigate(['/postagens']);
+  carregarAvisos(): void {
+    this.carregandoAvisos = true;
+    this.erroAvisos = null;
+
+    this.dashboardService.getAvisos().subscribe({
+      next: avisos => {
+        this.avisos = avisos;
+        this.carregandoAvisos = false;
+      },
+      error: erro => {
+        this.erroAvisos = mensagemDeErro(erro, 'Não foi possível carregar as novidades.');
+        this.carregandoAvisos = false;
+      }
+    });
   }
 
-  goToPostagemNova(): void {
-    this.router.navigate(['/postagens/nova']);
+  /** Publica uma novidade (só aparece para administradores) e a coloca no topo da lista. */
+  publicar(): void {
+    if (this.avisoForm.invalid || this.publicando) {
+      this.avisoForm.markAllAsTouched();
+      return;
+    }
+
+    this.publicando = true;
+    this.erroPublicacao = null;
+
+    this.dashboardService.criarAviso(this.avisoForm.getRawValue()).subscribe({
+      next: aviso => {
+        this.avisos = [aviso, ...this.avisos];
+        this.avisoForm.reset();
+        this.publicando = false;
+      },
+      error: erro => {
+        this.erroPublicacao = mensagemDeErro(erro, 'Não foi possível publicar a novidade.');
+        this.publicando = false;
+      }
+    });
+  }
+
+  excluir(aviso: Aviso): void {
+    this.erroPublicacao = null;
+
+    this.dashboardService.excluirAviso(aviso.id).subscribe({
+      next: () => {
+        this.avisos = this.avisos.filter(a => a.id !== aviso.id);
+      },
+      error: erro => {
+        this.erroPublicacao = mensagemDeErro(erro, 'Não foi possível excluir a novidade.');
+      }
+    });
   }
 
   private carregarContadores(): void {
