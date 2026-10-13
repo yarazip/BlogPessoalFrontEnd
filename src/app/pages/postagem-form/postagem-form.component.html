@@ -1,7 +1,7 @@
 
 <div class="postagem-container">
   <div class="card">
-    <h2>{{ isEdit ? (isComentario ? 'Editar comentário' : 'Editar postagem') : 'Nova postagem de blog' }}</h2>
+    <h2>{{ isEdit ? (isComentario ? 'Editar rabisco' : 'Editar rascunho') : 'Novo rascunho' }}</h2>
 
     @if (errorMessage) {
       <div class="alert alert-danger" role="alert">
@@ -38,7 +38,7 @@
       }
 
         <div class="form-group">
-          <label for="texto">{{ isComentario ? 'Comentário' : 'Conteúdo' }} *</label>
+          <label for="texto">{{ isComentario ? 'Rabisco' : 'Conteúdo' }} *</label>
           <textarea
             id="texto"
             formControlName="texto"

@@ -134,7 +134,7 @@ describe('PostagemFormComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
     });
 
-    it('na tela não aparecem os campos de título e tema, e o título da página diz comentário', () => {
+    it('na tela não aparecem os campos de título e tema, e o título da página diz rabisco', () => {
       abrirComentario();
       fixture.detectChanges();
       const el = fixture.nativeElement as HTMLElement;
@@ -142,7 +142,7 @@ describe('PostagemFormComponent', () => {
       expect(el.querySelector('#titulo')).toBeNull();
       expect(el.querySelector('#tema')).toBeNull();
       expect(el.querySelector('#texto')).not.toBeNull();
-      expect(el.querySelector('h2')!.textContent).toBe('Editar comentário');
+      expect(el.querySelector('h2')!.textContent).toBe('Editar rabisco');
       expect(el.querySelector('.contador-texto')!.textContent).toBe('17/280');
     });
 
@@ -154,7 +154,7 @@ describe('PostagemFormComponent', () => {
 
       expect(el.querySelector('#titulo')).not.toBeNull();
       expect(el.querySelector('#tema')).not.toBeNull();
-      expect(el.querySelector('h2')!.textContent).toBe('Nova postagem de blog');
+      expect(el.querySelector('h2')!.textContent).toBe('Novo rascunho');
       expect(el.querySelector('.contador-texto')!.textContent).toBe('3/10000');
     });
   });

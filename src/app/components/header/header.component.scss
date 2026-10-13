@@ -41,23 +41,16 @@ header {
   display: inline-block;
 }
 
-.blogify-logo {
-  font-family: 'Syncopate', sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+
+.logo-wordmark {
+  font-size: 2rem;
   color: var(--text-color);
   transition: color 0.3s ease;
-  
-  span {
-    font-weight: 400;
-    color: var(--primary-color);
-  }
-  
-  &:hover {
-    color: var(--primary-color);
-  }
+}
+
+.logo-link:hover .logo-wordmark,
+.logo-link:focus-visible .logo-wordmark {
+  color: var(--primary-color);
 }
 
 .main-nav {
@@ -361,9 +354,8 @@ app-home {
     gap: 8px;
   }
 
-  .blogify-logo {
-    font-size: 1.15rem;
-    letter-spacing: 1px;
+  .logo-wordmark {
+    font-size: 1.6rem;
   }
 
   .main-nav {

@@ -1,4 +1,5 @@
 import { IconComponent } from '../../shared/icon/icon.component';
+import { LogoComponent } from '../../shared/logo/logo.component';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, effect, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ArcElement, Chart, Legend, PieController, Title, Tooltip } from 'chart.js';
@@ -25,7 +26,7 @@ const CORES_ESCURO = [
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ReactiveFormsModule, DateBrPipe, IconComponent],
+  imports: [ReactiveFormsModule, DateBrPipe, IconComponent, LogoComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

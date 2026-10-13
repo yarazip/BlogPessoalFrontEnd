@@ -1,4 +1,5 @@
 import { IconComponent } from '../../shared/icon/icon.component';
+import { LogoComponent } from '../../shared/logo/logo.component';
 import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -7,7 +8,7 @@ import { ThemeService } from '../../services/theme.service';
 @Component({
   selector: 'app-dashboard-header',
   standalone: true,
-  imports: [RouterModule, IconComponent],
+  imports: [RouterModule, IconComponent, LogoComponent],
   templateUrl: './dashboard-header.component.html',
   styleUrls: ['./dashboard-header.component.scss']
 })

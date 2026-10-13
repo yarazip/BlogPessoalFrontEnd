@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { LogoComponent } from '../../shared/logo/logo.component';
 import { IconName } from '../../shared/icon/icon-names';
 
 interface LinkDeContato {
@@ -11,7 +12,7 @@ interface LinkDeContato {
 
 @Component({
   selector: 'app-footer',
-  imports: [IconComponent],
+  imports: [IconComponent, LogoComponent],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss'
 })

@@ -37,33 +37,26 @@ header {
   }
 }
 
-// Logo styles
+// Logo
 .logo-link {
   text-decoration: none;
 }
 
-.blogfy-logo {
-  font-family: 'Syncopate', sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+.logo-wordmark {
+  font-size: 2rem;
   color: var(--text-color);
   transition: color 0.3s ease;
 
-  span {
-    color: var(--primary-color);
-    font-weight: 400;
-  }
-
-  &:hover {
-    color: var(--primary-color);
-  }
-
   @media (max-width: 480px) {
-    font-size: 1.2rem;
+    font-size: 1.7rem;
   }
 }
+
+.logo-link:hover .logo-wordmark,
+.logo-link:focus-visible .logo-wordmark {
+  color: var(--primary-color);
+}
+
 
 // Navigation styles
 .main-nav {

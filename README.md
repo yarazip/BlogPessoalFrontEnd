@@ -1,4 +1,4 @@
-# Blogify (front-end)
+# Rasura (front-end)
 
 Front-end em **Angular 19** do Blog Pessoal: cadastro e login, postagens por usuário, feed público e dashboard.
 O back-end (Spring Boot) fica em outro repositório: [BlogPessoal](https://github.com/yarazip/BlogPessoal).
@@ -74,6 +74,10 @@ Os desenhos vêm do [Font Awesome Free](https://fontawesome.com) 6, licença
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (atribuição mantida no próprio sprite).
 
 ## Deploy (Netlify)
+
+O site se chama **Rasura**, mas o projeto Angular e a pasta de saída mantêm o nome interno `blogify`
+(`angular.json`, `package.json`): eles estão amarrados ao `netlify.toml`, e renomeá-los é um passo à parte,
+que precisa mudar os dois juntos. O endereço técnico da API (`blogify-cf4p.onrender.com`) também continua.
 
 O build gera `dist/blogify/browser`, que é o diretório publicado (definido no `netlify.toml`; o plugin
 `@netlify/angular-runtime` do Netlify exige esse caminho). O `netlify.toml` define o redirecionamento da SPA e os **cabeçalhos de segurança**, incluindo uma

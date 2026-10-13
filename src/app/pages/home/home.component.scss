@@ -41,7 +41,7 @@
     }
 }
 
-.why-blogify {
+.why-rasura {
     background-color: var(--secondary-color);
     
     .why-content {
@@ -62,36 +62,8 @@
     }
 }
 
-.blogify-logo2{
-  font-family: 'Syncopate', sans-serif;
-  font-weight: 700px;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text-color);
-  transition: all 0.3s ease;
-  
-  span {
-    font-weight: 400;
-    color: var(--primary-color);
-  }
 
-}
 
-.blogify-logo {
-  font-family: 'Syncopate', sans-serif;
-  font-weight: 700px;
-  font-size: 2rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text-color);
-  transition: all 0.3s ease;
-  
-  span {
-    font-weight: 400;
-    color: var(--primary-color);
-  }
-}
 .why-text {
     p {
         font-size: 1.125rem;
@@ -342,12 +314,12 @@
         grid-template-columns: 1fr;
     }
     
-    .why-blogify {
+    .why-rasura {
         h2 {
             font-size: 1.8rem;
         }
         
-        .blogify-logo {
+        .logo-titulo {
             font-size: 1.8rem;
         }
         
