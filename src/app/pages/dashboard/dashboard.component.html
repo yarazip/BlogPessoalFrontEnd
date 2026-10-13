@@ -1,19 +1,11 @@
-
+<header class="insights-topo">
+  <h2>Insights do <span class="blogify-logo2">BLOG<span>ify</span></span></h2>
+  <p>Números oficiais do site e novidades do produto.</p>
+</header>
 
 @if (error) {
   <p class="mensagem-erro" role="alert">{{ error }}</p>
 }
-
-<h2 class="welcome">Bem-vindo ao Dashboard, {{ usuario?.nome }}</h2>
-
-<section class="actions-section">
-  <button (click)="goToPostagens()" class="action-btn">
-    <app-icon name="list" /> Ver Postagens
-  </button>
-  <button (click)="goToPostagemNova()" class="action-btn primary">
-    <app-icon name="plus" /> Nova Postagem
-  </button>
-</section>
 
 <div class="dashboard-container">
   <section class="stats-section">
@@ -33,4 +25,57 @@
       role="img"></canvas>
     </div>
   </div>
+
+  <section class="novidades" aria-labelledby="titulo-novidades">
+    <h3 id="titulo-novidades">Novidades do Blogify</h3>
+
+    @if (admin) {
+      <form class="novidade-form" [formGroup]="avisoForm" (ngSubmit)="publicar()">
+        <label for="aviso-titulo">Título</label>
+        <input id="aviso-titulo" type="text" formControlName="titulo" [maxlength]="limites.tituloMax" />
+
+        <label for="aviso-texto">Texto</label>
+        <textarea id="aviso-texto" rows="3" formControlName="texto" [maxlength]="limites.textoMax"></textarea>
+        <small class="contador">{{ avisoForm.controls.texto.value.length }}/{{ limites.textoMax }}</small>
+
+        <button type="submit" class="btn-publicar" [disabled]="publicando">
+          {{ publicando ? 'Publicando...' : 'Publicar novidade' }}
+        </button>
+      </form>
+    }
+
+    @if (erroPublicacao) {
+      <p class="mensagem-erro" role="alert">{{ erroPublicacao }}</p>
+    }
+
+    @if (carregandoAvisos) {
+      <p class="novidades-aviso">Carregando novidades...</p>
+    }
+
+    @if (erroAvisos) {
+      <div class="novidades-aviso" role="alert">
+        <p>{{ erroAvisos }}</p>
+        <button type="button" class="btn-tentar" (click)="carregarAvisos()">Tentar de novo</button>
+      </div>
+    }
+
+    @if (!carregandoAvisos && !erroAvisos && avisos.length === 0) {
+      <p class="novidades-aviso">Nenhuma novidade por enquanto.</p>
+    }
+
+    @for (aviso of avisos; track aviso.id) {
+      <article class="novidade">
+        <header class="novidade-cabecalho">
+          <h4>{{ aviso.titulo }}</h4>
+          <span class="novidade-data">{{ aviso.data | dateBr: 'dd/MM/yyyy' }}</span>
+        </header>
+        <p class="novidade-texto">{{ aviso.texto }}</p>
+        @if (admin) {
+          <button type="button" class="novidade-excluir" (click)="excluir(aviso)" [attr.aria-label]="'Excluir: ' + aviso.titulo">
+            <app-icon name="trash" /> Excluir
+          </button>
+        }
+      </article>
+    }
+  </section>
 </div>

@@ -14,6 +14,7 @@ export interface UsuarioResponse {
   email: string;
   token: string;
   foto?: string;
+  admin?: boolean;
 }
 
 export interface UsuarioLogin {
@@ -53,7 +54,13 @@ export class AuthService {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(
       USUARIO_KEY,
-      JSON.stringify({ id: usuario.id, nome: usuario.nome, email: usuario.email, foto: usuario.foto ?? '' })
+      JSON.stringify({
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        foto: usuario.foto ?? '',
+        admin: usuario.admin ?? false
+      })
     );
   }
 
@@ -68,6 +75,11 @@ export class AuthService {
       localStorage.removeItem(USUARIO_KEY);
       return null;
     }
+  }
+
+  /** Mostra ou esconde as ações de administrador na tela; quem barra de verdade é a API (403). */
+  isAdmin(): boolean {
+    return this.getUsuario()?.admin === true;
   }
 
   updateUsuario(parcial: Partial<Usuario>): void {

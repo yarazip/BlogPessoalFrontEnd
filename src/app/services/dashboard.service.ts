@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Aviso, AvisoRequest } from '../models/Aviso';
 
 export interface StatsResponse {
   day: string;
@@ -20,6 +21,20 @@ export class DashboardService {
 
   getPostCount(): Observable<number> {
     return this.http.get<{ quantidade: number }>(`${this.apiUrl}/postagens/count`).pipe(map(r => r.quantidade));
+  }
+
+  /** Novidades oficiais do Blogify, as mais recentes primeiro (leitura pública). */
+  getAvisos(): Observable<Aviso[]> {
+    return this.http.get<Aviso[]>(`${this.apiUrl}/avisos`);
+  }
+
+  /** Só administradores: a API responde 403 para os demais. */
+  criarAviso(aviso: AvisoRequest): Observable<Aviso> {
+    return this.http.post<Aviso>(`${this.apiUrl}/avisos`, aviso);
+  }
+
+  excluirAviso(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/avisos/${id}`);
   }
 
   /** Postagens por dia da semana; os nomes dos dias já vêm em português da API. */

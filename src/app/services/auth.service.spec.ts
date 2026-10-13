@@ -54,8 +54,20 @@ describe('AuthService', () => {
       service.saveAuthData({ id: 1, nome: 'Ana', email: 'a@a.com', token: 'Bearer abc.def.ghi' });
 
       expect(service.getToken()).toBe('abc.def.ghi');
-      expect(service.getUsuario()).toEqual({ id: 1, nome: 'Ana', email: 'a@a.com', foto: '' });
+      expect(service.getUsuario()).toEqual({ id: 1, nome: 'Ana', email: 'a@a.com', foto: '', admin: false });
       expect(localStorage.getItem('usuario')).not.toContain('abc.def.ghi');
+    });
+
+    it('guarda se a pessoa é administradora e responde em isAdmin()', () => {
+      service.saveAuthData({ id: 1, nome: 'Ana', email: 'a@a.com', token: 't', admin: true });
+      expect(service.isAdmin()).toBeTrue();
+
+      service.saveAuthData({ id: 2, nome: 'Bia', email: 'b@b.com', token: 't' });
+      expect(service.isAdmin()).toBeFalse();
+    });
+
+    it('sem sessão ninguém é administrador', () => {
+      expect(service.isAdmin()).toBeFalse();
     });
 
     it('está logado com token válido', () => {
@@ -111,7 +123,7 @@ describe('AuthService', () => {
 
       service.updateUsuario({ foto: 'http://x/foto.png' });
 
-      expect(service.getUsuario()).toEqual({ id: 1, nome: 'Ana', email: 'a@a.com', foto: 'http://x/foto.png' });
+      expect(service.getUsuario()).toEqual({ id: 1, nome: 'Ana', email: 'a@a.com', foto: 'http://x/foto.png', admin: false });
     });
   });
 });
