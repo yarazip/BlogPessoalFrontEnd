@@ -1,6 +1,17 @@
 
 
 :root { 
+  /* Identidade "zine de caderno" (a mesma da página inicial): papel, tinta e contornos grossos. */
+  --zine-papel: #fbf6e9;
+  --zine-folha: #ffffff;
+  --zine-tinta: #1f1a2e;
+  --zine-suave: #5f5870;
+  --zine-contorno: #1f1a2e;
+  --zine-sombra: #1f1a2e;
+  --zine-laranja: #ff7a2f;
+  --zine-roxo: #7b4dff;
+  --zine-marca: #ffe35c;
+  --zine-marca-leve: #ffe35c;
   --bg-color: #FFFFFF;
   --text-color: #333333;
   --text-muted: #6B6B6B;
@@ -18,6 +29,14 @@
 }
 
 .dark-mode {
+  --zine-papel: #1a1727;
+  --zine-folha: #262238;
+  --zine-tinta: #f3eefc;
+  --zine-suave: #b3abc7;
+  --zine-contorno: #b9a8ee;
+  --zine-sombra: #000000;
+  --zine-roxo: #b79bff;
+  --zine-marca-leve: rgba(255, 227, 92, 0.32);
   --bg-color: #121212;
   --text-color: #E0E0E0;
   --text-muted: #9E9E9E;
