@@ -276,3 +276,94 @@ header {
     border-radius: 50%;
   }
 }
+
+// ===== Identidade zine (mesmos tokens da página inicial; definidos em styles.scss) =====
+header {
+  background-color: var(--zine-papel);
+  border-bottom: 2px solid var(--zine-contorno);
+  box-shadow: none;
+}
+
+.logo-wordmark {
+  padding: 0 6px;
+  color: var(--zine-tinta);
+  background: linear-gradient(transparent 58%, var(--zine-marca-leve) 58% 90%, transparent 90%);
+}
+
+.logo-link:hover .logo-wordmark,
+.logo-link:focus-visible .logo-wordmark {
+  color: var(--zine-roxo);
+}
+
+.nav-links a {
+  isolation: isolate;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  color: var(--zine-tinta);
+
+  &::after {
+    z-index: -1;
+    bottom: 0.1em;
+    left: -4px;
+    height: 0.6em;
+    background-color: var(--zine-marca-leve);
+    transform: rotate(-1deg);
+  }
+
+  &:hover,
+  &.active {
+    color: var(--zine-tinta);
+    font-weight: 700;
+  }
+
+  &:hover::after,
+  &.active::after {
+    width: calc(100% + 8px);
+  }
+
+  @media (max-width: 768px) {
+    &::after {
+      bottom: 0.7em;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    background-color: var(--zine-papel);
+    border-bottom: 2px solid var(--zine-contorno);
+    box-shadow: none;
+  }
+}
+
+.main-nav .mobile-menu-toggle .hamburger-line {
+  background-color: var(--zine-tinta);
+}
+
+.theme-toggle,
+.logout-btn {
+  border: 2px solid var(--zine-contorno);
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+  box-shadow: 3px 3px 0 var(--zine-sombra);
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+}
+
+.theme-toggle:hover {
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+}
+
+.logout-btn {
+  font-weight: 700;
+
+  &:hover {
+    background: var(--zine-folha);
+    color: var(--error-color);
+  }
+}
