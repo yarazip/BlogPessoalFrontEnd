@@ -92,6 +92,96 @@ describe('busca de música e de livro', () => {
       ]);
     });
 
+    describe('capas', () => {
+      const doc = (titulo: string, autor: string, cover?: number) => ({ title: titulo, author_name: [autor], cover_i: cover });
+      const buscar = (docs: unknown[], limite?: number) => {
+        let itens: { titulo: string; capa: string | null }[] = [];
+        TestBed.inject(BuscaLivroService).buscar('x', limite).subscribe(i => (itens = i));
+        http.expectOne(r => r.url.includes('openlibrary')).flush({ docs });
+        return itens;
+      };
+
+      it('pede bem mais resultados do que mostra, para ter de onde escolher livros com capa', () => {
+        TestBed.inject(BuscaLivroService).buscar('dom casmurro').subscribe();
+
+        const req = http.expectOne(r => r.url.includes('openlibrary'));
+        expect(Number(req.request.params.get('limit'))).toBeGreaterThanOrEqual(20);
+        req.flush({ docs: [] });
+      });
+
+      it('os livros com capa vêm primeiro, mantendo a ordem de relevância dentro de cada grupo', () => {
+        const itens = buscar([
+          doc('Sem capa A', 'Autor 1'),
+          doc('Com capa B', 'Autor 2', 2),
+          doc('Sem capa C', 'Autor 3'),
+          doc('Com capa D', 'Autor 4', 4)
+        ]);
+
+        expect(itens.map(i => i.titulo)).toEqual(['Com capa B', 'Com capa D', 'Sem capa A', 'Sem capa C']);
+      });
+
+      it('as edições repetidas do mesmo livro viram uma só, e fica a que tem capa', () => {
+        const itens = buscar([
+          doc('Dom Casmurro', 'Machado de Assis'),
+          doc('Dom Casmurro', 'Machado de Assis', 647501),
+          doc('Dom Casmurro', 'Machado de Assis', 999)
+        ]);
+
+        expect(itens.length).toBe(1);
+        expect(itens[0].capa).toBe('https://covers.openlibrary.org/b/id/647501-M.jpg');
+      });
+
+      it('título e autor iguais, mesmo com acento, maiúscula ou pontuação diferentes, contam como o mesmo livro', () => {
+        const itens = buscar([
+          doc('Dom Casmurro', 'Machado de Assís'),
+          doc('DOM CASMURRO!', 'machado de assis', 5)
+        ]);
+
+        expect(itens.length).toBe(1);
+        expect(itens[0].capa).not.toBeNull();
+      });
+
+      it('livros diferentes do mesmo autor, ou com o mesmo título e autores diferentes, não são juntados', () => {
+        const itens = buscar([
+          doc('Dom Casmurro', 'Machado de Assis', 1),
+          doc('Quincas Borba', 'Machado de Assis', 2),
+          doc('Dom Casmurro', 'Outra Pessoa', 3)
+        ]);
+
+        expect(itens.length).toBe(3);
+      });
+
+      it('mostra no máximo o limite pedido (6), escolhendo os com capa', () => {
+        const docs = [
+          ...Array.from({ length: 5 }, (_, n) => doc(`Sem capa ${n}`, `Autor ${n}`)),
+          ...Array.from({ length: 8 }, (_, n) => doc(`Com capa ${n}`, `Escritor ${n}`, n + 1))
+        ];
+
+        const itens = buscar(docs);
+
+        expect(itens.length).toBe(6);
+        expect(itens.every(i => i.capa)).toBeTrue();
+      });
+
+      it('se há poucos com capa, os sem capa completam a lista (a pessoa ainda pode escolher o livro)', () => {
+        const itens = buscar([doc('Com capa', 'Autor 1', 1), doc('Sem capa 1', 'Autor 2'), doc('Sem capa 2', 'Autor 3')]);
+
+        expect(itens.map(i => i.titulo)).toEqual(['Com capa', 'Sem capa 1', 'Sem capa 2']);
+      });
+
+      it('respeita um limite diferente do padrão', () => {
+        const itens = buscar(Array.from({ length: 10 }, (_, n) => doc(`Livro ${n}`, `Autor ${n}`, n + 1)), 3);
+
+        expect(itens.length).toBe(3);
+      });
+
+      it('resultados sem título são descartados', () => {
+        const itens = buscar([{ author_name: ['Alguém'], cover_i: 1 }, doc('Com título', 'Autor', 2)]);
+
+        expect(itens.map(i => i.titulo)).toEqual(['Com título']);
+      });
+    });
+
     it('livro sem capa ou sem autor continua aparecendo', () => {
       let itens: unknown;
       TestBed.inject(BuscaLivroService).buscar('x').subscribe(i => (itens = i));
