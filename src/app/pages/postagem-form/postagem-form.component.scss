@@ -270,3 +270,70 @@ textarea#texto {
 .form-group select {
   font-family: inherit;
 }
+
+/* Os campos nunca passam da largura do cartão (a borda e o espaço interno contam dentro dos 100%) */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+/* Celular: cartão mais justo, abas e botões fáceis de tocar, e a barra fixa baixa (botões lado a lado, não um sobre o outro) */
+@media (max-width: 480px) {
+  .postagem-container {
+    margin: 1rem auto;
+    padding: 0 0.5rem;
+  }
+
+  .card {
+    padding: 1rem;
+
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.4rem;
+    }
+  }
+
+  .abas {
+    margin-bottom: 12px;
+  }
+
+  .aba {
+    flex: 1;
+    min-height: 44px;
+    padding: 8px 12px;
+    text-align: center;
+  }
+
+  .aviso-recuperado {
+    padding: 8px 12px;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: row;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding: 10px 0 2px;
+
+    button {
+      flex: 1;
+      width: auto;
+      min-height: 46px;
+      padding: 0.6rem 0.75rem;
+    }
+  }
+
+  .contadores {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .contadores .contador-texto {
+    margin-left: 0;
+  }
+}

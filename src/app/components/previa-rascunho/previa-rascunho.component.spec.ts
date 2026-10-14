@@ -22,7 +22,6 @@ describe('PreviaRascunhoComponent', () => {
   it('sem título nem texto, mostra um convite e nenhuma das duas prévias', () => {
     expect(el.querySelector('.previa-vazia')!.textContent).toContain('Escreva um título e um texto');
     expect(el.querySelector('.previa-post')).toBeNull();
-    expect(el.querySelector('.previa-pagina')).toBeNull();
   });
 
   it('só espaços também conta como vazio', () => {
@@ -60,29 +59,23 @@ describe('PreviaRascunhoComponent', () => {
     });
   });
 
-  describe('na página da postagem', () => {
-    it('mostra o texto inteiro, mesmo o longo, e o tempo de leitura', () => {
-      const texto = palavras(450);
-      definir({ titulo: 'Título', texto, autor: 'Ana' });
+  it('mostra só a prévia do feed (não há uma segunda prévia da página da postagem)', () => {
+    definir({ titulo: 'Título', texto: palavras(450), autor: 'Ana' });
 
-      const pagina = el.querySelector('.previa-pagina')!;
-      expect(pagina.querySelector('.previa-texto')!.textContent).toBe(texto);
-      expect(pagina.querySelector('.previa-meta')!.textContent).toBe('Ana · hoje · 3 min de leitura');
-    });
-
-    it('um texto curto leva 1 minuto', () => {
-      definir({ titulo: 'Título', texto: 'Curto.' });
-
-      expect(el.querySelector('.previa-meta')!.textContent).toContain('1 min de leitura');
-    });
+    expect(el.querySelectorAll('.previa-post').length).toBe(1);
+    expect(el.querySelectorAll('.previa-bloco').length).toBe(1);
+    expect(el.querySelector('.previa-rotulo')!.textContent).toBe('No feed');
+    expect(el.querySelector('.previa-pagina')).toBeNull();
+    expect(el.querySelector('.previa-meta')).toBeNull();
+    expect(el.textContent).not.toContain('min de leitura');
   });
 
   describe('fonte', () => {
-    it('título e texto aparecem na fonte escolhida, nas duas prévias', () => {
+    it('título e texto aparecem na fonte escolhida', () => {
       definir({ titulo: 'Título', texto: 'Texto', fonte: 'MEA_CULPA' });
 
       const textos = Array.from(el.querySelectorAll<HTMLElement>('.previa-titulo, .previa-texto'));
-      expect(textos.length).toBe(4);
+      expect(textos.length).toBe(2);
       textos.forEach(t => expect(t.style.fontFamily).toContain('Mea Culpa'));
     });
 

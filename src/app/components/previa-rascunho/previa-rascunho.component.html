@@ -19,18 +19,4 @@
       }
     </article>
   </section>
-
-  <section class="previa-bloco" aria-labelledby="previa-pagina">
-    <h3 class="previa-rotulo" id="previa-pagina">Na página da postagem</h3>
-    <article class="previa-pagina">
-      @if (titulo().trim()) {
-        <h4 class="previa-titulo grande" [style.font-family]="pilha()" [style.font-weight]="pesoDoTitulo()">{{ titulo() }}</h4>
-      }
-      <p class="previa-meta">{{ autor() }} · hoje · {{ minutos() }} min de leitura</p>
-      <p class="previa-texto inteiro" [style.font-family]="pilha()">{{ texto() }}</p>
-      @if (tema()) {
-        <span class="previa-tema">#{{ tema() }}</span>
-      }
-    </article>
-  </section>
 }

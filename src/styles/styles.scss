@@ -653,3 +653,10 @@ body.modal-aberto {
     color: #fff;
   }
 }
+
+/* Celular: botões da identidade com altura de toque confortável (44px, o mínimo recomendado) */
+@media (max-width: 480px) {
+  .zine-botao {
+    min-height: 44px;
+  }
+}
