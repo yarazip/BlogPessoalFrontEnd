@@ -21,7 +21,7 @@
         <li>
           <button type="button" class="busca-item" (click)="escolher(item)">
             @if (item.capa) {
-              <img class="busca-capa" [src]="item.capa" alt="" width="36" height="36" loading="lazy" />
+              <img class="busca-capa" [src]="item.capa" alt="" width="36" height="36" />
             } @else {
               <span class="busca-capa sem-capa" aria-hidden="true"></span>
             }
