@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { minutosDeLeitura } from '../../shared/leitura';
 import { pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
 import { Postagem } from '../../models/Postagem';
 
@@ -70,6 +71,17 @@ export class FeedPostagensComponent implements OnInit {
   /** Trecho da postagem para o nome do menu lido por leitores de tela. */
   rotuloDe(postagem: Postagem): string {
     return (postagem.titulo || postagem.texto).slice(0, 50);
+  }
+
+  /** Minutos de leitura de um rascunho; rabisco não mostra, e prévia sem o dado da API também não. */
+  minutosDe(postagem: Postagem): number | null {
+    if (postagem.tipo === 'COMENTARIO') {
+      return null;
+    }
+    if (postagem.minutosLeitura) {
+      return postagem.minutosLeitura;
+    }
+    return postagem.resumido ? null : minutosDeLeitura(postagem.texto);
   }
 
   /** O menu de três pontinhos (Editar e Excluir) aparece nas postagens da própria pessoa; a API também exige. */

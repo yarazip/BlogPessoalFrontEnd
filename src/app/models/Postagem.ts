@@ -25,6 +25,8 @@ export interface Postagem {
   texto: string;
   /** true quando o texto é só a prévia (listas do feed); o texto inteiro vem em GET /postagens/{id}. */
   resumido?: boolean;
+  /** Tempo de leitura do texto inteiro, calculado pela API (a prévia não tem o texto todo); ausente em respostas antigas. */
+  minutosLeitura?: number | null;
   data?: Date | string;
   tema?: Tema | null;
   usuario?: Usuario;

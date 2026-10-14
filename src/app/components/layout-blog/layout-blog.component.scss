@@ -1,0 +1,83 @@
+.layout {
+  display: block;
+  margin: 0 auto;
+}
+
+.lateral {
+  display: none; // só no computador
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    max-width: 1120px;
+    padding: 24px 16px;
+  }
+
+  .principal {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .lateral {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 20px;
+    width: 260px;
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+  }
+}
+
+/* Caixinha de blog antigo: moldura grossa, faixa de título em fonte manuscrita, texto simples. */
+.caixa {
+  border: 2px solid var(--text-color);
+  background: var(--bg-color);
+  box-shadow: 4px 4px 0 var(--header-border);
+}
+
+.caixa-titulo {
+  margin: 0;
+  padding: 4px 10px;
+  background: var(--text-color);
+  color: var(--bg-color);
+  font-family: 'Mansalva', cursive;
+  font-size: 1.15rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.caixa-texto {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.caixa-lista {
+  margin: 0;
+  padding: 8px 12px;
+  list-style: none;
+  font-size: 0.9rem;
+
+  li {
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--header-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  a {
+    color: var(--text-color);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--primary-color);
+    }
+  }
+}

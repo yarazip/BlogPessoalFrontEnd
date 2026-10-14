@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompositorComentarioComponent } from '../../components/compositor-comentario/compositor-comentario.component';
 import { FeedPostagensComponent } from '../../components/feed-postagens/feed-postagens.component';
+import { LayoutBlogComponent } from '../../components/layout-blog/layout-blog.component';
 import { LIMITE_BIO, Perfil } from '../../models/Perfil';
 import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
@@ -18,7 +19,7 @@ import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [FeedPostagensComponent, CompositorComentarioComponent, IconComponent, ReactiveFormsModule, RouterLink],
+  imports: [LayoutBlogComponent, FeedPostagensComponent, CompositorComentarioComponent, IconComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })

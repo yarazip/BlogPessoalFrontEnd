@@ -1,0 +1,40 @@
+<div class="layout">
+  <div class="principal">
+    <ng-content />
+  </div>
+
+  <aside class="lateral" aria-label="Barra lateral">
+    <section class="caixa">
+      <h2 class="caixa-titulo">~ sobre ~</h2>
+      <p class="caixa-texto">
+        A Rasura é um canto para escrever <strong>rascunhos</strong> (textos longos) e soltar
+        <strong>rabiscos</strong> (ideias curtas). Sem pressa, sem pose.
+      </p>
+    </section>
+
+    @if (temas.length > 0) {
+      <section class="caixa">
+        <h2 class="caixa-titulo">~ temas ~</h2>
+        <ul class="caixa-lista">
+          @for (tema of temas; track tema.id) {
+            <li>#{{ nomeDoTema(tema.descricao) }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section class="caixa">
+      <h2 class="caixa-titulo">~ cantinho ~</h2>
+      <ul class="caixa-lista">
+        @if (logado) {
+          <li><a routerLink="/postagens/nova">Escrever um rascunho</a></li>
+          <li><a routerLink="/perfil">Meu perfil</a></li>
+        } @else {
+          <li><a routerLink="/login">Entrar</a></li>
+          <li><a routerLink="/register">Criar conta</a></li>
+        }
+        <li><a routerLink="/explorar">Últimas postagens</a></li>
+      </ul>
+    </section>
+  </aside>
+</div>

@@ -2,9 +2,9 @@
    Medidas por faixa de largura (mobile first), definidas como variáveis para o resto do arquivo:
      até 359px  celular estreito: tudo mais justo
      360-599px  celular: coluna ocupa a tela, sem bordas laterais
-     600-1023px tablet: coluna de 600px centralizada, com bordas
-     1024-1439  desktop: coluna de 680px, foto e texto maiores
-     1440+      tela larga: coluna de 720px */
+     600-1023px tablet: coluna de 680px centralizada, com bordas
+     1024+      computador: a coluna ocupa o espaço que a moldura de blog (LayoutBlog) lhe dá,
+                com foto, título e texto maiores e filetes pontilhados entre as entradas */
 .feed {
   --feed-largura: 100%;
   --post-espaco: 16px;
@@ -26,21 +26,19 @@
   }
 
   @media (min-width: 600px) {
-    --feed-largura: 600px;
+    --feed-largura: 680px;
     border-inline: 1px solid var(--header-border);
   }
 
   @media (min-width: 1024px) {
-    --feed-largura: 680px;
-    --post-espaco: 20px;
-    --post-intervalo: 16px;
-    --foto-tamanho: 48px;
-    --texto-tamanho: 1rem;
-    --titulo-tamanho: 1.15rem;
-  }
-
-  @media (min-width: 1440px) {
-    --feed-largura: 720px;
+    --feed-largura: none;
+    --post-espaco: 24px;
+    --post-intervalo: 18px;
+    --foto-tamanho: 52px;
+    --texto-tamanho: 1.05rem;
+    --titulo-tamanho: 1.5rem;
+    border: 2px solid var(--text-color);
+    box-shadow: 4px 4px 0 var(--header-border);
   }
 }
 
@@ -50,6 +48,10 @@
   padding: var(--post-espaco);
   border-bottom: 1px solid var(--header-border);
   transition: background-color 0.15s ease;
+
+  @media (min-width: 1024px) {
+    border-bottom-style: dotted;
+  }
 
   &:hover {
     background-color: var(--secondary-color);
@@ -118,9 +120,14 @@
   margin: 0;
   font-size: var(--texto-tamanho);
   line-height: 1.5;
+  max-width: 68ch; /* linha de leitura confortável mesmo na coluna larga */
   color: var(--text-color);
   white-space: pre-line;
   overflow-wrap: anywhere;
+
+  @media (min-width: 1024px) {
+    line-height: 1.65;
+  }
 }
 
 .post-titulo a {
@@ -202,4 +209,8 @@
 
 .post-cabecalho.com-menu {
   padding-right: 32px;
+}
+
+.leitura {
+  white-space: nowrap;
 }

@@ -6,6 +6,7 @@ import { Perfil } from '../../models/Perfil';
 import { Postagem } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
+import { TemaService } from '../../services/tema.service';
 import { PostagemService } from '../../services/postagem.service';
 import { PerfilComponent } from './perfil.component';
 
@@ -61,6 +62,7 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
         provideRouter([]),
         { provide: PerfilService, useValue: perfis },
         { provide: PostagemService, useValue: postagens },
+        { provide: TemaService, useValue: { getAll: () => of([]) } },
         { provide: AuthService, useValue: auth },
         { provide: ActivatedRoute, useValue: { paramMap: params } }
       ]

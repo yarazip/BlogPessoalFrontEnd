@@ -16,7 +16,7 @@
       </a>
       <div>
         <a class="detalhe-nome" [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a>
-        <span class="detalhe-data">{{ postagem.data | dateBr }}</span>
+        <span class="detalhe-data">{{ postagem.data | dateBr }}@if (minutos) { · {{ minutos }} min de leitura }</span>
       </div>
     </header>
 
