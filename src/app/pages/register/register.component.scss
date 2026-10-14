@@ -6,8 +6,7 @@
     }
     
     :host {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
+      font-family: 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: var(--text-color);
       min-height: 100vh;
       display: flex;
@@ -36,17 +35,12 @@
     
     .register-card {
       background-color: var(--card-bg);
-      padding: 50px; 
-      border-radius: 16px; 
+      padding: 50px;
+      border: 2px solid var(--zine-contorno);
+      border-radius: 6px;
       width: 100%;
       max-width: 600px;
-      transition: all 0.3s ease;
-      box-shadow: 0 15px 20px var(--shadow-color); 
-    }
-    
-    .register-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 30px var(--shadow-color);
+      box-shadow: 6px 6px 0 var(--zine-sombra);
     }
     
     .register-card h1 {
@@ -56,7 +50,7 @@
     }
     
     .subtitle {
-      color: var(--text-secondary);
+      color: var(--text-muted);
       margin-bottom: 2.5rem;
       font-size: 1.125rem; 
     }
@@ -81,8 +75,8 @@
     
     .form-group input {
       padding: 1rem 1.25rem; 
-      border-radius: 0.625rem;
-      border: 2px solid var(--input-border); 
+      border-radius: 6px;
+      border: 2px solid var(--zine-contorno);
       background-color: var(--bg-color);
       color: var(--text-color);
       font-size: 1rem;
@@ -90,25 +84,31 @@
     }
     
     .form-group input:focus {
-      border-color: var(--primary-color);
       outline: none;
-      box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.2);
+      box-shadow: 3px 3px 0 var(--zine-roxo);
     }
     
     .password-hint {
       font-size: 0.875rem;
-      color: var(--text-secondary);
+      color: var(--text-muted);
     }
     
     .register-button {
       padding: 1rem;
       font-size: 1rem;
-      background-color: var(--primary-color);
+      background-color: var(--zine-laranja);
       color: white;
-      border: none;
-      border-radius: 0.625rem;
+      border: 2px solid var(--zine-contorno);
+      border-radius: 10px;
+      font-weight: 800;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      box-shadow: 4px 4px 0 var(--zine-sombra);
+      transition: transform 0.1s, box-shadow 0.1s;
+
+      &:hover:not([disabled]) {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--zine-sombra);
+      }
 
        
   .loading-content {
@@ -207,7 +207,7 @@
   }
   
   .word {
-    font-family: 'oswald', 'sans serif'  ;
+    font-family: 'Mansalva', cursive;
     opacity: 0.7;
     transition: transform 1s ease;
   }
@@ -260,3 +260,12 @@
     animation: fadeSlideIn 1s ease forwards;
   }
   
+
+/* botão desativado (formulário incompleto): fica claramente apagado, mas legível */
+.register-button[disabled] {
+  background-color: var(--secondary-color);
+  color: var(--text-muted);
+  opacity: 1;
+  box-shadow: none;
+  border-color: var(--header-border);
+}

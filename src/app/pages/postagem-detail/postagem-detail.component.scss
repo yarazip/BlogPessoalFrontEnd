@@ -1,8 +1,17 @@
 /* Página de leitura: coluna estreita e texto confortável, no mesmo clima do feed. */
 .detalhe {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 24px 16px 48px;
+  max-width: 720px;
+  margin: 24px auto 48px;
+  padding: 24px 24px 32px;
+  background: var(--card-bg);
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  box-shadow: 6px 6px 0 var(--zine-sombra);
+
+  @media (max-width: 760px) {
+    margin: 12px;
+    padding: 16px;
+  }
 }
 
 .detalhe-voltar {

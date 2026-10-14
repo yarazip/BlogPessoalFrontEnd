@@ -94,18 +94,21 @@
   align-items: center;
   gap: 6px;
   padding: 6px 16px;
-  border: 1px solid var(--text-color);
-  border-radius: 999px;
-  background: none;
-  color: var(--text-color);
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
   font: inherit;
   font-size: 0.9rem;
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
+  box-shadow: 3px 3px 0 var(--zine-sombra);
 
   &:hover:not(:disabled),
   &:focus-visible {
-    background: var(--secondary-color);
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
   }
 
   &:disabled {
