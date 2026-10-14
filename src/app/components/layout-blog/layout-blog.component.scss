@@ -27,8 +27,14 @@
     flex-direction: column;
     gap: 20px;
     width: 260px;
+    /* Fica à vista enquanto o feed rola. Se as caixas forem mais altas que a tela, a própria barra rola
+       (sem isso o fim dela ficava cortado e inalcançável). A folga lateral é para não cortar a sombra. */
     position: sticky;
     top: calc(var(--header-height) + 24px);
+    max-height: calc(100vh - var(--header-height) - 48px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 6px 6px 0;
   }
 }
 
@@ -79,5 +85,148 @@
     &:focus-visible {
       color: var(--primary-color);
     }
+  }
+}
+
+.cartao-corpo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.cartao-foto img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.cartao-nome {
+  font-weight: 700;
+  color: var(--text-color);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+.cartao-bio {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+
+  &.vazia {
+    color: var(--text-muted);
+  }
+
+  a {
+    color: inherit;
+  }
+}
+
+.destaques {
+  margin: 0;
+  padding: 8px 12px;
+
+  dt {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.destaques-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+
+  label {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  input {
+    padding: 6px 8px;
+    border: 1px solid var(--header-border);
+    background: var(--bg-color);
+    color: var(--text-color);
+    font: inherit;
+    font-size: 0.9rem;
+  }
+}
+
+.destaques-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 12px 10px;
+}
+
+.destaques-form .destaques-acoes {
+  padding: 8px 0 0;
+}
+
+.destaques-erro {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #d93025;
+}
+
+.botao {
+  padding: 4px 14px;
+  border: 1px solid var(--text-color);
+  border-radius: 999px;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: var(--secondary-color);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.botao-texto {
+  padding: 4px 6px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--text-color);
   }
 }

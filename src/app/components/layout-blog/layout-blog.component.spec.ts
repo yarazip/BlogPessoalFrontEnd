@@ -1,61 +1,195 @@
-import { TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
-import { Tema } from '../../models/Tema';
+import { Perfil } from '../../models/Perfil';
 import { AuthService } from '../../services/auth.service';
-import { TemaService } from '../../services/tema.service';
+import { PerfilService } from '../../services/perfil.service';
 import { LayoutBlogComponent } from './layout-blog.component';
 
-describe('LayoutBlogComponent', () => {
-  let logado = false;
+@Component({
+  standalone: true,
+  imports: [LayoutBlogComponent],
+  template: '<app-layout-blog [perfilId]="id()" [comCartao]="comCartao()"><p class="conteudo">feed</p></app-layout-blog>'
+})
+class AnfitriaoComponent {
+  readonly id = signal<number | null>(null);
+  readonly comCartao = signal(true);
+}
 
-  const montar = (temas: Observable<Tema[]>) => {
-    TestBed.configureTestingModule({
-      imports: [LayoutBlogComponent],
-      providers: [
-        provideRouter([]),
-        { provide: TemaService, useValue: { getAll: () => temas } },
-        { provide: AuthService, useValue: { isLoggedIn: () => logado } }
-      ]
-    });
-    const fixture = TestBed.createComponent(LayoutBlogComponent);
+describe('LayoutBlogComponent', () => {
+  let perfis: jasmine.SpyObj<PerfilService>;
+  let logadoComo: { id: number } | null;
+  let fixture: ComponentFixture<AnfitriaoComponent>;
+  let el: HTMLElement;
+
+  const perfil = (sobre: Partial<Perfil> = {}): Perfil => ({
+    id: 5,
+    nome: 'Bia Autora',
+    bio: 'Escrevo sobre café.',
+    totalPostagens: 2,
+    ...sobre
+  });
+
+  const montar = (opcoes: { id?: number | null; comCartao?: boolean; resposta?: Observable<Perfil> } = {}) => {
+    perfis.getPerfil.and.returnValue(opcoes.resposta ?? of(perfil()));
+    fixture = TestBed.createComponent(AnfitriaoComponent);
+    fixture.componentInstance.id.set(opcoes.id ?? null);
+    fixture.componentInstance.comCartao.set(opcoes.comCartao ?? true);
     fixture.detectChanges();
-    return fixture.nativeElement as HTMLElement;
+    el = fixture.nativeElement;
   };
 
-  beforeEach(() => (logado = false));
+  const titulos = () => Array.from(el.querySelectorAll('.caixa-titulo')).map(t => t.textContent!.trim());
 
-  it('lista os temas na barra lateral, sem as aspas gravadas em temas antigos', () => {
-    const el = montar(of([{ id: 1, descricao: "'Tecnologia'" }, { id: 2, descricao: 'Viagens' }]));
-
-    const itens = Array.from(el.querySelectorAll('.caixa-lista li')).map(li => li.textContent!.trim());
-    expect(itens).toContain('#Tecnologia');
-    expect(itens).toContain('#Viagens');
+  beforeEach(() => {
+    logadoComo = null;
+    perfis = jasmine.createSpyObj('PerfilService', ['getPerfil', 'atualizarDestaques']);
+    TestBed.configureTestingModule({
+      imports: [AnfitriaoComponent],
+      providers: [
+        provideRouter([]),
+        { provide: PerfilService, useValue: perfis },
+        { provide: AuthService, useValue: { isLoggedIn: () => !!logadoComo, getUsuario: () => logadoComo } }
+      ]
+    });
   });
 
-  it('se os temas não carregarem, a caixa de temas simplesmente não aparece', () => {
-    const el = montar(throwError(() => new Error('falhou')));
+  it('projeta o conteúdo no meio da moldura', () => {
+    montar();
 
-    const titulos = Array.from(el.querySelectorAll('.caixa-titulo')).map(t => t.textContent);
-    expect(titulos).toEqual(['~ sobre ~', '~ cantinho ~']);
+    expect(el.querySelector('.principal .conteudo')).not.toBeNull();
   });
 
-  it('visitante vê Entrar e Criar conta', () => {
-    const el = montar(of([]));
+  describe('visitante, sem perfil para mostrar', () => {
+    it('mostra só "sobre" e "cantinho", com Entrar e Criar conta', () => {
+      montar();
 
-    const links = Array.from(el.querySelectorAll('.caixa-lista a')).map(a => a.getAttribute('href'));
-    expect(links).toContain('/login');
-    expect(links).toContain('/register');
-    expect(links).not.toContain('/postagens/nova');
+      expect(perfis.getPerfil).not.toHaveBeenCalled();
+      expect(titulos()).toEqual(['~ sobre ~', '~ cantinho ~']);
+      const links = Array.from(el.querySelectorAll('.caixa-lista a')).map(a => a.getAttribute('href'));
+      expect(links).toContain('/login');
+      expect(links).toContain('/register');
+      expect(links).not.toContain('/postagens/nova');
+    });
   });
 
-  it('quem está logado vê o atalho para escrever um rascunho e o perfil', () => {
-    logado = true;
-    const el = montar(of([]));
+  describe('pessoa logada', () => {
+    beforeEach(() => (logadoComo = { id: 5 }));
 
-    const links = Array.from(el.querySelectorAll('.caixa-lista a')).map(a => a.getAttribute('href'));
-    expect(links).toContain('/postagens/nova');
-    expect(links).toContain('/perfil');
-    expect(links).not.toContain('/login');
+    it('sem perfilId mostra o cartão do próprio perfil (foto, nome e bio)', () => {
+      montar();
+
+      expect(perfis.getPerfil).toHaveBeenCalledWith(5);
+      expect(titulos()[0]).toBe('~ meu perfil ~');
+      expect(el.querySelector('.cartao-nome')!.textContent).toBe('Bia Autora');
+      expect(el.querySelector('.cartao-bio')!.textContent).toBe('Escrevo sobre café.');
+      expect(el.querySelector<HTMLImageElement>('.cartao-foto img')!.getAttribute('src')).toBe('assets/img/sem-foto.svg');
+    });
+
+    it('tem os atalhos para escrever e para o perfil', () => {
+      montar();
+
+      const links = Array.from(el.querySelectorAll('.caixa-lista a')).map(a => a.getAttribute('href'));
+      expect(links).toContain('/postagens/nova');
+      expect(links).toContain('/perfil');
+      expect(links).not.toContain('/login');
+    });
+
+    it('SEGURANÇA: HTML na bio e nos destaques aparece como texto, nunca é executado', () => {
+      montar({ resposta: of(perfil({ bio: '<img src=x onerror="window.__xss = true">', musicaAtual: '<b>negrito</b>' })) });
+
+      expect(el.querySelector('.cartao-bio img')).toBeNull();
+      expect(el.querySelector('.destaque-musica b')).toBeNull();
+      expect(el.querySelector('.destaque-musica')!.textContent).toBe('<b>negrito</b>');
+    });
+
+    it('dona sem destaques vê o convite para adicionar', () => {
+      montar();
+
+      expect(titulos()).toContain('~ no momento ~');
+      expect(el.querySelector('.destaques-acoes .botao')!.textContent).toContain('Adicionar');
+    });
+
+    it('editar e salvar mostra a música e o livro na barra', () => {
+      perfis.atualizarDestaques.and.returnValue(of(perfil({ musicaAtual: 'Clube da Esquina', livroAtual: 'Dom Casmurro' })));
+      montar();
+
+      el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
+      fixture.detectChanges();
+      const musica = el.querySelector<HTMLInputElement>('#destaque-musica')!;
+      const livro = el.querySelector<HTMLInputElement>('#destaque-livro')!;
+      musica.value = 'Clube da Esquina';
+      musica.dispatchEvent(new Event('input'));
+      livro.value = 'Dom Casmurro';
+      livro.dispatchEvent(new Event('input'));
+      const envio = new Event('submit', { cancelable: true });
+      el.querySelector('form.destaques-form')!.dispatchEvent(envio);
+      fixture.detectChanges();
+
+      expect(envio.defaultPrevented).toBeTrue();
+      expect(perfis.atualizarDestaques).toHaveBeenCalledWith(5, { musicaAtual: 'Clube da Esquina', livroAtual: 'Dom Casmurro' });
+      expect(el.querySelector('.destaque-musica')!.textContent).toBe('Clube da Esquina');
+      expect(el.querySelector('.destaque-livro')!.textContent).toBe('Dom Casmurro');
+      expect(el.querySelector('form.destaques-form')).toBeNull();
+    });
+
+    it('erro da API mantém o formulário aberto com o aviso', () => {
+      perfis.atualizarDestaques.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+      montar();
+
+      el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
+      fixture.detectChanges();
+      fixture.debugElement.query(x => x.name === 'app-layout-blog').componentInstance.salvar();
+      fixture.detectChanges();
+
+      expect(el.querySelector('form.destaques-form [role="alert"]')).not.toBeNull();
+    });
+
+    it('cancelar fecha o formulário sem chamar a API', () => {
+      montar();
+
+      el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
+      fixture.detectChanges();
+      el.querySelector<HTMLButtonElement>('.botao-texto')!.click();
+      fixture.detectChanges();
+
+      expect(el.querySelector('form.destaques-form')).toBeNull();
+      expect(perfis.atualizarDestaques).not.toHaveBeenCalled();
+    });
+
+    it('com comCartao=false esconde o cartão e mantém música e livro', () => {
+      montar({ id: 5, comCartao: false, resposta: of(perfil({ musicaAtual: 'Uma música' })) });
+
+      expect(el.querySelector('.cartao')).toBeNull();
+      expect(el.querySelector('.destaque-musica')!.textContent).toBe('Uma música');
+    });
+  });
+
+  describe('perfil de outra pessoa (público)', () => {
+    beforeEach(() => (logadoComo = { id: 99 }));
+
+    it('mostra música e livro, sem botão de editar', () => {
+      montar({ id: 5, comCartao: false, resposta: of(perfil({ musicaAtual: 'Uma música', livroAtual: 'Um livro' })) });
+
+      expect(perfis.getPerfil).toHaveBeenCalledWith(5);
+      expect(el.querySelector('.destaque-musica')!.textContent).toBe('Uma música');
+      expect(el.querySelector('.destaque-livro')!.textContent).toBe('Um livro');
+      expect(el.querySelector('.destaques-acoes')).toBeNull();
+    });
+
+    it('sem destaques a caixa "no momento" nem aparece', () => {
+      montar({ id: 5, comCartao: false });
+
+      expect(titulos()).not.toContain('~ no momento ~');
+    });
+  });
+
+  it('se o perfil não carregar, a barra mostra só o que não depende dele', () => {
+    logadoComo = { id: 5 };
+    montar({ resposta: throwError(() => new HttpErrorResponse({ status: 500 })) });
+
+    expect(titulos()).toEqual(['~ sobre ~', '~ cantinho ~']);
   });
 });

@@ -4,6 +4,64 @@
   </div>
 
   <aside class="lateral" aria-label="Barra lateral">
+    @if (perfil && comCartao()) {
+      <section class="caixa cartao">
+        <h2 class="caixa-titulo">~ {{ ehDona ? 'meu perfil' : 'perfil' }} ~</h2>
+        <div class="cartao-corpo">
+          <a class="cartao-foto" [routerLink]="['/perfil', perfil.id]" [attr.aria-label]="'Perfil de ' + perfil.nome">
+            <img [src]="perfil.foto || fotoPadrao" alt="Foto de {{ perfil.nome }}" />
+          </a>
+          <a class="cartao-nome" [routerLink]="['/perfil', perfil.id]">{{ perfil.nome }}</a>
+          @if (perfil.bio) {
+            <p class="cartao-bio">{{ perfil.bio }}</p>
+          } @else if (ehDona) {
+            <p class="cartao-bio vazia">Sem bio ainda. <a [routerLink]="['/perfil', perfil.id]">Escreva uma</a>.</p>
+          }
+        </div>
+      </section>
+    }
+
+    @if (mostrarDestaques && perfil) {
+      <section class="caixa">
+        <h2 class="caixa-titulo">~ no momento ~</h2>
+
+        @if (editando) {
+          <form class="destaques-form" [formGroup]="destaquesForm" (ngSubmit)="salvar()">
+            <label for="destaque-musica">Ouvindo</label>
+            <input id="destaque-musica" type="text" formControlName="musica" [maxlength]="limiteDestaque" placeholder="Música ou artista" />
+            <label for="destaque-livro">Lendo</label>
+            <input id="destaque-livro" type="text" formControlName="livro" [maxlength]="limiteDestaque" placeholder="Livro ou autor" />
+            @if (erro) {
+              <p class="destaques-erro" role="alert">{{ erro }}</p>
+            }
+            <div class="destaques-acoes">
+              <button type="submit" class="botao" [disabled]="salvando">{{ salvando ? 'Salvando...' : 'Salvar' }}</button>
+              <button type="button" class="botao-texto" (click)="cancelar()">Cancelar</button>
+            </div>
+          </form>
+        } @else {
+          <dl class="destaques">
+            @if (perfil.musicaAtual) {
+              <dt>Ouvindo</dt>
+              <dd class="destaque-musica">{{ perfil.musicaAtual }}</dd>
+            }
+            @if (perfil.livroAtual) {
+              <dt>Lendo</dt>
+              <dd class="destaque-livro">{{ perfil.livroAtual }}</dd>
+            }
+          </dl>
+          @if (!temDestaques) {
+            <p class="caixa-texto">Conte o que você está ouvindo e lendo.</p>
+          }
+          @if (ehDona) {
+            <div class="destaques-acoes">
+              <button type="button" class="botao" (click)="editar()">{{ temDestaques ? 'Editar' : 'Adicionar' }}</button>
+            </div>
+          }
+        }
+      </section>
+    }
+
     <section class="caixa">
       <h2 class="caixa-titulo">~ sobre ~</h2>
       <p class="caixa-texto">
@@ -11,17 +69,6 @@
         <strong>rabiscos</strong> (ideias curtas). Sem pressa, sem pose.
       </p>
     </section>
-
-    @if (temas.length > 0) {
-      <section class="caixa">
-        <h2 class="caixa-titulo">~ temas ~</h2>
-        <ul class="caixa-lista">
-          @for (tema of temas; track tema.id) {
-            <li>#{{ nomeDoTema(tema.descricao) }}</li>
-          }
-        </ul>
-      </section>
-    }
 
     <section class="caixa">
       <h2 class="caixa-titulo">~ cantinho ~</h2>

@@ -10,7 +10,7 @@
 }
 
 @if (perfil) {
-  <app-layout-blog>
+  <app-layout-blog [perfilId]="perfil.id" [comCartao]="false">
   <app-feed-postagens #feed [autor]="perfil.id" [mensagemVazia]="mensagemDeListaVazia" (removida)="aoRemover()">
     <header class="perfil-topo">
       <div class="perfil-foto-area">
