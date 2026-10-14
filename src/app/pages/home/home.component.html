@@ -1,183 +1,111 @@
-    <section id="home" class="hero full-width-section">
-      <div class="section-container">
-        <h1>Crie um blog que é unicamente seu</h1>
-        <p>
-          Comece com um modelo flexível e personalize para se adequar ao seu
-          estilo e necessidades.
-        </p>
-        <a [routerLink]="['/register']" class="cta-button">Começar</a>
-      </div>
-    </section>
+<div class="pagina">
+  <section id="home" class="abertura">
+    <h1>
+      Escreva <span class="marca-texto">rascunhos</span>.
+      <span class="linha-2">Solte
+        <span class="circulo">rabiscos<svg viewBox="0 0 220 60" preserveAspectRatio="none" aria-hidden="true"><path d="M200 12 C 150 -4, 30 -2, 12 28 C 0 52, 90 62, 170 52 C 214 44, 222 20, 190 8" /></svg></span>.</span>
+    </h1>
+    <p class="subtitulo">
+      Um canto para textos longos e ideias curtas. Sem pressa, sem pose: o que ficou torto também vale a pena publicar.
+    </p>
+    <div class="acoes">
+      <a [routerLink]="['/register']" class="botao">Começar a escrever</a>
+      <a [routerLink]="['/explorar']" class="botao leve">Ver o que estão escrevendo</a>
+    </div>
+    <p class="bilhete" aria-hidden="true">
+      sem medo<br />do erro
+      <svg viewBox="0 0 70 34"><path d="M4 28 C 20 4, 44 2, 64 14" /><path d="M52 6 L 65 14 L 53 22" /></svg>
+    </p>
+  </section>
 
-    <section id="sobre" class="why-rasura full-width-section">
-      <div class="section-container">
-        <div class="why-container">
-          <h2>
-            Por que a <app-logo class="logo-titulo" />?
-          </h2>
-          <div class="why-content">
-            <div class="why-text">
-              <p>
-                <app-logo /> é um lugar para escrever sem medo de errar: você faz
-                rabiscos curtos, escreve rascunhos mais elaborados, risca o que não
-                gostou e recomeça. Cada pessoa tem o seu perfil, e o que você
-                publica aparece para todo mundo no feed.
+  <div class="faixa" role="marquee" aria-label="Bem-vinda à Rasura. Escreva um rascunho hoje. Solte um rabisco agora. Sem pressa, sem pose.">
+    <div class="faixa-trilho" aria-hidden="true">
+      @for (copia of [0, 1]; track copia) {
+        <span class="faixa-grupo">
+          @for (frase of frases; track frase) {
+            <span>★ {{ frase }}</span>
+          }
+          <span>★</span>
+        </span>
+      }
+    </div>
+  </div>
+
+  <section id="recursos" class="tipos" aria-labelledby="titulo-tipos">
+    <h2 id="titulo-tipos" class="visually-hidden">Dois jeitos de publicar</h2>
+
+    <article class="folha">
+      <span class="fita" aria-hidden="true"></span>
+      <div class="rotulo">Rascunho <small>texto longo</small></div>
+      <h3>Por que eu ainda escrevo à mão antes de digitar</h3>
+      <p>
+        Tem uma coisa na pausa entre uma palavra e outra que o teclado engole. Eu
+        <span class="risco">passo a limpo logo</span> risco, volto, mudo a ordem das frases e só no fim passo a limpo. O
+        texto final quase nunca é o primeiro, e é por isso que ele funciona…
+      </p>
+      <p class="meta">Exemplo · escolha a fonte, o tema e veja o tempo de leitura</p>
+    </article>
+
+    <div class="coluna-rabiscos">
+      <article class="postit">
+        <div class="rotulo">Rabisco <small>ideia curta</small></div>
+        <p>Café frio, ideia quente. Anotando antes que eu esqueça.</p>
+      </article>
+      <article class="postit rosa">
+        <p>Até 280 caracteres, sem título. Rápido de escrever, rápido de ler.</p>
+        <p class="meta">Exemplo</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="sobre" class="nome-secao" aria-labelledby="titulo-nome">
+    <h2 id="titulo-nome">Por que <app-logo class="logo-titulo" />?</h2>
+    <p>
+      <app-logo /> é o risco que se passa por cima do erro. Aqui errar faz parte de escrever: dá para riscar, refazer e
+      recomeçar quantas vezes quiser. Cada pessoa tem o seu perfil, com bio e foto, e o que você publica aparece para todo
+      mundo no feed. Dá para curtir e descurtir, e quem escreve um rascunho escolhe a fonte dele.
+    </p>
+  </section>
+
+  @if (postagens.length > 0) {
+    <section class="vitrine" aria-labelledby="titulo-vitrine">
+      <h2 id="titulo-vitrine">O feed, <span>do jeito que ele é</span></h2>
+      <div class="vitrine-lista">
+        @for (postagem of postagens; track postagem.id) {
+          <article class="post">
+            @if (postagem.usuario?.foto) {
+              <img class="foto" [src]="postagem.usuario?.foto" alt="" loading="lazy" />
+            } @else {
+              <span class="foto inicial" aria-hidden="true">{{ inicialDe(postagem) }}</span>
+            }
+            <div>
+              <p class="nome">
+                {{ postagem.usuario?.nome }}
+                <span>
+                  · {{ postagem.data | dateBr: 'dd/MM/yyyy' }}
+                  @if (postagem.minutosLeitura) {
+                    · {{ postagem.minutosLeitura }} min de leitura
+                  }
+                </span>
               </p>
-
-              <div class="curiosity-box">
-                <div class="curiosity-icon" aria-hidden="true">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="var(--primary-color)"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path
-                      d="M9 18h6M10 22h4M12 2a7 7 0 0 1 7 7c0 2.5-1.5 4.5-3.5 5.5v2.5H8v-2.5C6 13.5 4.5 11.5 4.5 9a7 7 0 0 1 7-7z"
-                    />
-                    <circle
-                      cx="12"
-                      cy="9"
-                      r="2"
-                      fill="var(--secondary-color)"
-                    />
-                  </svg>
-                </div>
-                <h3>O nome</h3>
-                <p>
-                  Rasura é o risco que se passa por cima do erro. Aqui errar faz parte de
-                  escrever: dá para riscar, refazer e recomeçar quantas vezes quiser.
+              @if (ehRabisco(postagem)) {
+                <p class="texto">{{ postagem.texto }}</p>
+              } @else {
+                <p class="texto">
+                  <a [routerLink]="['/postagens', postagem.id]">{{ postagem.titulo }}</a>
                 </p>
-              </div>
+              }
             </div>
-          </div>
-        </div>
+          </article>
+        }
       </div>
+      <a [routerLink]="['/explorar']" class="ver-mais">Ver o feed completo »</a>
     </section>
+  }
 
-    <section id="recursos" class="features full-width-section">
-      <div class="section-container">
-        <h2>Tudo que você precisa para criar seu blog</h2>
-        <div class="feature-grid">
-          <div class="feature-card">
-            <h3>Responsivo para celular</h3>
-            <p>
-              Atualize seu blog em qualquer lugar com nosso site fácil de usar.
-            </p>
-          </div>
-          <div class="feature-card">
-            <h3>Análises Integradas</h3>
-            <p>
-              Acompanhe seu crescimento com estatísticas detalhadas de
-              visitantes.
-            </p>
-          </div>
-          <div class="feature-card">
-            <h3>Hospedagem Confiável</h3>
-            <p>Hospedagem rápida e segura e com disponibilidade.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="templates full-width-section">
-      <div class="section-container">
-        <h2>Blogs incríveis!</h2>
-        <h3>EM BREVE!</h3>
-        <p>
-          Escolha da nossa coleção de modelos profissionalmente desenhados cada
-          um personalizável para se adequar ao seu estilo pessoal.
-        </p>
-        <div class="template-grid">
-          <div class="template-card">
-            <img
-              src="../../../assets/img/minimalista.jpg"
-              alt="Modelo Minimalista"
-              class="template-img"
-            />
-            <div class="template-info">
-              <h3>Minimalista</h3>
-              <p>Design limpo e simples</p>
-            </div>
-          </div>
-          <div class="template-card">
-            <img
-              src="../../../assets/img/moderno.jpg"
-              alt="Modelo Moderno"
-              class="template-img"
-            />
-            <div class="template-info">
-              <h3>Moderno</h3>
-              <p>Audacioso e contemporâneo</p>
-            </div>
-          </div>
-          <div class="template-card">
-            <img
-              src="../../../assets/img/classico.jpg"
-              alt="Modelo Clássico"
-              class="template-img"
-            />
-            <div class="template-info">
-              <h3>Clássico</h3>
-              <p>Elegância atemporal</p>
-            </div>
-          </div>
-          <div class="template-card">
-            <img
-              src="../../../assets/img/artistico.jpg"
-              alt="Modelo Criativo"
-              class="template-img"
-            />
-            <div class="template-info">
-              <h3>Criativo</h3>
-              <p>Artístico e expressivo</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="testimonials full-width-section">
-      <div class="section-container">
-        <h2>Confiado por milhões de criadores</h2>
-        <div class="testimonial-grid">
-          <div class="testimonial-card">
-            <p class="testimonial-text">
-              "A Rasura tornou tão fácil começar meu blog de culinária. Os
-              modelos são lindos e a plataforma é intuitiva."
-            </p>
-            <p class="testimonial-author">— Sarah K., Blog de Culinária</p>
-          </div>
-          <div class="testimonial-card">
-            <p class="testimonial-text">
-              "Consegui configurar meu blog de viagens em um final de semana. As
-              análises me ajudam a entender melhor meu público."
-            </p>
-            <p class="testimonial-author">— Michael T., Escritor de Viagens</p>
-          </div>
-          <div class="testimonial-card">
-            <p class="testimonial-text">
-              "Como fotógrafo, ter um portfólio bonito era essencial. A Rasura
-              entregou exatamente o que eu precisava."
-            </p>
-            <p class="testimonial-author">— Jessica L., Fotógrafa</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="final-cta full-width-section">
-      <div class="section-container">
-        <h2>Pronto para começar seu blog?</h2>
-        <p>
-          Junte-se a milhões de criadores que usam a Rasura para compartilhar
-          suas histórias com o mundo.
-        </p>
-        <a [routerLink]="['/register']" class="cta-button">Começar</a>
-      </div>
-    </section>
+  <section class="convite" aria-labelledby="titulo-convite">
+    <h2 id="titulo-convite">Seu rascunho <span>está esperando</span></h2>
+    <p>Crie sua conta, escolha uma fonte e publique o primeiro texto, mesmo que ainda esteja torto.</p>
+    <a [routerLink]="['/register']" class="botao amarelo">Criar minha conta</a>
+  </section>
+</div>
