@@ -1,4 +1,5 @@
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ConfirmarExclusaoComponent } from '../../components/confirmar-exclusao/confirmar-exclusao.component';
 import { ReacoesComponent } from '../../components/reacoes/reacoes.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ import { Postagem } from '../../models/Postagem';
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [DateBrPipe, IconComponent, RouterLink, ReacoesComponent],
+  imports: [DateBrPipe, IconComponent, RouterLink, ReacoesComponent, ConfirmarExclusaoComponent],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })
@@ -76,18 +77,39 @@ export class PostagemDetailComponent implements OnInit {
     this.router.navigate(['/postagens', id, 'editar']);
   }
 
+  /** O id da postagem que está no modal de confirmação (nulo = modal fechado). */
+  idParaExcluir: number | null = null;
+  excluindo = false;
+
+  /** "Excluir": só abre a pergunta; nada é apagado até a pessoa confirmar no modal. */
   excluir(id: number): void {
-    if (!confirm('Deseja excluir esta postagem?')) {
+    this.mensagemErro = null;
+    this.idParaExcluir = id;
+  }
+
+  cancelarExclusao(): void {
+    if (!this.excluindo) {
+      this.idParaExcluir = null;
+    }
+  }
+
+  confirmarExclusao(): void {
+    const id = this.idParaExcluir;
+    if (id === null || this.excluindo) {
       return;
     }
 
-    this.isLoading = true;
-    this.mensagemErro = null;
+    this.excluindo = true;
     this.postagemService.delete(id).subscribe({
-      next: () => this.router.navigate(['/postagens']),
+      next: () => {
+        this.excluindo = false;
+        this.idParaExcluir = null;
+        this.router.navigate(['/postagens']);
+      },
       error: erro => {
         this.mensagemErro = mensagemDeErro(erro, 'Erro ao excluir postagem.');
-        this.isLoading = false;
+        this.excluindo = false;
+        this.idParaExcluir = null;
       }
     });
   }

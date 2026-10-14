@@ -1,0 +1,135 @@
+/* O <dialog> é só a "janela": sem borda nem fundo, centralizado pelo navegador. Quem tem a cara da Rasura é a folha. */
+.modal {
+  width: min(520px, calc(100vw - 24px));
+  max-width: none;
+  max-height: calc(100vh - 24px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--zine-tinta);
+  overflow: visible; /* a sombra dura e a fita passam da borda da folha */
+
+  &.estreita {
+    width: min(380px, calc(100vw - 24px));
+  }
+
+  &.larga {
+    width: min(720px, calc(100vw - 24px));
+  }
+
+  &::backdrop {
+    background: rgba(31, 26, 46, 0.55);
+  }
+
+  &[open] {
+    animation: entrar 0.16s ease-out;
+  }
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(8px) rotate(-0.6deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal[open] {
+    animation: none;
+  }
+}
+
+.modal-folha {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 24px);
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--card-bg);
+  box-shadow: 8px 8px 0 var(--zine-sombra);
+}
+
+.modal-fita {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 92px;
+  height: 26px;
+  margin-left: -46px;
+  border: 1px dashed rgba(0, 0, 0, 0.18);
+  background: rgba(255, 227, 92, 0.78);
+  transform: rotate(-3deg);
+  pointer-events: none;
+}
+
+.modal-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 24px 20px 4px;
+}
+
+.modal-titulo {
+  margin: 0;
+  font-family: 'Mansalva', cursive;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.modal-x {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+}
+
+.modal-corpo {
+  flex: 1;
+  padding: 12px 20px 20px;
+  overflow-y: auto;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+/* O rodapé só existe se alguém projetou botões nele. */
+.modal-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 14px 20px 18px;
+  border-top: 2px dashed var(--zine-contorno);
+
+  &:not(:has(*)) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-rodape {
+    flex-direction: column-reverse;
+  }
+}

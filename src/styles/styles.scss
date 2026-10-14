@@ -606,3 +606,50 @@ app-root {
   flex-direction: column;
   min-height: 100vh;
 }
+
+/* Modal aberto: a página atrás não rola (ver ModalComponent). */
+body.modal-aberto {
+  overflow: hidden;
+}
+
+/* Botões da identidade zine (borda grossa, sombra dura que "afunda" ao clicar). Úteis nos botões projetados no
+   rodapé do ModalComponent e em qualquer lugar que precise do mesmo estilo:
+   .zine-botao (branco), .zine-botao.primario (laranja) e .zine-botao.perigo (vermelho, para ações destrutivas). */
+.zine-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--zine-sombra);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &.primario {
+    background: var(--zine-laranja);
+    color: #fff;
+  }
+
+  &.perigo {
+    background: #d93025;
+    color: #fff;
+  }
+}

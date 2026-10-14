@@ -181,12 +181,15 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       const minha: Postagem = { id: 9, tipo: 'COMENTARIO', texto: 'oi', usuario: { id: 5, nome: 'Bia' } } as Postagem;
       postagens.getPagina.and.returnValue(of(pagina([minha])));
       postagens.delete.and.returnValue(of(void 0));
-      spyOn(window, 'confirm').and.returnValue(true);
       abrir('5');
 
       el.querySelector<HTMLButtonElement>('.menu-botao')!.click();
       fixture.detectChanges();
       el.querySelector<HTMLButtonElement>('.menu-lista button')!.click();
+      fixture.detectChanges();
+      // o menu só pergunta; a exclusão acontece quando a pessoa confirma no modal
+      expect(postagens.delete).not.toHaveBeenCalled();
+      el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .zine-botao.perigo')!.click();
       fixture.detectChanges();
 
       expect(postagens.delete).toHaveBeenCalledWith(9);

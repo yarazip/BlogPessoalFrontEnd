@@ -2,6 +2,7 @@ import { Component, OnInit, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
+import { ConfirmarExclusaoComponent } from '../confirmar-exclusao/confirmar-exclusao.component';
 import { MenuPostagemComponent } from '../menu-postagem/menu-postagem.component';
 import { ReacoesComponent } from '../reacoes/reacoes.component';
 import { AuthService } from '../../services/auth.service';
@@ -17,7 +18,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-feed-postagens',
   standalone: true,
-  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent],
+  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent, ConfirmarExclusaoComponent],
   templateUrl: './feed-postagens.component.html',
   styleUrls: ['./feed-postagens.component.scss']
 })
@@ -90,19 +91,43 @@ export class FeedPostagensComponent implements OnInit {
     return !!eu && !!postagem.usuario && eu.id === postagem.usuario.id;
   }
 
+  /** A postagem que está no modal de confirmação (nula = modal fechado). */
+  postagemParaExcluir: Postagem | null = null;
+  excluindo = false;
+
+  /** "Excluir" no menu: só abre a pergunta; nada é apagado até a pessoa confirmar no modal. */
   excluir(postagem: Postagem): void {
-    if (postagem.id === undefined || !confirm('Deseja excluir esta postagem?')) {
+    if (postagem.id === undefined) {
+      return;
+    }
+    this.erroAcao = null;
+    this.postagemParaExcluir = postagem;
+  }
+
+  cancelarExclusao(): void {
+    if (!this.excluindo) {
+      this.postagemParaExcluir = null;
+    }
+  }
+
+  confirmarExclusao(): void {
+    const postagem = this.postagemParaExcluir;
+    if (!postagem || postagem.id === undefined || this.excluindo) {
       return;
     }
 
-    this.erroAcao = null;
+    this.excluindo = true;
     this.postagemService.delete(postagem.id).subscribe({
       next: () => {
         this.postagens = this.postagens.filter(p => p.id !== postagem.id);
         this.removida.emit(postagem);
+        this.excluindo = false;
+        this.postagemParaExcluir = null;
       },
       error: erro => {
         this.erroAcao = mensagemDeErro(erro, 'Não foi possível excluir a postagem.');
+        this.excluindo = false;
+        this.postagemParaExcluir = null;
       }
     });
   }

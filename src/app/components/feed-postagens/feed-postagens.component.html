@@ -68,6 +68,13 @@
     </article>
   }
 
+  <app-confirmar-exclusao
+    [aberto]="postagemParaExcluir !== null"
+    [excluindo]="excluindo"
+    (confirmar)="confirmarExclusao()"
+    (cancelar)="cancelarExclusao()"
+  />
+
   @if (haMais && !mensagemErro) {
     <!-- Rolar até aqui carrega o próximo trecho do feed -->
     <div appSentinela (visivel)="carregarMais()" class="feed-sentinela">
