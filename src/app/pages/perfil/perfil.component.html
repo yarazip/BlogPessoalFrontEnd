@@ -11,7 +11,6 @@
 
 @if (perfil) {
   <app-layout-blog [perfilId]="perfil.id" [comCartao]="false">
-  <app-feed-postagens #feed [autor]="perfil.id" [mensagemVazia]="mensagemDeListaVazia" (removida)="aoRemover()">
     <header class="perfil-topo">
       <div class="perfil-foto-area">
         <img class="perfil-foto" [src]="perfil.foto || fotoPadrao" alt="Foto de {{ perfil.nome }}" />
@@ -74,9 +73,10 @@
       </div>
     </header>
 
-    @if (ehOProprioPerfil) {
-      <app-compositor-comentario (publicado)="aoPublicar(); feed.adicionarNoTopo($event)" />
-    }
-  </app-feed-postagens>
+    <app-feed-postagens #feed [autor]="perfil.id" [mensagemVazia]="mensagemDeListaVazia" (removida)="aoRemover()">
+      @if (ehOProprioPerfil) {
+        <app-compositor-comentario (publicado)="aoPublicar(); feed.adicionarNoTopo($event)" />
+      }
+    </app-feed-postagens>
   </app-layout-blog>
 }

@@ -1,9 +1,24 @@
-/* O cabeçalho é projetado no topo da coluna do feed, que já define largura e bordas. */
+/* O topo do perfil é um retângulo à parte (acima), separado do retângulo das postagens. Abaixo de 600px
+   os dois ocupam a tela inteira, como o feed; de 600px para cima viram "folhas" com borda e sombra. */
 .perfil-topo {
   display: flex;
   gap: 16px;
   padding: 24px 16px;
-  border-bottom: 1px solid var(--header-border);
+  border-bottom: 2px solid var(--zine-contorno);
+  background: var(--card-bg);
+
+  @media (min-width: 600px) {
+    max-width: 680px;
+    margin: 0 auto 24px;
+    padding: 24px;
+    border: 2px solid var(--zine-contorno);
+    background: var(--card-bg);
+    box-shadow: 6px 6px 0 var(--zine-sombra);
+  }
+
+  @media (min-width: 1024px) {
+    max-width: none;
+  }
 }
 
 .perfil-foto-area {
