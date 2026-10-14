@@ -312,7 +312,7 @@ describe('PostagemFormComponent', () => {
       expect(previa.querySelector('.previa-texto')!.textContent).toContain('Um texto de rascunho');
       expect(previa.querySelector('.previa-tema')!.textContent).toBe('#Java');
       expect(previa.querySelector<HTMLElement>('.previa-titulo')!.style.fontFamily).toContain('Mea Culpa');
-      expect(previa.querySelector('.previa-meta')!.textContent).toContain('Ana');
+      expect(previa.querySelector('.previa-autor')!.textContent).toContain('Ana');
     });
 
     it('voltar para Escrever mantém o que foi digitado (os campos só ficam escondidos, não são apagados)', () => {

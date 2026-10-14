@@ -22,9 +22,8 @@
   font-weight: 400;
 }
 
-/* As duas "folhas" imitam o feed e a página da postagem, para a prévia se parecer com o resultado. */
-.previa-post,
-.previa-pagina {
+/* A "folha" imita um post do feed, para a prévia se parecer com o resultado. */
+.previa-post {
   padding: 16px 18px;
   border: 2px dashed var(--zine-contorno);
   border-radius: 6px;
@@ -45,16 +44,6 @@
   font-size: 1.3rem;
   line-height: 1.3;
   overflow-wrap: anywhere;
-
-  &.grande {
-    font-size: 1.7rem;
-  }
-}
-
-.previa-meta {
-  margin: 0 0 10px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
 }
 
 .previa-texto {
@@ -84,12 +73,7 @@
 }
 
 @media (max-width: 480px) {
-  .previa-post,
-  .previa-pagina {
+  .previa-post {
     padding: 12px;
-  }
-
-  .previa-titulo.grande {
-    font-size: 1.4rem;
   }
 }
