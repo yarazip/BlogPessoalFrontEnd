@@ -63,7 +63,7 @@ describe('PostagemDetailComponent', () => {
     expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('Meu blog');
     expect(el.querySelector('.detalhe-nome')!.textContent).toBe('Bia');
     expect(el.querySelector('.detalhe-nome')!.getAttribute('href')).toBe('/perfil/3');
-    expect(el.querySelector('.detalhe-data')!.textContent).toBe('09/10/2026 15:30');
+    expect(el.querySelector('.detalhe-data')!.textContent!.replace(/\s+/g, ' ').trim()).toBe('09/10/2026 15:30 · 1 min de leitura');
     expect(el.querySelector('.detalhe-tema')!.textContent).toBe('#Tecnologia');
     expect(el.querySelector('.detalhe-texto')!.textContent).toBe('Linha 1\nLinha 2 do texto completo');
   });

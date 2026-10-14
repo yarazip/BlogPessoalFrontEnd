@@ -114,6 +114,33 @@ describe('FeedPostagensComponent', () => {
     expect((el.querySelector('img.foto-perfil') as HTMLImageElement).getAttribute('src')).toBe('assets/img/sem-foto.svg');
   });
 
+  describe('tempo de leitura', () => {
+    const longo = Array(450).fill('palavra').join(' ');
+    const leitura = (el: HTMLElement) => el.querySelector('.leitura')?.textContent?.trim() ?? null;
+
+    it('rascunho com o texto inteiro mostra os minutos calculados', () => {
+      expect(leitura(criar(of(pagina([postagem(longo)], 0, true))))).toBe('· 3 min de leitura');
+    });
+
+    it('prévia usa o tempo calculado pela API (o texto da lista vem cortado)', () => {
+      const previa = { ...postagem('começo do texto'), resumido: true, minutosLeitura: 7 };
+
+      expect(leitura(criar(of(pagina([previa], 0, true))))).toBe('· 7 min de leitura');
+    });
+
+    it('prévia sem o dado da API não mostra um número errado', () => {
+      const previa = { ...postagem('começo do texto'), resumido: true };
+
+      expect(leitura(criar(of(pagina([previa], 0, true))))).toBeNull();
+    });
+
+    it('rabisco não mostra tempo de leitura', () => {
+      const rabisco: Postagem = { ...postagem(longo), tipo: 'COMENTARIO' };
+
+      expect(leitura(criar(of(pagina([rabisco], 0, true))))).toBeNull();
+    });
+  });
+
   it('mostra mensagem quando não há postagens', () => {
     expect(criar(of(pagina([], 0, true))).textContent).toContain('Ainda não há postagens');
   });

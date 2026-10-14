@@ -6,6 +6,7 @@ import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
+import { minutosDeLeitura } from '../../shared/leitura';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
 import { Postagem } from '../../models/Postagem';
@@ -33,6 +34,12 @@ export class PostagemDetailComponent implements OnInit {
   postagem?: Postagem;
   isLoading = true;
   mensagemErro: string | null = null;
+
+  /** Minutos de leitura do rascunho (o rabisco, curto, não mostra). Aqui o texto vem inteiro, então dá para calcular. */
+  get minutos(): number | null {
+    const p = this.postagem;
+    return p && p.tipo !== 'COMENTARIO' ? (p.minutosLeitura ?? minutosDeLeitura(p.texto)) : null;
+  }
 
   /** Só o autor vê as ações de editar e excluir (a API também exige isso). */
   get ehAutor(): boolean {
