@@ -1,0 +1,36 @@
+@if (vazia()) {
+  <p class="previa-vazia">Escreva um título e um texto para ver como o rascunho vai aparecer.</p>
+} @else {
+  <section class="previa-bloco" aria-labelledby="previa-feed">
+    <h3 class="previa-rotulo" id="previa-feed">No feed</h3>
+    <article class="previa-post">
+      <p class="previa-autor">
+        <strong>{{ autor() }}</strong> <span>· hoje</span>
+      </p>
+      @if (titulo().trim()) {
+        <h4 class="previa-titulo" [style.font-family]="pilha()" [style.font-weight]="pesoDoTitulo()">{{ titulo() }}</h4>
+      }
+      <p class="previa-texto" [class.resumido]="noFeed().resumido" [style.font-family]="pilha()">{{ noFeed().texto }}</p>
+      @if (noFeed().resumido) {
+        <span class="previa-ler-mais">Ler mais</span>
+      }
+      @if (tema()) {
+        <span class="previa-tema">#{{ tema() }}</span>
+      }
+    </article>
+  </section>
+
+  <section class="previa-bloco" aria-labelledby="previa-pagina">
+    <h3 class="previa-rotulo" id="previa-pagina">Na página da postagem</h3>
+    <article class="previa-pagina">
+      @if (titulo().trim()) {
+        <h4 class="previa-titulo grande" [style.font-family]="pilha()" [style.font-weight]="pesoDoTitulo()">{{ titulo() }}</h4>
+      }
+      <p class="previa-meta">{{ autor() }} · hoje · {{ minutos() }} min de leitura</p>
+      <p class="previa-texto inteiro" [style.font-family]="pilha()">{{ texto() }}</p>
+      @if (tema()) {
+        <span class="previa-tema">#{{ tema() }}</span>
+      }
+    </article>
+  </section>
+}

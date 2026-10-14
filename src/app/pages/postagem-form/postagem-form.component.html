@@ -1,4 +1,3 @@
-
 <div class="postagem-container">
   <div class="card">
     <h2>{{ !isEdit ? 'Novo rascunho' : carregandoPostagem || falhaAoCarregar ? 'Editar postagem' : isComentario ? 'Editar rabisco' : 'Editar rascunho' }}</h2>
@@ -16,128 +15,179 @@
         <button type="button" class="btn-secondary" (click)="cancelar()">Voltar</button>
       </div>
     } @else {
-    <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
-      <!-- Campo Título (só no blog) -->
-      @if (!isComentario) {
-      <div class="form-group">
-        <label for="titulo">Título *</label>
-        <input
-          type="text"
-          id="titulo"
-          [style.font-family]="pilhaDe(fonte.value)"
-          formControlName="titulo"
-          placeholder="Digite um título para sua postagem"
-          [class.is-invalid]="titulo.invalid && (titulo.dirty || titulo.touched)"
-          >
-          @if (titulo.invalid && (titulo.dirty || titulo.touched)) {
-            <div class="invalid-feedback">
-              @if (titulo.errors?.['required']) {
-                <span>Título é obrigatório</span>
-              }
-              @if (titulo.errors?.['minlength']) {
-                <span>Mínimo {{ limites.tituloMin }} caracteres</span>
-              }
-              @if (titulo.errors?.['maxlength']) {
-                <span>Máximo {{ limites.tituloMax }} caracteres</span>
-              }
-            </div>
-          }
+      @if (recuperadoEm) {
+        <div class="aviso-recuperado" role="status">
+          <span>Recuperamos o que você estava escrevendo (guardado em {{ recuperadoEm | dateBr: 'dd/MM HH:mm' }}).</span>
+          <button type="button" class="zine-botao" (click)="descartarRecuperado()">
+            {{ isEdit ? 'Voltar à versão publicada' : 'Descartar e começar do zero' }}
+          </button>
         </div>
       }
 
-        <div class="form-group">
-          <label for="texto">{{ isComentario ? 'Rabisco' : 'Conteúdo' }} *</label>
-          <textarea
-            id="texto"
-            [style.font-family]="pilhaDe(fonte.value)"
-            formControlName="texto"
-            [attr.rows]="isComentario ? 3 : 14"
-            [attr.maxlength]="limiteTexto"
-            placeholder="Escreva o conteúdo da sua postagem"
-            [class.is-invalid]="texto.invalid && (texto.dirty || texto.touched)"
-          ></textarea>
-          @if (texto.invalid && (texto.dirty || texto.touched)) {
-            <div class="invalid-feedback">
-              @if (texto.errors?.['required']) {
-                <span>Conteúdo é obrigatório</span>
-              }
-              @if (texto.errors?.['minlength']) {
-                <span>Mínimo {{ limites.textoMin }} caracteres</span>
-              }
-              @if (texto.errors?.['maxlength']) {
-                <span>Máximo {{ limiteTexto }} caracteres</span>
+      @if (!isComentario) {
+        <div class="abas" role="tablist" aria-label="Escrever ou ver a prévia">
+          <button
+            type="button"
+            role="tab"
+            id="aba-escrever"
+            class="aba"
+            [class.ativa]="aba === 'escrever'"
+            [attr.aria-selected]="aba === 'escrever'"
+            aria-controls="painel-escrever"
+            [attr.tabindex]="aba === 'escrever' ? 0 : -1"
+            (click)="selecionarAba('escrever')"
+            (keydown)="teclaDaAba($event)"
+          >
+            Escrever
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="aba-previa"
+            class="aba"
+            [class.ativa]="aba === 'previa'"
+            [attr.aria-selected]="aba === 'previa'"
+            aria-controls="painel-previa"
+            [attr.tabindex]="aba === 'previa' ? 0 : -1"
+            (click)="selecionarAba('previa')"
+            (keydown)="teclaDaAba($event)"
+          >
+            Prévia
+          </button>
+        </div>
+      }
+
+      <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
+        <div id="painel-escrever" role="tabpanel" aria-labelledby="aba-escrever" [hidden]="aba !== 'escrever'">
+          <!-- Campo Título (só no blog) -->
+          @if (!isComentario) {
+            <div class="form-group">
+              <label for="titulo">Título *</label>
+              <input
+                type="text"
+                id="titulo"
+                [style.font-family]="pilhaDe(fonte.value)"
+                formControlName="titulo"
+                placeholder="Digite um título para sua postagem"
+                [class.is-invalid]="titulo.invalid && (titulo.dirty || titulo.touched)"
+              />
+              @if (titulo.invalid && (titulo.dirty || titulo.touched)) {
+                <div class="invalid-feedback">
+                  @if (titulo.errors?.['required']) {
+                    <span>Título é obrigatório</span>
+                  }
+                  @if (titulo.errors?.['minlength']) {
+                    <span>Mínimo {{ limites.tituloMin }} caracteres</span>
+                  }
+                  @if (titulo.errors?.['maxlength']) {
+                    <span>Máximo {{ limites.tituloMax }} caracteres</span>
+                  }
+                </div>
               }
             </div>
           }
-          <small class="contador-texto">{{ (texto.value ?? '').length }}/{{ limiteTexto }}</small>
-        </div>
 
-        @if (!isComentario) {
-        <div class="form-group">
-          <label for="tema">Tema *</label>
-          <select
-            id="tema"
-            formControlName="temaId"
-            [class.is-invalid]="temaId.invalid && (temaId.dirty || temaId.touched)"
-            >
-            <option [ngValue]="null" disabled>{{ semTemas ? "Nenhum tema cadastrado" : "Selecione um tema" }}</option>
-            @for (tema of temas; track tema.id) {
-              <option [ngValue]="tema.id">
-                {{ tema.descricao }}
-              </option>
+          <div class="form-group">
+            <label for="texto">{{ isComentario ? 'Rabisco' : 'Conteúdo' }} *</label>
+            <textarea
+              id="texto"
+              appAutoAjuste
+              [style.font-family]="pilhaDe(fonte.value)"
+              formControlName="texto"
+              [attr.rows]="isComentario ? 3 : 14"
+              [attr.maxlength]="limiteTexto"
+              placeholder="Escreva o conteúdo da sua postagem"
+              [class.is-invalid]="texto.invalid && (texto.dirty || texto.touched)"
+            ></textarea>
+            @if (texto.invalid && (texto.dirty || texto.touched)) {
+              <div class="invalid-feedback">
+                @if (texto.errors?.['required']) {
+                  <span>Conteúdo é obrigatório</span>
+                }
+                @if (texto.errors?.['minlength']) {
+                  <span>Mínimo {{ limites.textoMin }} caracteres</span>
+                }
+                @if (texto.errors?.['maxlength']) {
+                  <span>Máximo {{ limiteTexto }} caracteres</span>
+                }
+              </div>
             }
-          </select>
-          @if (semTemas) {
-            <div class="invalid-feedback">Ainda não há temas cadastrados, então não é possível publicar.</div>
-          }
-          @if (temaId.invalid && (temaId.dirty || temaId.touched)) {
-            <div class="invalid-feedback">
-              <span>Selecione um tema</span>
+            <div class="contadores">
+              @if (!isComentario) {
+                <small class="contador-palavras">{{ palavras }} {{ palavras === 1 ? 'palavra' : 'palavras' }} · {{ minutosDeLeitura }} min de leitura</small>
+              }
+              <small class="contador-texto">{{ (texto.value ?? '').length }}/{{ limiteTexto }}</small>
             </div>
-          }
-        </div>
-
-        <fieldset class="form-group fonte-grupo">
-          <legend>Fonte</legend>
-          <p class="fonte-ajuda">O que você escrever aparece nessa fonte para quem ler.</p>
-          <div class="fonte-opcoes">
-            <label class="fonte-opcao" [class.escolhida]="fonte.value === null">
-              <input type="radio" formControlName="fonte" [value]="null" />
-              <span class="fonte-amostra">Aa</span>
-              <span class="fonte-nome">Padrão do site</span>
-            </label>
-            @for (f of fontes; track f.id) {
-              <label class="fonte-opcao" [class.escolhida]="fonte.value === f.id">
-                <input type="radio" formControlName="fonte" [value]="f.id" />
-                <span class="fonte-amostra" [style.font-family]="f.pilha">Aa</span>
-                <span class="fonte-nome" [style.font-family]="f.pilha">{{ f.nome }}</span>
-              </label>
-            }
           </div>
-        </fieldset>
+
+          @if (!isComentario) {
+            <div class="form-group">
+              <label for="tema">Tema *</label>
+              <select
+                id="tema"
+                formControlName="temaId"
+                [class.is-invalid]="temaId.invalid && (temaId.dirty || temaId.touched)"
+              >
+                <option [ngValue]="null" disabled>{{ semTemas ? 'Nenhum tema cadastrado' : 'Selecione um tema' }}</option>
+                @for (tema of temas; track tema.id) {
+                  <option [ngValue]="tema.id">
+                    {{ tema.descricao }}
+                  </option>
+                }
+              </select>
+              @if (semTemas) {
+                <div class="invalid-feedback">Ainda não há temas cadastrados, então não é possível publicar.</div>
+              }
+              @if (temaId.invalid && (temaId.dirty || temaId.touched)) {
+                <div class="invalid-feedback">
+                  <span>Selecione um tema</span>
+                </div>
+              }
+            </div>
+
+            <div class="form-group">
+              <app-seletor-de-fonte [controle]="fonte" />
+            </div>
+          }
+        </div>
+
+        @if (!isComentario && aba === 'previa') {
+          <div id="painel-previa" role="tabpanel" aria-labelledby="aba-previa">
+            <app-previa-rascunho
+              [titulo]="titulo.value ?? ''"
+              [texto]="texto.value ?? ''"
+              [tema]="nomeDoTema"
+              [fonte]="fonte.value"
+              [autor]="nomeDoAutor"
+            />
+          </div>
         }
 
         <div class="form-actions">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="cancelar()"
-            >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="postagemForm.invalid || isLoading"
-            >
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="postagemForm.invalid || isLoading">
             @if (isLoading) {
               <span class="spinner-border spinner-border-sm"></span>
             }
             {{ isEdit ? 'Atualizar' : 'Publicar' }}
           </button>
-
         </div>
       </form>
     }
-    </div>
   </div>
+</div>
+
+<app-modal
+  [aberto]="confirmandoSaida"
+  titulo="Sair sem publicar?"
+  largura="estreita"
+  (fechar)="responderSaida(false)"
+>
+  <p>Você tem alterações que ainda não foram publicadas. Elas ficam guardadas neste navegador, e você pode continuar depois.</p>
+  <ng-container modalAcoes>
+    <!-- autofocus é o certo aqui: num modal o foco inicial vai para a ação segura (padrão WAI-ARIA para diálogos de confirmação) -->
+    <!-- eslint-disable-next-line @angular-eslint/template/no-autofocus -->
+    <button type="button" class="zine-botao" autofocus (click)="responderSaida(false)">Continuar escrevendo</button>
+    <button type="button" class="zine-botao primario" (click)="responderSaida(true)">Sair</button>
+  </ng-container>
+</app-modal>

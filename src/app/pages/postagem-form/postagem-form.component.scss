@@ -174,77 +174,99 @@
   color: var(--text-muted);
 }
 
-
-.fonte-grupo {
-  margin: 0 0 1.25rem;
-  padding: 0;
-  border: none;
-
-  legend {
-    padding: 0;
-    margin-bottom: 4px;
-    font-weight: 600;
-  }
-}
-
-.fonte-ajuda {
-  margin: 0 0 10px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.fonte-opcoes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 8px;
-}
-
-.fonte-opcao {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border: 2px solid var(--zine-contorno);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-
-  // o botão de rádio fica escondido, mas continua focável pelo teclado
-  input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  &:hover {
-    background-color: var(--secondary-color);
-  }
-
-  &.escolhida {
-    border-color: var(--text-color);
-    background-color: var(--secondary-color);
-  }
-
-  &:has(input:focus-visible) {
-    outline: 2px solid var(--text-color);
-    outline-offset: 2px;
-  }
-}
-
-.fonte-amostra {
-  font-size: 1.6rem;
-  line-height: 1;
-}
-
-.fonte-nome {
-  font-size: 0.9rem;
-  overflow-wrap: anywhere;
-}
-
 .carregando {
   margin: 0;
   padding: 2rem 0;
   text-align: center;
   color: var(--text-muted);
+}
+
+/* Abas Escrever | Prévia */
+.abas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--zine-contorno);
+}
+
+.aba {
+  margin-bottom: -2px;
+  padding: 8px 20px;
+  border: 2px solid transparent;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--text-color);
+  }
+
+  &.ativa {
+    border-color: var(--zine-contorno);
+    background: var(--card-bg);
+    color: var(--text-color);
+  }
+}
+
+/* O que foi recuperado do navegador */
+.aviso-recuperado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border: 2px dashed var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--zine-marca-leve);
+  font-size: 0.9rem;
+
+  .zine-botao {
+    padding: 4px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Contadores sob o texto: palavras e tempo de leitura à esquerda, caracteres à direita */
+.contadores {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  color: var(--text-muted);
+}
+
+.contadores .contador-texto {
+  margin-left: auto;
+}
+
+/* O texto cresce com o que se escreve (a diretiva ajusta a altura) */
+textarea#texto {
+  min-height: 12rem;
+  resize: none;
+}
+
+/* Cancelar e Publicar sempre à vista, mesmo num texto longo */
+.form-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-top: 1.5rem;
+  padding: 12px 0 4px;
+  border-top: 2px dashed var(--zine-contorno);
+  background: var(--card-bg);
+}
+
+/* Os campos usam a fonte do site (e não a monoespaçada padrão do <textarea>); a fonte escolhida para o rascunho
+   continua valendo por cima, pelo estilo da própria tela. */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  font-family: inherit;
 }
