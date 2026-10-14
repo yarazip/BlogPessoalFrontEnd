@@ -7,6 +7,10 @@ export interface Perfil {
   /** Música e livro do momento que a pessoa mostra no perfil (texto livre, opcionais). */
   musicaAtual?: string | null;
   livroAtual?: string | null;
+  /** Capa e prévia de 30 s escolhidas na busca (https de fontes conhecidas); ausentes se foi texto livre. */
+  musicaCapa?: string | null;
+  musicaPrevia?: string | null;
+  livroCapa?: string | null;
   totalPostagens: number;
 }
 

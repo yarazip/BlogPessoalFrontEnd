@@ -27,10 +27,24 @@
 
         @if (editando) {
           <form class="destaques-form" [formGroup]="destaquesForm" (ngSubmit)="salvar()">
-            <label for="destaque-musica">Ouvindo</label>
-            <input id="destaque-musica" type="text" formControlName="musica" [maxlength]="limiteDestaque" placeholder="Música ou artista" />
-            <label for="destaque-livro">Lendo</label>
-            <input id="destaque-livro" type="text" formControlName="livro" [maxlength]="limiteDestaque" placeholder="Livro ou autor" />
+            <app-busca-destaque
+              idDoCampo="destaque-musica"
+              rotulo="Ouvindo"
+              placeholder="Busque uma música ou artista"
+              [controle]="musica"
+              [buscar]="buscarMusica"
+              [limite]="limiteDestaque"
+              (escolhido)="musicaItem = $event"
+            />
+            <app-busca-destaque
+              idDoCampo="destaque-livro"
+              rotulo="Lendo"
+              placeholder="Busque um livro ou autor"
+              [controle]="livro"
+              [buscar]="buscarLivro"
+              [limite]="limiteDestaque"
+              (escolhido)="livroItem = $event"
+            />
             @if (erro) {
               <p class="destaques-erro" role="alert">{{ erro }}</p>
             }
@@ -42,12 +56,37 @@
         } @else {
           <dl class="destaques">
             @if (perfil.musicaAtual) {
-              <dt>Ouvindo</dt>
-              <dd class="destaque-musica">{{ perfil.musicaAtual }}</dd>
+              <div class="destaque">
+                @if (perfil.musicaCapa) {
+                  <img class="destaque-capa" [src]="perfil.musicaCapa" alt="" width="48" height="48" loading="lazy" />
+                }
+                <div class="destaque-textos">
+                  <dt>Ouvindo</dt>
+                  <dd class="destaque-musica">{{ perfil.musicaAtual }}</dd>
+                  @if (perfil.musicaPrevia) {
+                    <button
+                      type="button"
+                      class="previa"
+                      [attr.aria-pressed]="tocando"
+                      [attr.aria-label]="tocando ? 'Pausar a prévia' : 'Ouvir a prévia de 30 segundos'"
+                      (click)="alternarPrevia()"
+                    >
+                      {{ tocando ? '❚❚ Pausar' : '▶ Prévia' }}
+                    </button>
+                  }
+                </div>
+              </div>
             }
             @if (perfil.livroAtual) {
-              <dt>Lendo</dt>
-              <dd class="destaque-livro">{{ perfil.livroAtual }}</dd>
+              <div class="destaque">
+                @if (perfil.livroCapa) {
+                  <img class="destaque-capa livro" [src]="perfil.livroCapa" alt="" width="48" height="64" loading="lazy" />
+                }
+                <div class="destaque-textos">
+                  <dt>Lendo</dt>
+                  <dd class="destaque-livro">{{ perfil.livroAtual }}</dd>
+                </div>
+              </div>
             }
           </dl>
           @if (!temDestaques) {

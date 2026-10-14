@@ -1,0 +1,45 @@
+<label [for]="idDoCampo()">{{ rotulo() }}</label>
+<input
+  [id]="idDoCampo()"
+  type="text"
+  autocomplete="off"
+  [formControl]="controle()"
+  [maxlength]="limite()"
+  [placeholder]="placeholder()"
+  [attr.aria-expanded]="estado.tipo === 'resultados'"
+  (keydown.escape)="fechar()"
+/>
+
+@if (buscando) {
+  <p class="busca-aviso" role="status">Buscando...</p>
+}
+
+@switch (estado.tipo) {
+  @case ('resultados') {
+    <ul class="busca-lista" [attr.aria-label]="'Resultados para ' + rotulo()">
+      @for (item of resultados; track $index) {
+        <li>
+          <button type="button" class="busca-item" (click)="escolher(item)">
+            @if (item.capa) {
+              <img class="busca-capa" [src]="item.capa" alt="" width="36" height="36" loading="lazy" />
+            } @else {
+              <span class="busca-capa sem-capa" aria-hidden="true"></span>
+            }
+            <span class="busca-textos">
+              <span class="busca-titulo">{{ item.titulo }}</span>
+              @if (item.detalhe) {
+                <span class="busca-detalhe">{{ item.detalhe }}</span>
+              }
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+  @case ('vazia') {
+    <p class="busca-aviso">Nada encontrado. Você pode salvar o que digitou.</p>
+  }
+  @case ('erro') {
+    <p class="busca-aviso" role="alert">A busca está indisponível agora. Você pode digitar e salvar mesmo assim.</p>
+  }
+}

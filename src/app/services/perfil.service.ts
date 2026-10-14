@@ -20,7 +20,10 @@ export class PerfilService {
   }
 
   /** Só a própria pessoa altera a música e o livro do momento; texto vazio apaga o campo. */
-  atualizarDestaques(id: number, destaques: { musicaAtual: string; livroAtual: string }): Observable<Perfil> {
+  atualizarDestaques(
+    id: number,
+    destaques: { musicaAtual: string; livroAtual: string; musicaCapa: string; musicaPrevia: string; livroCapa: string }
+  ): Observable<Perfil> {
     return this.http.put<Perfil>(`${this.apiUrl}/${id}/destaques`, destaques);
   }
 }
