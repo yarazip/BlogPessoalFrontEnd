@@ -50,4 +50,11 @@
       </div>
     }
   }
+
+  <app-confirmar-exclusao
+    [aberto]="idParaExcluir !== null"
+    [excluindo]="excluindo"
+    (confirmar)="confirmarExclusao()"
+    (cancelar)="cancelarExclusao()"
+  />
 </article>

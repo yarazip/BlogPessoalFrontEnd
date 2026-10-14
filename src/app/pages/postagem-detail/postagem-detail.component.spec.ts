@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 import { Postagem } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
@@ -156,26 +156,79 @@ describe('PostagemDetailComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/postagens', 7, 'editar']);
     });
 
-    it('Excluir confirma, apaga e volta para Minhas postagens', () => {
-      spyOn(window, 'confirm').and.returnValue(true);
+    const modal = () => el.querySelector<HTMLDialogElement>('app-confirmar-exclusao dialog')!;
+    const confirmar = () => el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .zine-botao.perigo')!;
+    const cancelar = () => el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .modal-rodape .zine-botao:not(.perigo)')!;
+    const clicarExcluir = () => {
+      el.querySelectorAll<HTMLButtonElement>('.detalhe-acoes button')[1].click();
+      fixture.detectChanges();
+    };
+
+    it('Excluir abre o modal de confirmação e ainda não apaga nada', () => {
+      auth.getUsuario.and.returnValue({ id: 3 });
+      abrir('7');
+
+      clicarExcluir();
+
+      expect(modal().open).toBeTrue();
+      expect(service.delete).not.toHaveBeenCalled();
+    });
+
+    it('confirmar apaga e volta para Minhas postagens', () => {
       service.delete.and.returnValue(of(undefined));
       auth.getUsuario.and.returnValue({ id: 3 });
       abrir('7');
 
-      el.querySelectorAll<HTMLButtonElement>('.detalhe-acoes button')[1].click();
+      clicarExcluir();
+      confirmar().click();
+      fixture.detectChanges();
 
       expect(service.delete).toHaveBeenCalledOnceWith(7);
       expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
+      expect(modal().open).toBeFalse();
     });
 
-    it('sem confirmação nada é apagado', () => {
-      spyOn(window, 'confirm').and.returnValue(false);
+    it('cancelar fecha o modal e nada é apagado', () => {
       auth.getUsuario.and.returnValue({ id: 3 });
       abrir('7');
 
-      el.querySelectorAll<HTMLButtonElement>('.detalhe-acoes button')[1].click();
+      clicarExcluir();
+      cancelar().click();
+      fixture.detectChanges();
 
+      expect(modal().open).toBeFalse();
       expect(service.delete).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('a postagem continua na tela enquanto a exclusão acontece (o modal mostra "Excluindo...")', () => {
+      const resposta = new Subject<void>();
+      service.delete.and.returnValue(resposta);
+      auth.getUsuario.and.returnValue({ id: 3 });
+      abrir('7');
+
+      clicarExcluir();
+      confirmar().click();
+      fixture.detectChanges();
+
+      expect(el.querySelector('.detalhe-titulo')).not.toBeNull();
+      expect(confirmar().textContent!.trim()).toBe('Excluindo...');
+      expect(confirmar().disabled).toBeTrue();
+    });
+
+    it('se a API recusar, o modal fecha e o erro aparece, com a postagem ainda na tela', () => {
+      service.delete.and.returnValue(throwError(() => new Error('falhou')));
+      auth.getUsuario.and.returnValue({ id: 3 });
+      abrir('7');
+
+      clicarExcluir();
+      confirmar().click();
+      fixture.detectChanges();
+
+      expect(modal().open).toBeFalse();
+      expect(el.querySelector('[role="alert"]')!.textContent).toContain('Erro ao excluir postagem');
+      expect(el.querySelector('.detalhe-titulo')).not.toBeNull();
+      expect(router.navigate).not.toHaveBeenCalled();
     });
   });
 });

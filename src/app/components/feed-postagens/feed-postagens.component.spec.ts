@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
@@ -323,41 +323,133 @@ describe('FeedPostagensComponent', () => {
       expect(cabecalhos[1].classList).not.toContain('com-menu');
     });
 
-    it('Excluir pede confirmação, apaga na API e tira da lista', () => {
-      spyOn(window, 'confirm').and.returnValue(true);
-      service.delete.and.returnValue(of(undefined));
-      const el = abrir([minha(1), minha(2)]);
-
-      abrirMenu(el, 0);
+    /** Abre o menu da primeira postagem e clica em "Excluir": só abre o modal de confirmação. */
+    const pedirExclusao = (el: HTMLElement, indice = 0) => {
+      abrirMenu(el, indice);
       itensDoMenu(el)[1].click();
       fixture.detectChanges();
+    };
+    const modal = (el: HTMLElement) => el.querySelector<HTMLDialogElement>('app-confirmar-exclusao dialog')!;
+    const botaoConfirmar = (el: HTMLElement) => el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .zine-botao.perigo')!;
+    const botaoCancelar = (el: HTMLElement) =>
+      el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .modal-rodape .zine-botao:not(.perigo)')!;
 
-      expect(service.delete).toHaveBeenCalledOnceWith(1);
-      expect(Array.from(el.querySelectorAll('.texto-postagem')).map(t => t.textContent)).toEqual(['minha 2']);
-    });
-
-    it('se a pessoa não confirma, nada é apagado', () => {
-      spyOn(window, 'confirm').and.returnValue(false);
+    it('Excluir abre o modal de confirmação e ainda não apaga nada', () => {
       const el = abrir([minha(1)]);
 
-      abrirMenu(el);
-      itensDoMenu(el)[1].click();
+      pedirExclusao(el);
 
+      expect(modal(el).open).toBeTrue();
+      expect(el.querySelector('app-confirmar-exclusao .modal-titulo')!.textContent).toBe('Excluir esta postagem?');
       expect(service.delete).not.toHaveBeenCalled();
       expect(el.querySelectorAll('article').length).toBe(1);
     });
 
-    it('se a API recusar, a postagem continua na lista e o erro aparece', () => {
-      spyOn(window, 'confirm').and.returnValue(true);
+    it('confirmar apaga na API, tira da lista, avisa quem usa e fecha o modal', () => {
+      service.delete.and.returnValue(of(undefined));
+      const el = abrir([minha(1), minha(2)]);
+      const removidas: Postagem[] = [];
+      fixture.componentInstance.removida.subscribe(p => removidas.push(p));
+
+      pedirExclusao(el, 0);
+      botaoConfirmar(el).click();
+      fixture.detectChanges();
+
+      expect(service.delete).toHaveBeenCalledOnceWith(1);
+      expect(Array.from(el.querySelectorAll('.texto-postagem')).map(t => t.textContent)).toEqual(['minha 2']);
+      expect(removidas.map(p => p.id)).toEqual([1]);
+      expect(modal(el).open).toBeFalse();
+    });
+
+    it('cancelar fecha o modal e nada é apagado', () => {
+      const el = abrir([minha(1)]);
+
+      pedirExclusao(el);
+      botaoCancelar(el).click();
+      fixture.detectChanges();
+
+      expect(modal(el).open).toBeFalse();
+      expect(service.delete).not.toHaveBeenCalled();
+      expect(el.querySelectorAll('article').length).toBe(1);
+    });
+
+    it('o foco começa em "Cancelar" (a ação segura), não em "Excluir"', () => {
+      const el = abrir([minha(1)]);
+
+      pedirExclusao(el);
+
+      expect(document.activeElement).toBe(botaoCancelar(el));
+    });
+
+    it('Esc também cancela', () => {
+      const el = abrir([minha(1)]);
+      pedirExclusao(el);
+
+      modal(el).dispatchEvent(new Event('cancel', { cancelable: true }));
+      fixture.detectChanges();
+
+      expect(modal(el).open).toBeFalse();
+      expect(service.delete).not.toHaveBeenCalled();
+    });
+
+    it('enquanto a API apaga, os botões ficam travados, o botão mostra "Excluindo..." e a janela não fecha', () => {
+      const resposta = new Subject<void>();
+      service.delete.and.returnValue(resposta);
+      const el = abrir([minha(1)]);
+      pedirExclusao(el);
+
+      botaoConfirmar(el).click();
+      fixture.detectChanges();
+
+      expect(botaoConfirmar(el).disabled).toBeTrue();
+      expect(botaoCancelar(el).disabled).toBeTrue();
+      expect(botaoConfirmar(el).textContent!.trim()).toBe('Excluindo...');
+      expect(el.querySelector('app-confirmar-exclusao .modal-x')).toBeNull();
+      modal(el).dispatchEvent(new Event('cancel', { cancelable: true }));
+      fixture.detectChanges();
+      expect(modal(el).open).toBeTrue();
+
+      resposta.next();
+      resposta.complete();
+      fixture.detectChanges();
+      expect(modal(el).open).toBeFalse();
+    });
+
+    it('um segundo clique em "Excluir" durante a exclusão não manda outra chamada', () => {
+      service.delete.and.returnValue(new Subject<void>());
+      const el = abrir([minha(1)]);
+      pedirExclusao(el);
+
+      botaoConfirmar(el).click();
+      fixture.componentInstance.confirmarExclusao();
+
+      expect(service.delete).toHaveBeenCalledTimes(1);
+    });
+
+    it('se a API recusar, o modal fecha, a postagem continua na lista e o erro aparece', () => {
       service.delete.and.returnValue(throwError(() => new Error('falhou')));
       const el = abrir([minha(1)]);
 
-      abrirMenu(el);
-      itensDoMenu(el)[1].click();
+      pedirExclusao(el);
+      botaoConfirmar(el).click();
       fixture.detectChanges();
 
+      expect(modal(el).open).toBeFalse();
       expect(el.querySelectorAll('article').length).toBe(1);
-      expect(el.querySelector('[role="alert"]')!.textContent).toContain('Não foi possível excluir');
+      expect(el.querySelector('.feed-erro[role="alert"]')!.textContent).toContain('Não foi possível excluir');
+    });
+
+    it('o erro de uma tentativa some quando a pessoa tenta excluir de novo', () => {
+      service.delete.and.returnValue(throwError(() => new Error('falhou')));
+      const el = abrir([minha(1)]);
+      pedirExclusao(el);
+      botaoConfirmar(el).click();
+      fixture.detectChanges();
+      expect(el.querySelector('.feed-erro[role="alert"]')).not.toBeNull();
+
+      pedirExclusao(el);
+
+      expect(el.querySelector('.feed-erro[role="alert"]')).toBeNull();
     });
   });
 

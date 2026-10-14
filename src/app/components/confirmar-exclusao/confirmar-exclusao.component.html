@@ -1,0 +1,19 @@
+<app-modal
+  [aberto]="aberto()"
+  [titulo]="titulo()"
+  largura="estreita"
+  [mostrarX]="!excluindo()"
+  [fecharAoClicarFora]="!excluindo()"
+  (fechar)="pedirParaFechar()"
+>
+  <p class="confirmar-texto">{{ texto() }}</p>
+
+  <ng-container modalAcoes>
+    <!-- autofocus é o certo aqui: num modal o foco inicial vai para a ação segura (padrão WAI-ARIA para diálogos de confirmação) -->
+    <!-- eslint-disable-next-line @angular-eslint/template/no-autofocus -->
+    <button type="button" class="zine-botao" autofocus [disabled]="excluindo()" (click)="cancelar.emit()">Cancelar</button>
+    <button type="button" class="zine-botao perigo" [disabled]="excluindo()" (click)="confirmar.emit()">
+      {{ excluindo() ? 'Excluindo...' : 'Excluir' }}
+    </button>
+  </ng-container>
+</app-modal>
