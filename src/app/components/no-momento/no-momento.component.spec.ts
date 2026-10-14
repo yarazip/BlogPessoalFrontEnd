@@ -24,10 +24,11 @@ describe('NoMomentoComponent', () => {
       livroCapa: 'https://covers.openlibrary.org/b/id/647501-M.jpg'
     });
 
-  const montar = (p: Perfil, ehDona = true) => {
+  const montar = (p: Perfil, ehDona = true, compacto = false) => {
     fixture = TestBed.createComponent(NoMomentoComponent);
     fixture.componentRef.setInput('perfil', p);
     fixture.componentRef.setInput('ehDona', ehDona);
+    fixture.componentRef.setInput('compacto', compacto);
     fixture.componentInstance.atualizado.subscribe(novo => atualizados.push(novo));
     fixture.detectChanges();
     el = fixture.nativeElement;
@@ -240,6 +241,82 @@ describe('NoMomentoComponent', () => {
       fixture.componentInstance.salvar();
 
       expect(perfis.atualizarDestaques).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('compacto (faixa de uma linha)', () => {
+    it('mostra música e livro lado a lado, com capa pequena e o rótulo de cada um', () => {
+      montar(comCapas(), false, true);
+
+      expect(el.querySelector('.faixa')).not.toBeNull();
+      expect(el.querySelector('.destaques')).toBeNull();
+      const itens = el.querySelectorAll('.faixa-item');
+      expect(itens.length).toBe(2);
+      expect(itens[0].querySelector('.faixa-rotulo')!.textContent).toBe('Ouvindo');
+      expect(itens[0].querySelector('.destaque-musica')!.textContent).toBe('Clube da Esquina - Milton');
+      expect(itens[1].querySelector('.faixa-rotulo')!.textContent).toBe('Lendo');
+      expect(itens[0].querySelector('img.faixa-capa')!.getAttribute('src')).toBe('https://is1-ssl.mzstatic.com/capa.jpg');
+      expect(itens[1].querySelector('img.faixa-capa')!.getAttribute('src')).toBe('https://covers.openlibrary.org/b/id/647501-M.jpg');
+    });
+
+    it('o texto completo fica no title (a faixa corta com reticências)', () => {
+      montar(perfil({ musicaAtual: 'Uma música com um nome bem comprido' }), false, true);
+
+      expect(el.querySelector('.destaque-musica')!.getAttribute('title')).toBe('Uma música com um nome bem comprido');
+    });
+
+    it('a prévia vira um botão pequeno (só o ícone) e toca com um clique', () => {
+      const audio = jasmine.createSpyObj<HTMLAudioElement>('Audio', ['play', 'pause', 'addEventListener']);
+      audio.play.and.returnValue(Promise.resolve());
+      spyOn(window, 'Audio').and.returnValue(audio);
+      montar(comCapas(), false, true);
+      const botao = () => el.querySelector<HTMLButtonElement>('.previa.mini')!;
+
+      expect(botao().textContent!.trim()).toBe('▶');
+      botao().click();
+      fixture.detectChanges();
+
+      expect(audio.play).toHaveBeenCalled();
+      expect(botao().textContent!.trim()).toBe('❚❚');
+      expect(botao().getAttribute('aria-label')).toBe('Pausar a prévia');
+    });
+
+    it('visitante não vê botão de editar; só música ou só livro aparece sozinho', () => {
+      montar(perfil({ livroAtual: 'Um livro' }), false, true);
+
+      expect(el.querySelectorAll('.faixa-item').length).toBe(1);
+      expect(el.querySelector('.faixa .botao')).toBeNull();
+    });
+
+    it('a dona sem nada vê um convite curto e o botão "Adicionar"', () => {
+      montar(perfil(), true, true);
+
+      expect(el.querySelector('.faixa-vazio')!.textContent).toContain('Conte o que você ouve e lê');
+      expect(el.querySelector('.faixa .botao')!.textContent).toContain('Adicionar');
+    });
+
+    it('editar na faixa abre o mesmo formulário com busca e salva', () => {
+      perfis.atualizarDestaques.and.returnValue(of(perfil({ musicaAtual: 'Nova' })));
+      montar(perfil({ musicaAtual: 'Antiga' }), true, true);
+
+      el.querySelector<HTMLButtonElement>('.faixa .botao')!.click();
+      fixture.detectChanges();
+      expect(el.querySelector('form.destaques-form')).not.toBeNull();
+      expect(el.querySelector('.faixa')).toBeNull();
+
+      digitar(campo('musica'), 'Nova');
+      fixture.componentInstance.salvar();
+      fixture.detectChanges();
+
+      expect(atualizados[0].musicaAtual).toBe('Nova');
+      expect(el.querySelector('.faixa')).not.toBeNull();
+    });
+
+    it('SEGURANÇA: HTML no texto aparece como texto, nunca é executado', () => {
+      montar(perfil({ musicaAtual: '<img src=x onerror="window.__xss = true">' }), false, true);
+
+      expect(el.querySelector('.faixa img.faixa-capa')).toBeNull();
+      expect(el.querySelector('.destaque-musica')!.textContent).toContain('<img src=x');
     });
   });
 

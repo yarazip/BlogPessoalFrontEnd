@@ -28,19 +28,18 @@
 
 .perfil-momento {
   flex: 1 1 100%;
-  padding-top: 14px;
+  min-width: 0; // o texto da faixa não pode alargar o topo; ele é cortado com reticências
+  overflow: hidden;
+  margin: 0 -16px -24px;
   border-top: 2px dashed var(--zine-contorno);
+
+  @media (min-width: 600px) {
+    margin: 0 -24px -24px;
+  }
 
   @media (min-width: 1024px) {
     display: none;
   }
-}
-
-.perfil-momento-titulo {
-  margin: 0 0 6px;
-  font-family: 'Mansalva', cursive;
-  font-size: 1.15rem;
-  font-weight: 400;
 }
 
 .perfil-foto-area {

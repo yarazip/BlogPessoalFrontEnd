@@ -73,9 +73,13 @@
       </div>
 
       @if (mostrarNoMomento) {
-        <section class="perfil-momento" aria-labelledby="titulo-momento">
-          <h2 id="titulo-momento" class="perfil-momento-titulo">no momento</h2>
-          <app-no-momento [perfil]="perfil" [ehDona]="ehOProprioPerfil" (atualizado)="aoAtualizarNoMomento($event)" />
+        <section class="perfil-momento" aria-label="No momento">
+          <app-no-momento
+            [perfil]="perfil"
+            [ehDona]="ehOProprioPerfil"
+            [compacto]="true"
+            (atualizado)="aoAtualizarNoMomento($event)"
+          />
         </section>
       }
     </header>

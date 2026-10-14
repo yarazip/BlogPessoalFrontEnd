@@ -26,6 +26,48 @@
       <button type="button" class="botao-texto" (click)="cancelar()">Cancelar</button>
     </div>
   </form>
+} @else if (compacto()) {
+  <div class="faixa">
+    @if (perfil().musicaAtual) {
+      <div class="faixa-item">
+        @if (perfil().musicaCapa) {
+          <img class="faixa-capa" [src]="perfil().musicaCapa" alt="" width="32" height="32" loading="lazy" />
+        }
+        <div class="faixa-textos">
+          <span class="faixa-rotulo">Ouvindo</span>
+          <span class="faixa-texto destaque-musica" [title]="perfil().musicaAtual">{{ perfil().musicaAtual }}</span>
+        </div>
+        @if (perfil().musicaPrevia) {
+          <button
+            type="button"
+            class="previa mini"
+            [attr.aria-pressed]="tocando"
+            [attr.aria-label]="tocando ? 'Pausar a prévia' : 'Ouvir a prévia de 30 segundos'"
+            (click)="alternarPrevia()"
+          >
+            {{ tocando ? '❚❚' : '▶' }}
+          </button>
+        }
+      </div>
+    }
+    @if (perfil().livroAtual) {
+      <div class="faixa-item">
+        @if (perfil().livroCapa) {
+          <img class="faixa-capa livro" [src]="perfil().livroCapa" alt="" width="24" height="32" loading="lazy" />
+        }
+        <div class="faixa-textos">
+          <span class="faixa-rotulo">Lendo</span>
+          <span class="faixa-texto destaque-livro" [title]="perfil().livroAtual">{{ perfil().livroAtual }}</span>
+        </div>
+      </div>
+    }
+    @if (!temDestaques) {
+      <span class="faixa-vazio">Conte o que você ouve e lê</span>
+    }
+    @if (ehDona()) {
+      <button type="button" class="botao mini" (click)="editar()">{{ temDestaques ? 'Editar' : 'Adicionar' }}</button>
+    }
+  </div>
 } @else {
   <dl class="destaques">
     @if (perfil().musicaAtual) {
