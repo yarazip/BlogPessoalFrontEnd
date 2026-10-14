@@ -104,3 +104,15 @@
   font-size: 0.95rem;
   color: var(--text-muted);
 }
+
+/* Celular: o botão e cada opção têm altura de toque confortável */
+@media (max-width: 480px) {
+  .fonte-botao {
+    min-height: 48px;
+  }
+
+  .fonte-opcao {
+    min-height: 52px;
+    padding: 8px 12px;
+  }
+}

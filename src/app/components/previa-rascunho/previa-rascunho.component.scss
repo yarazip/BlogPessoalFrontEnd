@@ -82,3 +82,14 @@
   font-size: 0.85rem;
   color: var(--primary-color);
 }
+
+@media (max-width: 480px) {
+  .previa-post,
+  .previa-pagina {
+    padding: 12px;
+  }
+
+  .previa-titulo.grande {
+    font-size: 1.4rem;
+  }
+}
