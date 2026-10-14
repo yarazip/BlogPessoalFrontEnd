@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { Postagem } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
-import { TemaService } from '../../services/tema.service';
+import { PerfilService } from '../../services/perfil.service';
 import { PostagemService } from '../../services/postagem.service';
 import { ExplorarComponent } from './explorar.component';
 
@@ -34,7 +34,7 @@ describe('ExplorarComponent', () => {
       providers: [
         provideRouter([]),
         { provide: PostagemService, useValue: service },
-        { provide: TemaService, useValue: { getAll: () => of([]) } },
+        { provide: PerfilService, useValue: { getPerfil: () => of({ id: 1, nome: 'Ana', totalPostagens: 0 }) } },
         { provide: AuthService, useValue: auth }
       ]
     });
