@@ -72,123 +72,215 @@ describe('busca de música e de livro', () => {
     });
   });
 
-  describe('BuscaLivroService (Open Library)', () => {
-    it('pede só os campos necessários e monta a capa pelo cover_i', () => {
-      let itens: unknown;
-      TestBed.inject(BuscaLivroService).buscar('dom casmurro').subscribe(i => (itens = i));
+  describe('BuscaLivroService (Apple Books + Open Library)', () => {
+    interface Livro {
+      titulo: string;
+      detalhe: string;
+      capa: string | null;
+      previa: null;
+    }
 
-      const req = http.expectOne(r => r.url === 'https://openlibrary.org/search.json');
-      expect(req.request.params.get('q')).toBe('dom casmurro');
-      expect(req.request.params.get('fields')).toBe('title,author_name,cover_i');
-      req.flush({ docs: [{ title: 'Dom Casmurro', author_name: ['Machado de Assis'], cover_i: 647501 }] });
-
-      expect(itens).toEqual([
-        {
-          titulo: 'Dom Casmurro',
-          detalhe: 'Machado de Assis',
-          capa: 'https://covers.openlibrary.org/b/id/647501-M.jpg',
-          previa: null
-        }
-      ]);
+    const reqApple = () => http.expectOne(r => r.url === 'https://itunes.apple.com/search' && r.params.get('media') === 'ebook');
+    const reqOpenLibrary = () => http.expectOne(r => r.url === 'https://openlibrary.org/search.json');
+    const apple = (titulo: string, autor: string, comCapa = true) => ({
+      trackName: titulo,
+      artistName: autor,
+      artworkUrl100: comCapa ? 'https://is1-ssl.mzstatic.com/image/thumb/Publication/capa/100x100bb.jpg' : undefined
     });
+    const doc = (titulo: string, autor: string, cover?: number) => ({ title: titulo, author_name: [autor], cover_i: cover });
 
-    describe('capas', () => {
-      const doc = (titulo: string, autor: string, cover?: number) => ({ title: titulo, author_name: [autor], cover_i: cover });
-      const buscar = (docs: unknown[], limite?: number) => {
-        let itens: { titulo: string; capa: string | null }[] = [];
-        TestBed.inject(BuscaLivroService).buscar('x', limite).subscribe(i => (itens = i));
-        http.expectOne(r => r.url.includes('openlibrary')).flush({ docs });
-        return itens;
-      };
+    /** Faz a busca e responde às duas fontes ('erro' simula uma fonte fora do ar). */
+    const buscar = (resposta: { apple?: unknown[] | 'erro'; ol?: unknown[] | 'erro' }, limite?: number) => {
+      let itens: Livro[] | undefined;
+      let falhou = false;
+      TestBed.inject(BuscaLivroService)
+        .buscar('x', limite)
+        .subscribe({ next: i => (itens = i as Livro[]), error: () => (falhou = true) });
+      const a = reqApple();
+      const ol = reqOpenLibrary();
+      if (resposta.apple === 'erro') {
+        a.flush('fora do ar', { status: 500, statusText: 'Erro' });
+      } else {
+        a.flush({ results: resposta.apple ?? [] });
+      }
+      if (resposta.ol === 'erro') {
+        ol.flush('fora do ar', { status: 500, statusText: 'Erro' });
+      } else {
+        ol.flush({ docs: resposta.ol ?? [] });
+      }
+      return { itens, falhou };
+    };
 
-      it('pede bem mais resultados do que mostra, para ter de onde escolher livros com capa', () => {
+    describe('o que é pedido', () => {
+      it('às duas fontes ao mesmo tempo, com bem mais resultados do que mostra', () => {
         TestBed.inject(BuscaLivroService).buscar('dom casmurro').subscribe();
 
-        const req = http.expectOne(r => r.url.includes('openlibrary'));
-        expect(Number(req.request.params.get('limit'))).toBeGreaterThanOrEqual(20);
-        req.flush({ docs: [] });
+        const a = reqApple();
+        const ol = reqOpenLibrary();
+        expect(a.request.params.get('term')).toBe('dom casmurro');
+        expect(a.request.params.get('country')).toBe('BR');
+        expect(Number(a.request.params.get('limit'))).toBeGreaterThanOrEqual(20);
+        expect(ol.request.params.get('q')).toBe('dom casmurro');
+        expect(ol.request.params.get('fields')).toBe('title,author_name,cover_i');
+        expect(Number(ol.request.params.get('limit'))).toBeGreaterThanOrEqual(20);
+        a.flush({ results: [] });
+        ol.flush({ docs: [] });
+      });
+    });
+
+    describe('o que volta', () => {
+      it('Apple Books: título, autor e a capa em 200x200 (mesmo endereço, só o tamanho)', () => {
+        const { itens } = buscar({ apple: [apple('Dom Casmurro', 'Machado de Assis')] });
+
+        expect(itens).toEqual([
+          {
+            titulo: 'Dom Casmurro',
+            detalhe: 'Machado de Assis',
+            capa: 'https://is1-ssl.mzstatic.com/image/thumb/Publication/capa/200x200bb.jpg',
+            previa: null
+          }
+        ]);
       });
 
-      it('os livros com capa vêm primeiro, mantendo a ordem de relevância dentro de cada grupo', () => {
-        const itens = buscar([
-          doc('Sem capa A', 'Autor 1'),
-          doc('Com capa B', 'Autor 2', 2),
-          doc('Sem capa C', 'Autor 3'),
-          doc('Com capa D', 'Autor 4', 4)
-        ]);
+      it('Open Library: título, autor e a capa montada pelo cover_i', () => {
+        const { itens } = buscar({ ol: [doc('Dom Casmurro', 'Machado de Assis', 647501)] });
 
-        expect(itens.map(i => i.titulo)).toEqual(['Com capa B', 'Com capa D', 'Sem capa A', 'Sem capa C']);
+        expect(itens).toEqual([
+          { titulo: 'Dom Casmurro', detalhe: 'Machado de Assis', capa: 'https://covers.openlibrary.org/b/id/647501-M.jpg', previa: null }
+        ]);
       });
 
-      it('as edições repetidas do mesmo livro viram uma só, e fica a que tem capa', () => {
-        const itens = buscar([
-          doc('Dom Casmurro', 'Machado de Assis'),
-          doc('Dom Casmurro', 'Machado de Assis', 647501),
-          doc('Dom Casmurro', 'Machado de Assis', 999)
-        ]);
+      it('capa do Apple Books que não é https é descartada (o livro continua na lista, sem capa)', () => {
+        const { itens } = buscar({ apple: [{ trackName: 'Livro', artistName: 'Autora', artworkUrl100: 'http://a/capa/100x100bb.jpg' }] });
 
-        expect(itens.length).toBe(1);
-        expect(itens[0].capa).toBe('https://covers.openlibrary.org/b/id/647501-M.jpg');
+        expect(itens![0].capa).toBeNull();
+      });
+
+      it('livro sem capa ou sem autor continua aparecendo', () => {
+        const { itens } = buscar({ ol: [{ title: 'Sem nada' }] });
+
+        expect(itens).toEqual([{ titulo: 'Sem nada', detalhe: '', capa: null, previa: null }]);
+      });
+
+      it('resultados sem título são descartados nas duas fontes', () => {
+        const { itens } = buscar({
+          apple: [{ artistName: 'Sem título', artworkUrl100: 'https://a/x/100x100bb.jpg' }, apple('Com título A', 'Autor')],
+          ol: [{ author_name: ['Alguém'], cover_i: 1 }, doc('Com título B', 'Autor 2', 2)]
+        });
+
+        expect(itens!.map(i => i.titulo)).toEqual(['Com título A', 'Com título B']);
+      });
+    });
+
+    describe('juntando as duas fontes', () => {
+      it('o Apple Books vem primeiro (quase tudo tem capa) e a Open Library completa a lista', () => {
+        const { itens } = buscar({
+          apple: [apple('Livro A', 'Autor 1'), apple('Livro B', 'Autor 2')],
+          ol: [doc('Livro C', 'Autor 3', 3), doc('Livro D', 'Autor 4', 4)]
+        });
+
+        expect(itens!.map(i => i.titulo)).toEqual(['Livro A', 'Livro B', 'Livro C', 'Livro D']);
+      });
+
+      it('o mesmo livro nas duas fontes aparece uma vez só (e fica o do Apple Books)', () => {
+        const { itens } = buscar({
+          apple: [apple('Dom Casmurro', 'Machado de Assis')],
+          ol: [doc('Dom Casmurro', 'Machado de Assís', 647501)]
+        });
+
+        expect(itens!.length).toBe(1);
+        expect(itens![0].capa).toContain('mzstatic.com');
+      });
+
+      it('se o Apple Books não tem a capa, a edição da Open Library que tem entra no lugar', () => {
+        const { itens } = buscar({
+          apple: [apple('Dom Casmurro', 'Machado de Assis', false)],
+          ol: [doc('Dom Casmurro', 'Machado de Assis', 647501)]
+        });
+
+        expect(itens!.length).toBe(1);
+        expect(itens![0].capa).toBe('https://covers.openlibrary.org/b/id/647501-M.jpg');
+      });
+
+      it('os livros com capa vêm primeiro, mantendo a ordem dentro de cada grupo', () => {
+        const { itens } = buscar({
+          apple: [apple('Sem capa A', 'Autor 1', false), apple('Com capa B', 'Autor 2')],
+          ol: [doc('Sem capa C', 'Autor 3'), doc('Com capa D', 'Autor 4', 4)]
+        });
+
+        expect(itens!.map(i => i.titulo)).toEqual(['Com capa B', 'Com capa D', 'Sem capa A', 'Sem capa C']);
       });
 
       it('título e autor iguais, mesmo com acento, maiúscula ou pontuação diferentes, contam como o mesmo livro', () => {
-        const itens = buscar([
-          doc('Dom Casmurro', 'Machado de Assís'),
-          doc('DOM CASMURRO!', 'machado de assis', 5)
-        ]);
+        const { itens } = buscar({ ol: [doc('Dom Casmurro', 'Machado de Assís'), doc('DOM CASMURRO!', 'machado de assis', 5)] });
 
-        expect(itens.length).toBe(1);
-        expect(itens[0].capa).not.toBeNull();
+        expect(itens!.length).toBe(1);
+        expect(itens![0].capa).not.toBeNull();
       });
 
-      it('livros diferentes do mesmo autor, ou com o mesmo título e autores diferentes, não são juntados', () => {
-        const itens = buscar([
-          doc('Dom Casmurro', 'Machado de Assis', 1),
-          doc('Quincas Borba', 'Machado de Assis', 2),
-          doc('Dom Casmurro', 'Outra Pessoa', 3)
-        ]);
+      it('livros diferentes do mesmo autor, ou o mesmo título com autores diferentes, não são juntados', () => {
+        const { itens } = buscar({
+          apple: [apple('Dom Casmurro', 'Machado de Assis'), apple('Quincas Borba', 'Machado de Assis')],
+          ol: [doc('Dom Casmurro', 'Outra Pessoa', 3)]
+        });
 
-        expect(itens.length).toBe(3);
+        expect(itens!.length).toBe(3);
       });
 
-      it('mostra no máximo o limite pedido (6), escolhendo os com capa', () => {
-        const docs = [
-          ...Array.from({ length: 5 }, (_, n) => doc(`Sem capa ${n}`, `Autor ${n}`)),
-          ...Array.from({ length: 8 }, (_, n) => doc(`Com capa ${n}`, `Escritor ${n}`, n + 1))
-        ];
+      it('mostra no máximo o limite pedido (6), e todos com capa quando há de onde escolher', () => {
+        const { itens } = buscar({
+          apple: Array.from({ length: 4 }, (_, n) => apple(`Apple ${n}`, `Autor ${n}`)),
+          ol: [
+            ...Array.from({ length: 4 }, (_, n) => doc(`Sem capa ${n}`, `Escritor ${n}`)),
+            ...Array.from({ length: 6 }, (_, n) => doc(`Open ${n}`, `Escritora ${n}`, n + 1))
+          ]
+        });
 
-        const itens = buscar(docs);
-
-        expect(itens.length).toBe(6);
-        expect(itens.every(i => i.capa)).toBeTrue();
+        expect(itens!.length).toBe(6);
+        expect(itens!.every(i => i.capa)).toBeTrue();
       });
 
       it('se há poucos com capa, os sem capa completam a lista (a pessoa ainda pode escolher o livro)', () => {
-        const itens = buscar([doc('Com capa', 'Autor 1', 1), doc('Sem capa 1', 'Autor 2'), doc('Sem capa 2', 'Autor 3')]);
+        const { itens } = buscar({ ol: [doc('Com capa', 'Autor 1', 1), doc('Sem capa 1', 'Autor 2'), doc('Sem capa 2', 'Autor 3')] });
 
-        expect(itens.map(i => i.titulo)).toEqual(['Com capa', 'Sem capa 1', 'Sem capa 2']);
+        expect(itens!.map(i => i.titulo)).toEqual(['Com capa', 'Sem capa 1', 'Sem capa 2']);
       });
 
       it('respeita um limite diferente do padrão', () => {
-        const itens = buscar(Array.from({ length: 10 }, (_, n) => doc(`Livro ${n}`, `Autor ${n}`, n + 1)), 3);
+        const { itens } = buscar({ apple: Array.from({ length: 10 }, (_, n) => apple(`Livro ${n}`, `Autor ${n}`)) }, 3);
 
-        expect(itens.length).toBe(3);
-      });
-
-      it('resultados sem título são descartados', () => {
-        const itens = buscar([{ author_name: ['Alguém'], cover_i: 1 }, doc('Com título', 'Autor', 2)]);
-
-        expect(itens.map(i => i.titulo)).toEqual(['Com título']);
+        expect(itens!.length).toBe(3);
       });
     });
 
-    it('livro sem capa ou sem autor continua aparecendo', () => {
-      let itens: unknown;
-      TestBed.inject(BuscaLivroService).buscar('x').subscribe(i => (itens = i));
+    describe('quando uma fonte falha', () => {
+      it('com o Apple Books fora do ar, a Open Library segue valendo', () => {
+        const { itens, falhou } = buscar({ apple: 'erro', ol: [doc('Dom Casmurro', 'Machado de Assis', 1)] });
 
-      http.expectOne(r => r.url.includes('openlibrary')).flush({ docs: [{ title: 'Sem nada' }] });
+        expect(falhou).toBeFalse();
+        expect(itens!.map(i => i.titulo)).toEqual(['Dom Casmurro']);
+      });
 
-      expect(itens).toEqual([{ titulo: 'Sem nada', detalhe: '', capa: null, previa: null }]);
+      it('com a Open Library fora do ar, o Apple Books segue valendo', () => {
+        const { itens, falhou } = buscar({ apple: [apple('Dom Casmurro', 'Machado de Assis')], ol: 'erro' });
+
+        expect(falhou).toBeFalse();
+        expect(itens!.length).toBe(1);
+      });
+
+      it('só se as duas falharem a busca dá erro (e a tela avisa que a busca está indisponível)', () => {
+        const { itens, falhou } = buscar({ apple: 'erro', ol: 'erro' });
+
+        expect(falhou).toBeTrue();
+        expect(itens).toBeUndefined();
+      });
+
+      it('uma fonte que responde sem resultados não conta como falha', () => {
+        const { itens, falhou } = buscar({ apple: [], ol: [] });
+
+        expect(falhou).toBeFalse();
+        expect(itens).toEqual([]);
+      });
     });
   });
 
