@@ -31,10 +31,11 @@
 
 .card {
   background: var(--card-bg);
-  border-radius: 12px;
   padding: 1.25rem;
-  box-shadow: 0 4px 6px var(--shadow-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--zine-sombra);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
   text-align: center;
   min-height: 120px;
   display: flex;
@@ -43,8 +44,8 @@
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px var(--shadow-color);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--zine-sombra);
 }
 
 .card h3 {
@@ -74,8 +75,9 @@
   margin: 0 auto;
   padding: 1rem;
   background-color: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 var(--zine-sombra);
 }
 
 .loading-state,
@@ -177,8 +179,9 @@
   gap: 0.4rem;
   margin-bottom: 1.25rem;
   padding: 1rem;
-  border: 1px solid var(--header-border);
-  border-radius: 12px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--card-bg);
 
   label {
     font-size: 0.85rem;
@@ -188,8 +191,8 @@
   input,
   textarea {
     padding: 0.6rem 0.75rem;
-    border: 1px solid var(--header-border);
-    border-radius: 8px;
+    border: 2px solid var(--zine-contorno);
+    border-radius: 6px;
     background: var(--bg-color);
     color: var(--text-color);
     font: inherit;
@@ -206,15 +209,18 @@
 .btn-tentar {
   align-self: flex-start;
   padding: 0.5rem 1.25rem;
-  border: 1px solid var(--text-color);
-  border-radius: 999px;
-  background: none;
-  color: var(--text-color);
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
   font: inherit;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 3px 3px 0 var(--zine-sombra);
 
   &:hover:not(:disabled) {
-    background: var(--secondary-color);
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
   }
 
   &:disabled {

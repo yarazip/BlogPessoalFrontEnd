@@ -490,3 +490,8 @@ header {
 .nav-links {
   margin-top: 0;
 }
+
+/* respiro entre os links e o botão de tema em telas médias (antes se encostavam) */
+.main-nav {
+  margin-right: 20px;
+}

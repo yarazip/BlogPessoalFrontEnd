@@ -16,6 +16,7 @@
   max-width: var(--feed-largura);
   min-height: 70vh;
   margin: 0 auto;
+  background: var(--card-bg); // a "folha" branca sobre o caderno pautado
 
   @media (max-width: 359px) {
     --post-espaco: 12px;
@@ -27,7 +28,7 @@
 
   @media (min-width: 600px) {
     --feed-largura: 680px;
-    border-inline: 1px solid var(--header-border);
+    border-inline: 2px solid var(--zine-contorno);
   }
 
   @media (min-width: 1024px) {
@@ -37,8 +38,8 @@
     --foto-tamanho: 52px;
     --texto-tamanho: 1.05rem;
     --titulo-tamanho: 1.5rem;
-    border: 2px solid var(--text-color);
-    box-shadow: 4px 4px 0 var(--header-border);
+    border: 2px solid var(--zine-contorno);
+    box-shadow: 6px 6px 0 var(--zine-sombra);
   }
 }
 
@@ -50,7 +51,7 @@
   transition: background-color 0.15s ease;
 
   @media (min-width: 1024px) {
-    border-bottom-style: dotted;
+    border-bottom-style: dashed;
   }
 
   &:hover {

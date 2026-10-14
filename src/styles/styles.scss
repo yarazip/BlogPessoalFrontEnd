@@ -12,20 +12,21 @@
   --zine-roxo: #7b4dff;
   --zine-marca: #ffe35c;
   --zine-marca-leve: #ffe35c;
-  --bg-color: #FFFFFF;
-  --text-color: #333333;
-  --text-muted: #6B6B6B;
-  --primary-color: #515050;
-  --secondary-color: #F5F5F5;
-  --card-bg: #f0f0f0;
-  --header-border: #E0E0E0;
-  --footer-bg: #EEEEEE;
-  --footer-text: #555555;
-  --footer-link: #777777;
-  --shadow-color: rgba(0, 0, 0, 0.05);
-  --testimonial-bg: #F0F0F0;
-  --hero-bg: #EDEDED;
-  --rec-senha: #F8F8F8;
+  --zine-linha: rgba(90, 120, 200, 0.22);
+  --bg-color: #fbf6e9;
+  --text-color: #1f1a2e;
+  --text-muted: #5f5870;
+  --primary-color: #6b3fe0;
+  --secondary-color: #f1e8cf;
+  --card-bg: #ffffff;
+  --header-border: #d9cfb4;
+  --footer-bg: #fbf6e9;
+  --footer-text: #1f1a2e;
+  --footer-link: #5f5870;
+  --shadow-color: rgba(31, 26, 46, 0.12);
+  --testimonial-bg: #ffffff;
+  --hero-bg: #fbf6e9;
+  --rec-senha: #fff8df;
 }
 
 .dark-mode {
@@ -37,27 +38,31 @@
   --zine-sombra: #000000;
   --zine-roxo: #b79bff;
   --zine-marca-leve: rgba(255, 227, 92, 0.32);
-  --bg-color: #121212;
-  --text-color: #E0E0E0;
-  --text-muted: #9E9E9E;
-  --primary-color: #B0B0B0;
-  --secondary-color: #2D2D2D;
-  --card-bg: #424242;
-  --header-border: #616161;
-  --footer-bg: #1E1E1E;
-  --footer-text: #F5F5F5;
-  --footer-link: #9E9E9E;
+  --zine-linha: rgba(160, 175, 235, 0.12);
+  --bg-color: #1a1727;
+  --text-color: #f3eefc;
+  --text-muted: #b3abc7;
+  --primary-color: #8f6bff;
+  --secondary-color: #2d2842;
+  --card-bg: #262238;
+  --header-border: #3d3656;
+  --footer-bg: #1a1727;
+  --footer-text: #f3eefc;
+  --footer-link: #b3abc7;
   --shadow-color: rgba(0, 0, 0, 0.5);
-  --testimonial-bg: #2D2D2D;
-  --hero-bg: #333333;
-  --rec-senha: #EDEDED;
+  --testimonial-bg: #262238;
+  --hero-bg: #1a1727;
+  --rec-senha: #2d2842;
 }
 
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--bg-color);
+  font-family: 'Open Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* folha de caderno: o papel com a pauta (as páginas colocam suas "folhas" brancas por cima) */
+  background:
+    repeating-linear-gradient(180deg, transparent 0 31px, var(--zine-linha) 31px 32px),
+    var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }

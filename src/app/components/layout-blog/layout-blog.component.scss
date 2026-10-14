@@ -64,16 +64,17 @@
 
 /* Caixinha de blog antigo: moldura grossa, faixa de título em fonte manuscrita, texto simples. */
 .caixa {
-  border: 2px solid var(--text-color);
-  background: var(--bg-color);
-  box-shadow: 4px 4px 0 var(--header-border);
+  border: 2px solid var(--zine-contorno);
+  background: var(--card-bg);
+  box-shadow: 4px 4px 0 var(--zine-sombra);
 }
 
 .caixa-titulo {
   margin: 0;
   padding: 4px 10px;
-  background: var(--text-color);
-  color: var(--bg-color);
+  background: var(--zine-marca-leve);
+  color: var(--zine-tinta);
+  border-bottom: 2px solid var(--zine-contorno);
   font-family: 'Mansalva', cursive;
   font-size: 1.15rem;
   font-weight: 400;
@@ -221,17 +222,20 @@
 
 .botao {
   padding: 4px 14px;
-  border: 1px solid var(--text-color);
-  border-radius: 999px;
-  background: none;
-  color: var(--text-color);
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
   font: inherit;
   font-size: 0.85rem;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 2px 2px 0 var(--zine-sombra);
 
   &:hover:not(:disabled),
   &:focus-visible {
-    background: var(--secondary-color);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
   }
 
   &:disabled {
