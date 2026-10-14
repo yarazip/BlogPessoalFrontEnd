@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CompositorComentarioComponent } from '../../components/compositor-comentario/compositor-comentario.component';
 import { FeedPostagensComponent } from '../../components/feed-postagens/feed-postagens.component';
 import { LayoutBlogComponent } from '../../components/layout-blog/layout-blog.component';
+import { NoMomentoComponent } from '../../components/no-momento/no-momento.component';
 import { LIMITE_BIO, Perfil } from '../../models/Perfil';
 import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
@@ -19,7 +20,7 @@ import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [LayoutBlogComponent, FeedPostagensComponent, CompositorComentarioComponent, IconComponent, ReactiveFormsModule, RouterLink],
+  imports: [LayoutBlogComponent, NoMomentoComponent, FeedPostagensComponent, CompositorComentarioComponent, IconComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
@@ -56,6 +57,16 @@ export class PerfilComponent implements OnInit {
   /** O e-mail não vem do perfil público (é dado pessoal); só a própria pessoa o vê, da sessão. */
   get emailDaSessao(): string | null {
     return this.ehOProprioPerfil ? (this.authService.getUsuario()?.email ?? null) : null;
+  }
+
+  /** A seção "no momento" do topo (celular) existe se há algo a mostrar ou se a dona pode preencher. */
+  get mostrarNoMomento(): boolean {
+    return !!(this.perfil && (this.perfil.musicaAtual || this.perfil.livroAtual || this.ehOProprioPerfil));
+  }
+
+  /** Depois de salvar música e livro: o perfil da tela recebe os novos valores. */
+  aoAtualizarNoMomento(perfil: Perfil): void {
+    this.perfil = { ...this.perfil!, ...perfil, totalPostagens: this.perfil!.totalPostagens };
   }
 
   get mensagemDeListaVazia(): string {

@@ -21,6 +21,28 @@
   }
 }
 
+/* Música e livro do momento no topo do perfil: só no celular e no tablet. No computador ficam na barra lateral. */
+.perfil-topo {
+  flex-wrap: wrap;
+}
+
+.perfil-momento {
+  flex: 1 1 100%;
+  padding-top: 14px;
+  border-top: 2px dashed var(--zine-contorno);
+
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}
+
+.perfil-momento-titulo {
+  margin: 0 0 6px;
+  font-family: 'Mansalva', cursive;
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
 .perfil-foto-area {
   position: relative;
   flex: none;

@@ -290,4 +290,31 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       });
     });
   });
+
+  describe('"no momento" dentro do topo (celular)', () => {
+    const topo = () => el.querySelector('.perfil-topo .perfil-momento');
+
+    it('aparece no topo do perfil quando a pessoa tem música ou livro, para quem visita', () => {
+      abrir('5', of(perfil({ musicaAtual: 'Uma música', livroAtual: 'Um livro' })));
+
+      expect(topo()).not.toBeNull();
+      expect(topo()!.querySelector('.destaque-musica')!.textContent).toBe('Uma música');
+      expect(topo()!.querySelector('.destaque-livro')!.textContent).toBe('Um livro');
+      expect(topo()!.querySelector('.destaques-acoes')).toBeNull();
+    });
+
+    it('não aparece quando a pessoa não tem nada e quem olha não é a dona', () => {
+      abrir('5');
+
+      expect(topo()).toBeNull();
+    });
+
+    it('a dona sempre vê a seção, para poder adicionar', () => {
+      logadoComo(5);
+      abrir('5');
+
+      expect(topo()).not.toBeNull();
+      expect(topo()!.querySelector('.destaques-acoes .botao')!.textContent).toContain('Adicionar');
+    });
+  });
 });

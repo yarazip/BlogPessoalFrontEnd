@@ -5,8 +5,6 @@ import { provideRouter } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { Perfil } from '../../models/Perfil';
 import { AuthService } from '../../services/auth.service';
-import { BuscaLivroService } from '../../services/busca-livro.service';
-import { BuscaMusicaService } from '../../services/busca-musica.service';
 import { PerfilService } from '../../services/perfil.service';
 import { LayoutBlogComponent } from './layout-blog.component';
 
@@ -53,8 +51,6 @@ describe('LayoutBlogComponent', () => {
       providers: [
         provideRouter([]),
         { provide: PerfilService, useValue: perfis },
-        { provide: BuscaMusicaService, useValue: { buscar: () => of([]) } },
-        { provide: BuscaLivroService, useValue: { buscar: () => of([]) } },
         { provide: AuthService, useValue: { isLoggedIn: () => !!logadoComo, getUsuario: () => logadoComo } }
       ]
     });
@@ -109,150 +105,24 @@ describe('LayoutBlogComponent', () => {
       expect(el.querySelector('.destaque-musica')!.textContent).toBe('<b>negrito</b>');
     });
 
-    it('dona sem destaques vê o convite para adicionar', () => {
+    it('dona sem destaques vê a caixa "no momento" com o convite para adicionar (a edição é do componente app-no-momento)', () => {
       montar();
 
       expect(titulos()).toContain('~ no momento ~');
-      expect(el.querySelector('.destaques-acoes .botao')!.textContent).toContain('Adicionar');
+      expect(el.querySelector('app-no-momento .destaques-acoes .botao')!.textContent).toContain('Adicionar');
     });
 
-    it('editar e salvar mostra a música e o livro na barra', () => {
+    it('salvar na caixa atualiza a barra com a música e o livro novos', () => {
       perfis.atualizarDestaques.and.returnValue(of(perfil({ musicaAtual: 'Clube da Esquina', livroAtual: 'Dom Casmurro' })));
       montar();
 
       el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
       fixture.detectChanges();
-      const musica = el.querySelector<HTMLInputElement>('#destaque-musica')!;
-      const livro = el.querySelector<HTMLInputElement>('#destaque-livro')!;
-      musica.value = 'Clube da Esquina';
-      musica.dispatchEvent(new Event('input'));
-      livro.value = 'Dom Casmurro';
-      livro.dispatchEvent(new Event('input'));
-      const envio = new Event('submit', { cancelable: true });
-      el.querySelector('form.destaques-form')!.dispatchEvent(envio);
+      el.querySelector('form.destaques-form')!.dispatchEvent(new Event('submit', { cancelable: true }));
       fixture.detectChanges();
 
-      expect(envio.defaultPrevented).toBeTrue();
-      expect(perfis.atualizarDestaques).toHaveBeenCalledWith(5, {
-        musicaAtual: 'Clube da Esquina',
-        livroAtual: 'Dom Casmurro',
-        musicaCapa: '',
-        musicaPrevia: '',
-        livroCapa: ''
-      });
       expect(el.querySelector('.destaque-musica')!.textContent).toBe('Clube da Esquina');
       expect(el.querySelector('.destaque-livro')!.textContent).toBe('Dom Casmurro');
-      expect(el.querySelector('form.destaques-form')).toBeNull();
-    });
-
-    it('erro da API mantém o formulário aberto com o aviso', () => {
-      perfis.atualizarDestaques.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
-      montar();
-
-      el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
-      fixture.detectChanges();
-      fixture.debugElement.query(x => x.name === 'app-layout-blog').componentInstance.salvar();
-      fixture.detectChanges();
-
-      expect(el.querySelector('form.destaques-form [role="alert"]')).not.toBeNull();
-    });
-
-    it('cancelar fecha o formulário sem chamar a API', () => {
-      montar();
-
-      el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
-      fixture.detectChanges();
-      el.querySelector<HTMLButtonElement>('.botao-texto')!.click();
-      fixture.detectChanges();
-
-      expect(el.querySelector('form.destaques-form')).toBeNull();
-      expect(perfis.atualizarDestaques).not.toHaveBeenCalled();
-    });
-
-    describe('capa e prévia', () => {
-      const comCapas = () =>
-        perfil({
-          musicaAtual: 'Clube da Esquina - Milton',
-          musicaCapa: 'https://is1-ssl.mzstatic.com/capa.jpg',
-          musicaPrevia: 'https://audio-ssl.itunes.apple.com/previa.m4a',
-          livroAtual: 'Dom Casmurro',
-          livroCapa: 'https://covers.openlibrary.org/b/id/647501-M.jpg'
-        });
-
-      it('mostra a capa da música e a do livro, sem texto alternativo (o nome já está ao lado)', () => {
-        montar({ resposta: of(comCapas()) });
-
-        const capas = el.querySelectorAll<HTMLImageElement>('.destaque-capa');
-        expect(capas.length).toBe(2);
-        expect(capas[0].getAttribute('src')).toBe('https://is1-ssl.mzstatic.com/capa.jpg');
-        expect(capas[1].getAttribute('src')).toBe('https://covers.openlibrary.org/b/id/647501-M.jpg');
-        capas.forEach(c => expect(c.getAttribute('alt')).toBe(''));
-      });
-
-      it('sem capa mostra só o texto, como antes', () => {
-        montar({ resposta: of(perfil({ musicaAtual: 'Uma música', livroAtual: 'Um livro' })) });
-
-        expect(el.querySelector('.destaque-capa')).toBeNull();
-        expect(el.querySelector('.previa')).toBeNull();
-        expect(el.querySelector('.destaque-musica')!.textContent).toBe('Uma música');
-      });
-
-      it('a prévia só toca com um clique e o botão vira "Pausar"; outro clique pausa', () => {
-        const audio = jasmine.createSpyObj<HTMLAudioElement>('Audio', ['play', 'pause', 'addEventListener']);
-        audio.play.and.returnValue(Promise.resolve());
-        const criar = spyOn(window, 'Audio').and.returnValue(audio);
-        montar({ resposta: of(comCapas()) });
-
-        expect(criar).not.toHaveBeenCalled();
-        const botao = () => el.querySelector<HTMLButtonElement>('.previa')!;
-        expect(botao().textContent!.trim()).toBe('▶ Prévia');
-
-        botao().click();
-        fixture.detectChanges();
-        expect(criar).toHaveBeenCalledOnceWith('https://audio-ssl.itunes.apple.com/previa.m4a');
-        expect(audio.play).toHaveBeenCalled();
-        expect(botao().textContent!.trim()).toBe('❚❚ Pausar');
-        expect(botao().getAttribute('aria-pressed')).toBe('true');
-
-        botao().click();
-        fixture.detectChanges();
-        expect(audio.pause).toHaveBeenCalled();
-        expect(botao().textContent!.trim()).toBe('▶ Prévia');
-      });
-
-      it('editar sem mexer no texto mantém a capa e a prévia ao salvar', () => {
-        perfis.atualizarDestaques.and.returnValue(of(comCapas()));
-        montar({ resposta: of(comCapas()) });
-
-        el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
-        fixture.detectChanges();
-        fixture.debugElement.query(x => x.name === 'app-layout-blog').componentInstance.salvar();
-
-        expect(perfis.atualizarDestaques).toHaveBeenCalledWith(5, {
-          musicaAtual: 'Clube da Esquina - Milton',
-          livroAtual: 'Dom Casmurro',
-          musicaCapa: 'https://is1-ssl.mzstatic.com/capa.jpg',
-          musicaPrevia: 'https://audio-ssl.itunes.apple.com/previa.m4a',
-          livroCapa: 'https://covers.openlibrary.org/b/id/647501-M.jpg'
-        });
-      });
-
-      it('mudar o texto à mão descarta a capa e a prévia antigas', () => {
-        perfis.atualizarDestaques.and.returnValue(of(perfil({ musicaAtual: 'Outra' })));
-        montar({ resposta: of(comCapas()) });
-        el.querySelector<HTMLButtonElement>('.destaques-acoes .botao')!.click();
-        fixture.detectChanges();
-
-        const campo = el.querySelector<HTMLInputElement>('#destaque-musica')!;
-        campo.value = 'Outra música';
-        campo.dispatchEvent(new Event('input'));
-        fixture.debugElement.query(x => x.name === 'app-layout-blog').componentInstance.salvar();
-
-        expect(perfis.atualizarDestaques).toHaveBeenCalledWith(
-          5,
-          jasmine.objectContaining({ musicaAtual: 'Outra música', musicaCapa: '', musicaPrevia: '', livroCapa: 'https://covers.openlibrary.org/b/id/647501-M.jpg' })
-        );
-      });
     });
 
     it('com comCartao=false esconde o cartão e mantém música e livro', () => {
