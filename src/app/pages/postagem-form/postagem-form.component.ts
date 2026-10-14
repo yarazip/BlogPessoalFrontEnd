@@ -45,6 +45,13 @@ export class PostagemFormComponent implements OnInit {
   isComentario = false;
   postagemId?: number;
   isLoading = false;
+  /**
+   * Na edição, até a postagem chegar da API não se sabe se é rascunho ou rabisco. Enquanto isso o formulário
+   * não aparece, senão a tela mostrava os campos do rascunho (título, tema, fonte) e trocava para os do rabisco.
+   */
+  carregandoPostagem = false;
+  /** A postagem a editar não pôde ser carregada: não há o que editar, só o aviso e o botão de voltar. */
+  falhaAoCarregar = false;
   temas: Tema[] = [];
   semTemas = false;
   errorMessage: string | null = null;
@@ -135,6 +142,7 @@ export class PostagemFormComponent implements OnInit {
 
   private carregarPostagem(id: number): void {
     this.isLoading = true;
+    this.carregandoPostagem = true;
     this.postagemService.getById(id).subscribe({
       next: postagem => {
         if (postagem.tipo === 'COMENTARIO') {
@@ -149,10 +157,13 @@ export class PostagemFormComponent implements OnInit {
           fonte: postagem.fonte ?? null
         });
         this.isLoading = false;
+        this.carregandoPostagem = false;
       },
       error: erro => {
         this.errorMessage = mensagemDeErro(erro, 'Erro ao carregar postagem.');
         this.isLoading = false;
+        this.carregandoPostagem = false;
+        this.falhaAoCarregar = true;
       }
     });
   }

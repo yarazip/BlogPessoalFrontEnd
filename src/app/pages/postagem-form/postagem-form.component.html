@@ -1,7 +1,7 @@
 
 <div class="postagem-container">
   <div class="card">
-    <h2>{{ isEdit ? (isComentario ? 'Editar rabisco' : 'Editar rascunho') : 'Novo rascunho' }}</h2>
+    <h2>{{ !isEdit ? 'Novo rascunho' : carregandoPostagem || falhaAoCarregar ? 'Editar postagem' : isComentario ? 'Editar rabisco' : 'Editar rascunho' }}</h2>
 
     @if (errorMessage) {
       <div class="alert alert-danger" role="alert">
@@ -9,6 +9,13 @@
       </div>
     }
 
+    @if (carregandoPostagem) {
+      <p class="carregando" role="status">Carregando...</p>
+    } @else if (falhaAoCarregar) {
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="cancelar()">Voltar</button>
+      </div>
+    } @else {
     <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
       <!-- Campo Título (só no blog) -->
       @if (!isComentario) {
@@ -131,5 +138,6 @@
 
         </div>
       </form>
+    }
     </div>
   </div>

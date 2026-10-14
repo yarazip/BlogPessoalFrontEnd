@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
+import { Postagem } from '../../models/Postagem';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
@@ -265,6 +266,71 @@ describe('PostagemFormComponent', () => {
       expect(el.querySelector('#tema')).not.toBeNull();
       expect(el.querySelector('h2')!.textContent).toBe('Novo rascunho');
       expect(el.querySelector('.contador-texto')!.textContent).toBe('3/10000');
+    });
+  });
+
+  describe('enquanto a postagem a editar carrega', () => {
+    const el = () => fixture.nativeElement as HTMLElement;
+
+    it('não mostra o formulário do rascunho (título, tema, fonte) antes de saber o tipo da postagem', () => {
+      postagens.getById.and.returnValue(new Subject());
+      criar('8');
+
+      expect(el().querySelector('#titulo')).toBeNull();
+      expect(el().querySelector('#tema')).toBeNull();
+      expect(el().querySelector('#texto')).toBeNull();
+      expect(el().querySelector('.fonte-grupo')).toBeNull();
+      expect(el().querySelector('.carregando')!.textContent).toContain('Carregando');
+      expect(el().querySelector('h2')!.textContent).toBe('Editar postagem');
+    });
+
+    it('um rabisco nunca passa por uma tela de rascunho: do carregando direto para o campo do rabisco', () => {
+      const resposta = new Subject<Postagem>();
+      postagens.getById.and.returnValue(resposta);
+      criar('8');
+      expect(el().querySelector('#titulo')).toBeNull();
+
+      resposta.next({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Meu rabisco', tema: null });
+      fixture.detectChanges();
+
+      expect(el().querySelector('.carregando')).toBeNull();
+      expect(el().querySelector('#titulo')).toBeNull();
+      expect(el().querySelector('#tema')).toBeNull();
+      expect(el().querySelector('#texto')).not.toBeNull();
+      expect(el().querySelector('h2')!.textContent).toBe('Editar rabisco');
+    });
+
+    it('um rascunho aparece completo quando chega', () => {
+      const resposta = new Subject<Postagem>();
+      postagens.getById.and.returnValue(resposta);
+      criar('7');
+
+      resposta.next({ id: 7, tipo: 'BLOG', titulo: 'Meu título', texto: 'Texto do rascunho', tema: { id: 2, descricao: 'Java' } });
+      fixture.detectChanges();
+
+      expect(el().querySelector('#titulo')).not.toBeNull();
+      expect(el().querySelector('#tema')).not.toBeNull();
+      expect(el().querySelector<HTMLInputElement>('#titulo')!.value).toBe('Meu título');
+      expect(el().querySelector('h2')!.textContent).toBe('Editar rascunho');
+    });
+
+    it('se a postagem não carregar, mostra só o aviso e o botão Voltar (sem formulário vazio de rascunho)', () => {
+      postagens.getById.and.returnValue(throwError(() => new HttpErrorResponse({ status: 404 })));
+      criar('8');
+
+      expect(el().querySelector('[role="alert"]')!.textContent).toContain('Erro ao carregar postagem');
+      expect(el().querySelector('form')).toBeNull();
+      expect(el().querySelector('#titulo')).toBeNull();
+
+      el().querySelector<HTMLButtonElement>('.btn-secondary')!.click();
+      expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
+    });
+
+    it('uma postagem nova abre o formulário na hora, sem passar pelo carregando', () => {
+      criar();
+
+      expect(el().querySelector('.carregando')).toBeNull();
+      expect(el().querySelector('#titulo')).not.toBeNull();
     });
   });
 
