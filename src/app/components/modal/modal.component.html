@@ -1,0 +1,28 @@
+<dialog
+  #dialogo
+  class="modal"
+  [class.estreita]="largura() === 'estreita'"
+  [class.larga]="largura() === 'larga'"
+  [attr.aria-labelledby]="idTitulo"
+  (cancel)="aoCancelar($event)"
+  (close)="aoFecharNativo()"
+>
+  <div class="modal-folha">
+    <span class="modal-fita" aria-hidden="true"></span>
+
+    <header class="modal-topo">
+      <h2 class="modal-titulo" [id]="idTitulo">{{ titulo() }}</h2>
+      @if (mostrarX()) {
+        <button type="button" class="modal-x" aria-label="Fechar" (click)="fechar.emit()">×</button>
+      }
+    </header>
+
+    <div class="modal-corpo">
+      <ng-content />
+    </div>
+
+    <footer class="modal-rodape">
+      <ng-content select="[modalAcoes]" />
+    </footer>
+  </div>
+</dialog>
