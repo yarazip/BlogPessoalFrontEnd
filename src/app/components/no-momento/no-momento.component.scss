@@ -164,3 +164,72 @@
     background: var(--zine-marca-leve);
   }
 }
+
+/* Faixa compacta: tudo numa linha, com a capa pequena e o texto cortado em reticências. */
+.faixa {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+}
+
+.faixa-item {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.faixa-capa {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 4px;
+  object-fit: cover;
+
+  &.livro {
+    width: 24px;
+  }
+}
+
+.faixa-textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.faixa-rotulo {
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.faixa-texto {
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faixa-vazio {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.mini {
+  flex: none;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+}
+
+.previa.mini {
+  margin: 0;
+  padding: 0 7px;
+  line-height: 1.5;
+}

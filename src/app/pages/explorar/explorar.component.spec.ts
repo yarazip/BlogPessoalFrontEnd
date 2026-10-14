@@ -62,6 +62,20 @@ describe('ExplorarComponent', () => {
     expect(el.querySelector('.feed')!.firstElementChild).toBe(caixa);
   });
 
+  it('quem está logado vê, logo abaixo da caixa para comentar, a faixa fina de música e livro (celular)', () => {
+    abrir(true);
+
+    const feed = el.querySelector('.feed')!;
+    expect(feed.children[0].tagName).toBe('APP-COMPOSITOR-COMENTARIO');
+    expect(feed.children[1].tagName).toBe('APP-FAIXA-NO-MOMENTO');
+  });
+
+  it('visitante não vê a faixa de música e livro', () => {
+    abrir(false);
+
+    expect(el.querySelector('app-faixa-no-momento')).toBeNull();
+  });
+
   it('um comentário publicado aparece no topo do feed sem recarregar a lista', () => {
     service.create.and.returnValue(
       of({ id: 9, tipo: 'COMENTARIO', texto: 'Acabei de publicar', usuario: { id: 1, nome: 'Ana' } })

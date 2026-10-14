@@ -300,7 +300,8 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       expect(topo()).not.toBeNull();
       expect(topo()!.querySelector('.destaque-musica')!.textContent).toBe('Uma música');
       expect(topo()!.querySelector('.destaque-livro')!.textContent).toBe('Um livro');
-      expect(topo()!.querySelector('.destaques-acoes')).toBeNull();
+      expect(topo()!.querySelector('.faixa')).not.toBeNull();
+      expect(topo()!.querySelector('.botao')).toBeNull();
     });
 
     it('não aparece quando a pessoa não tem nada e quem olha não é a dona', () => {
@@ -314,7 +315,7 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       abrir('5');
 
       expect(topo()).not.toBeNull();
-      expect(topo()!.querySelector('.destaques-acoes .botao')!.textContent).toContain('Adicionar');
+      expect(topo()!.querySelector('.faixa .botao')!.textContent).toContain('Adicionar');
     });
   });
 });

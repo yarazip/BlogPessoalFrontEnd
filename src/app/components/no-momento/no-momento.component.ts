@@ -32,6 +32,8 @@ export class NoMomentoComponent {
 
   readonly perfil = input.required<Perfil>();
   readonly ehDona = input(false);
+  /** Faixa de uma linha só, na horizontal (capa pequena e texto cortado), para telas pequenas. */
+  readonly compacto = input(false);
 
   readonly atualizado = output<Perfil>();
 
