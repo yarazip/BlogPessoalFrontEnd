@@ -1,0 +1,101 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+input {
+  padding: 6px 8px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.9rem;
+
+  &:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--zine-roxo);
+  }
+}
+
+.busca-aviso {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.busca-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--card-bg);
+  box-shadow: 3px 3px 0 var(--zine-sombra);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.busca-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-bottom: 1px dashed var(--header-border);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--zine-marca-leve);
+    outline: none;
+  }
+}
+
+li:last-child .busca-item {
+  border-bottom: none;
+}
+
+.busca-capa {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--zine-contorno);
+  border-radius: 3px;
+  object-fit: cover;
+
+  &.sem-capa {
+    background: var(--secondary-color);
+  }
+}
+
+.busca-textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.busca-titulo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.busca-detalhe {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}

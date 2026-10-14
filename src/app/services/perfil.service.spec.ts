@@ -38,11 +38,12 @@ describe('PerfilService', () => {
   });
 
   it('atualiza música e livro do momento com PUT em /destaques', () => {
-    service.atualizarDestaques(5, { musicaAtual: 'Clube da Esquina', livroAtual: '' }).subscribe();
+    const destaques = { musicaAtual: 'Clube da Esquina', livroAtual: '', musicaCapa: '', musicaPrevia: '', livroCapa: '' };
+    service.atualizarDestaques(5, destaques).subscribe();
 
     const req = http.expectOne(`${base}/5/destaques`);
     expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual({ musicaAtual: 'Clube da Esquina', livroAtual: '' });
+    expect(req.request.body).toEqual(destaques);
     req.flush({ id: 5, nome: 'Bia', musicaAtual: 'Clube da Esquina', totalPostagens: 0 });
   });
 });
