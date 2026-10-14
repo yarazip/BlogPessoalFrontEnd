@@ -100,11 +100,21 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       expect(el.querySelector('.perfil-bio')!.textContent).toContain('<img src=x');
     });
 
-    it('lista só as postagens daquela pessoa, com o cabeçalho do perfil no topo', () => {
+    it('lista só as postagens daquela pessoa', () => {
       abrir('5');
 
       expect(postagens.getPagina).toHaveBeenCalledOnceWith({ page: 0, size: 10, autor: 5 });
-      expect(el.querySelector('app-feed-postagens .perfil-topo')).not.toBeNull();
+    });
+
+    it('o topo do perfil e as postagens são dois retângulos separados (o topo fica acima do feed, não dentro dele)', () => {
+      abrir('5');
+
+      const topo = el.querySelector('.principal > .perfil-topo')!;
+      const feed = el.querySelector('.principal > app-feed-postagens')!;
+      expect(topo).not.toBeNull();
+      expect(feed).not.toBeNull();
+      expect(feed.querySelector('.perfil-topo')).toBeNull();
+      expect(topo.compareDocumentPosition(feed) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
     it('perfil inexistente (404) mostra aviso e volta ao feed', () => {
