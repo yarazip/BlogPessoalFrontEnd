@@ -1,0 +1,106 @@
+:host {
+  display: block;
+}
+
+.seletor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seletor-rotulo {
+  font-weight: 600;
+}
+
+/* O botão único: mostra a fonte atual e abre a janela de escolha. */
+.fonte-botao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--zine-sombra);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+}
+
+.fonte-amostra {
+  flex: none;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.fonte-atual {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fonte-seta {
+  flex: none;
+  color: var(--text-muted);
+}
+
+/* Dentro da janela. */
+.fonte-ajuda {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.fonte-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fonte-opcao {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 10px;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--zine-marca-leve);
+  }
+
+  &.escolhida {
+    box-shadow: 3px 3px 0 var(--zine-sombra);
+    background: var(--zine-marca-leve);
+  }
+
+  &.escolhida .opcao-nome::after {
+    content: ' ✓';
+  }
+}
+
+.opcao-nome {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.opcao-exemplo {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}

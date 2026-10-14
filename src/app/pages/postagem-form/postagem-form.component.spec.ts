@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Subject, of, throwError } from 'rxjs';
 import { Postagem } from '../../models/Postagem';
+import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { TemaService } from '../../services/tema.service';
@@ -13,7 +14,9 @@ describe('PostagemFormComponent', () => {
   let temas: jasmine.SpyObj<TemaService>;
   let fontes: jasmine.SpyObj<FonteService>;
   let router: jasmine.SpyObj<Router>;
+  let usuarioLogado: { id: number; nome: string };
   let fixture: ComponentFixture<PostagemFormComponent>;
+  const CHAVE_NOVO = 'rasura:rascunho:5:novo';
 
   const criar = (id: string | null = null) => {
     TestBed.configureTestingModule({
@@ -23,6 +26,7 @@ describe('PostagemFormComponent', () => {
         { provide: TemaService, useValue: temas },
         { provide: FonteService, useValue: fontes },
         { provide: Router, useValue: router },
+        { provide: AuthService, useValue: { getUsuario: () => usuarioLogado } },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap(id ? { id } : {}) } } }
       ]
     });
@@ -31,7 +35,11 @@ describe('PostagemFormComponent', () => {
     return fixture.componentInstance;
   };
 
+  afterEach(() => localStorage.clear());
+
   beforeEach(() => {
+    localStorage.clear();
+    usuarioLogado = { id: 5, nome: 'Ana' };
     postagens = jasmine.createSpyObj('PostagemService', ['create', 'update', 'getById']);
     temas = jasmine.createSpyObj('TemaService', ['getAll']);
     fontes = jasmine.createSpyObj('FonteService', ['carregar', 'carregarTodas']);
@@ -111,17 +119,16 @@ describe('PostagemFormComponent', () => {
   });
 
   describe('fonte do rascunho', () => {
-    const opcoes = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll('.fonte-opcao'));
+    const botaoDaFonte = () => (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('app-seletor-de-fonte .fonte-botao')!;
+    const opcoes = () => Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('app-seletor-de-fonte .fonte-opcao'));
 
-    it('oferece a fonte padrão do site e as 7 fontes, cada uma mostrada na própria fonte', () => {
+    it('a escolha de fonte é um botão só (e não uma grade de opções na tela)', () => {
       criar();
       fixture.detectChanges();
 
-      expect(opcoes().length).toBe(8);
-      expect(opcoes()[0].textContent).toContain('Padrão do site');
-      const nomes = opcoes().slice(1).map(o => o.querySelector('.fonte-nome')!.textContent!.trim());
-      expect(nomes).toEqual(['Instrument Serif', 'Fraunces', 'Righteous', 'Rye', 'Mea Culpa', 'Rubik Vinyl', 'Rampart One']);
-      expect((opcoes()[4].querySelector('.fonte-nome') as HTMLElement).style.fontFamily).toContain('Rye');
+      expect((fixture.nativeElement as HTMLElement).querySelectorAll('app-seletor-de-fonte .fonte-botao').length).toBe(1);
+      expect(botaoDaFonte().textContent).toContain('Padrão do site');
+      expect((fixture.nativeElement as HTMLElement).querySelector('app-seletor-de-fonte dialog')!.hasAttribute('open')).toBeFalse();
     });
 
     it('começa na fonte padrão do site', () => {
@@ -129,7 +136,6 @@ describe('PostagemFormComponent', () => {
       fixture.detectChanges();
 
       expect(c.fonte.value).toBeNull();
-      expect(opcoes()[0].classList).toContain('escolhida');
     });
 
     it('pede ao serviço as fontes ao abrir o formulário de um rascunho novo', () => {
@@ -154,16 +160,20 @@ describe('PostagemFormComponent', () => {
       });
     });
 
-    it('clicar numa opção escolhe a fonte e marca a opção', () => {
+    it('o botão abre a janela, escolher uma fonte a aplica ao rascunho e o botão passa a mostrar o nome dela', () => {
       const c = criar();
       fixture.detectChanges();
 
-      (opcoes()[2].querySelector('input') as HTMLInputElement).click();
+      botaoDaFonte().click();
+      fixture.detectChanges();
+      expect(opcoes().length).toBe(8);
+
+      opcoes()[2].click();
       fixture.detectChanges();
 
       expect(c.fonte.value).toBe('FRAUNCES');
-      expect(opcoes()[2].classList).toContain('escolhida');
-      expect(opcoes()[0].classList).not.toContain('escolhida');
+      expect(botaoDaFonte().textContent).toContain('Fraunces');
+      expect(c.postagemForm.dirty).toBeTrue();
     });
 
     it('o que se digita já aparece na fonte escolhida (prévia ao vivo)', () => {
@@ -208,7 +218,7 @@ describe('PostagemFormComponent', () => {
       criar('8');
       fixture.detectChanges();
 
-      expect((fixture.nativeElement as HTMLElement).querySelector('.fonte-grupo')).toBeNull();
+      expect((fixture.nativeElement as HTMLElement).querySelector('app-seletor-de-fonte')).toBeNull();
       expect(fontes.carregarTodas).not.toHaveBeenCalled();
     });
   });
@@ -266,6 +276,447 @@ describe('PostagemFormComponent', () => {
       expect(el.querySelector('#tema')).not.toBeNull();
       expect(el.querySelector('h2')!.textContent).toBe('Novo rascunho');
       expect(el.querySelector('.contador-texto')!.textContent).toBe('3/10000');
+    });
+  });
+
+  const el = () => fixture.nativeElement as HTMLElement;
+  const escrever = (c: PostagemFormComponent, dados: Partial<{ titulo: string; texto: string; temaId: number | null }> = {}) =>
+    c.postagemForm.patchValue({ titulo: 'Meu título', texto: 'Um texto de rascunho com tamanho válido', temaId: 2, ...dados });
+
+  describe('abas Escrever e Prévia', () => {
+    const aba = (nome: 'escrever' | 'previa') => el().querySelector<HTMLButtonElement>(`#aba-${nome}`)!;
+    const painelEscrever = () => el().querySelector<HTMLElement>('#painel-escrever')!;
+
+    it('o rascunho tem as duas abas, com Escrever aberta e a prévia ainda não montada', () => {
+      criar();
+
+      expect(aba('escrever').getAttribute('aria-selected')).toBe('true');
+      expect(aba('previa').getAttribute('aria-selected')).toBe('false');
+      expect(painelEscrever().hidden).toBeFalse();
+      expect(el().querySelector('app-previa-rascunho')).toBeNull();
+    });
+
+    it('Prévia mostra como o texto vai aparecer, com o que está escrito, a fonte e o tema', () => {
+      const c = criar();
+      escrever(c);
+      c.fonte.setValue('MEA_CULPA');
+      fixture.detectChanges();
+
+      aba('previa').click();
+      fixture.detectChanges();
+
+      expect(painelEscrever().hidden).toBeTrue();
+      expect(aba('previa').getAttribute('aria-selected')).toBe('true');
+      const previa = el().querySelector('app-previa-rascunho')!;
+      expect(previa.querySelector('.previa-titulo')!.textContent).toBe('Meu título');
+      expect(previa.querySelector('.previa-texto')!.textContent).toContain('Um texto de rascunho');
+      expect(previa.querySelector('.previa-tema')!.textContent).toBe('#Java');
+      expect(previa.querySelector<HTMLElement>('.previa-titulo')!.style.fontFamily).toContain('Mea Culpa');
+      expect(previa.querySelector('.previa-meta')!.textContent).toContain('Ana');
+    });
+
+    it('voltar para Escrever mantém o que foi digitado (os campos só ficam escondidos, não são apagados)', () => {
+      const c = criar();
+      escrever(c);
+      aba('previa').click();
+      fixture.detectChanges();
+
+      aba('escrever').click();
+      fixture.detectChanges();
+
+      expect(painelEscrever().hidden).toBeFalse();
+      expect(el().querySelector<HTMLInputElement>('#titulo')!.value).toBe('Meu título');
+      expect(el().querySelector('app-previa-rascunho')).toBeNull();
+    });
+
+    it('as setas do teclado trocam de aba', () => {
+      criar();
+      document.body.appendChild(el());
+
+      aba('escrever').dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+      fixture.detectChanges();
+      expect(aba('previa').getAttribute('aria-selected')).toBe('true');
+      expect(document.activeElement).toBe(aba('previa'));
+
+      aba('previa').dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+      fixture.detectChanges();
+      expect(aba('escrever').getAttribute('aria-selected')).toBe('true');
+      el().remove();
+    });
+
+    it('só a aba aberta entra na ordem do Tab (as abas se movem pelas setas)', () => {
+      criar();
+
+      expect(aba('escrever').getAttribute('tabindex')).toBe('0');
+      expect(aba('previa').getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('o rabisco não tem abas nem prévia (é curto e vai direto)', () => {
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));
+      criar('8');
+
+      expect(el().querySelector('[role="tablist"]')).toBeNull();
+      expect(el().querySelector('app-previa-rascunho')).toBeNull();
+    });
+  });
+
+  describe('contadores', () => {
+    it('mostra as palavras e o tempo de leitura ao vivo, além dos caracteres', () => {
+      const c = criar();
+      c.texto.setValue('Uma duas três quatro cinco.');
+      fixture.detectChanges();
+
+      expect(el().querySelector('.contador-palavras')!.textContent).toContain('5 palavras · 1 min de leitura');
+      expect(el().querySelector('.contador-texto')!.textContent).toBe('27/10000');
+    });
+
+    it('usa o singular com uma palavra e conta 1 minuto quando está vazio', () => {
+      const c = criar();
+      expect(el().querySelector('.contador-palavras')!.textContent).toContain('0 palavras · 1 min de leitura');
+
+      c.texto.setValue('Uma');
+      fixture.detectChanges();
+      expect(el().querySelector('.contador-palavras')!.textContent).toContain('1 palavra ·');
+    });
+
+    it('um texto de 450 palavras leva 3 minutos', () => {
+      const c = criar();
+      c.texto.setValue(Array(450).fill('palavra').join(' '));
+      fixture.detectChanges();
+
+      expect(el().querySelector('.contador-palavras')!.textContent).toContain('450 palavras · 3 min de leitura');
+    });
+
+    it('o rabisco só mostra os caracteres (sem palavras nem tempo de leitura)', () => {
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));
+      criar('8');
+
+      expect(el().querySelector('.contador-palavras')).toBeNull();
+      expect(el().querySelector('.contador-texto')).not.toBeNull();
+    });
+  });
+
+  describe('salvamento automático no navegador', () => {
+    const guardado = (chave = CHAVE_NOVO) => JSON.parse(localStorage.getItem(chave) ?? 'null');
+
+    it('depois de uma pausa na digitação, guarda o rascunho novo no navegador', fakeAsync(() => {
+      const c = criar();
+
+      escrever(c);
+      tick(499);
+      expect(guardado()).toBeNull();
+      tick(1);
+
+      expect(guardado()).toEqual(jasmine.objectContaining({ titulo: 'Meu título', texto: 'Um texto de rascunho com tamanho válido', temaId: 2, fonte: null }));
+      expect(guardado().salvoEm).toBeTruthy();
+    }));
+
+    it('várias teclas seguidas viram um salvamento só (com o texto mais recente)', fakeAsync(() => {
+      const c = criar();
+      spyOn(localStorage, 'setItem').and.callThrough();
+
+      ['a', 'ab', 'abc', 'abcd'].forEach(t => {
+        c.texto.setValue(t);
+        tick(100);
+      });
+      tick(500);
+
+      expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+      expect(guardado().texto).toBe('abcd');
+    }));
+
+    it('um formulário que ainda não foi tocado não guarda nada', fakeAsync(() => {
+      criar();
+
+      tick(1000);
+
+      expect(localStorage.getItem(CHAVE_NOVO)).toBeNull();
+    }));
+
+    it('se a pessoa apaga tudo e volta ao começo, o que estava guardado é apagado', fakeAsync(() => {
+      const c = criar();
+      escrever(c);
+      tick(500);
+      expect(guardado()).not.toBeNull();
+
+      c.postagemForm.patchValue({ titulo: '', texto: '', temaId: null });
+      tick(500);
+
+      expect(localStorage.getItem(CHAVE_NOVO)).toBeNull();
+    }));
+
+    it('guarda também a fonte escolhida', fakeAsync(() => {
+      const c = criar();
+      c.fonte.setValue('RYE');
+      tick(500);
+
+      expect(guardado().fonte).toBe('RYE');
+    }));
+
+    it('sair da tela antes da pausa não perde as últimas letras (guarda ao destruir)', () => {
+      const c = criar();
+      escrever(c);
+
+      fixture.destroy();
+
+      expect(guardado().texto).toBe('Um texto de rascunho com tamanho válido');
+    });
+
+    it('cada pessoa tem o seu: outra conta no mesmo navegador não vê nem recebe o texto', () => {
+      localStorage.setItem(CHAVE_NOVO, JSON.stringify({ titulo: 'Segredo da Ana', texto: 'texto da Ana', temaId: null, fonte: null, salvoEm: '2026-10-14T10:00:00Z' }));
+      usuarioLogado = { id: 6, nome: 'Beto' };
+
+      const c = criar();
+
+      expect(c.titulo.value).toBe('');
+      expect(el().querySelector('.aviso-recuperado')).toBeNull();
+    });
+
+    it('o rabisco nunca é guardado nem recuperado', fakeAsync(() => {
+      localStorage.setItem('rasura:rascunho:5:8', JSON.stringify({ titulo: '', texto: 'antigo', temaId: null, fonte: null, salvoEm: '2026-10-14T10:00:00Z' }));
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco do servidor', tema: null }));
+      const c = criar('8');
+
+      c.texto.setValue('Outro rabisco');
+      tick(1000);
+
+      expect(c.texto.value).toBe('Outro rabisco');
+      expect(el().querySelector('.aviso-recuperado')).toBeNull();
+      expect(guardado('rasura:rascunho:5:8').texto).toBe('antigo'); // intocado
+    }));
+  });
+
+  describe('recuperar o que estava guardado', () => {
+    const salvo = { titulo: 'Título guardado', texto: 'Texto guardado que ficou pela metade', temaId: 2, fonte: 'RYE', salvoEm: '2026-10-14T17:32:00Z' };
+    const guardarSalvo = (chave = CHAVE_NOVO, dados: object = salvo) => localStorage.setItem(chave, JSON.stringify(dados));
+
+    it('um rascunho novo abre já com o texto guardado e avisa de quando é', () => {
+      guardarSalvo();
+
+      const c = criar();
+
+      expect(c.titulo.value).toBe('Título guardado');
+      expect(c.texto.value).toBe('Texto guardado que ficou pela metade');
+      expect(c.temaId.value).toBe(2);
+      expect(c.fonte.value).toBe('RYE');
+      expect(el().querySelector('.aviso-recuperado')!.textContent).toContain('Recuperamos o que você estava escrevendo');
+      expect(el().querySelector('.aviso-recuperado')!.textContent).toMatch(/14\/10 \d\d:\d\d/);
+    });
+
+    it('o aviso oferece descartar e começar do zero (e apaga o que estava guardado)', () => {
+      guardarSalvo();
+      const c = criar();
+
+      el().querySelector<HTMLButtonElement>('.aviso-recuperado button')!.click();
+      fixture.detectChanges();
+
+      expect(el().querySelector('.aviso-recuperado button')).toBeNull();
+      expect(c.titulo.value).toBe('');
+      expect(c.texto.value).toBe('');
+      expect(c.temaId.value).toBeNull();
+      expect(c.fonte.value).toBeNull();
+      expect(localStorage.getItem(CHAVE_NOVO)).toBeNull();
+    });
+
+    it('depois de descartar, nada fica guardado nem pede confirmação ao sair', fakeAsync(() => {
+      guardarSalvo();
+      const c = criar();
+      el().querySelector<HTMLButtonElement>('.aviso-recuperado button')!.click();
+      tick(600);
+
+      expect(localStorage.getItem(CHAVE_NOVO)).toBeNull();
+      expect(c.temAlteracoes).toBeFalse();
+    }));
+
+    it('texto recuperado conta como alteração não publicada', () => {
+      guardarSalvo();
+
+      expect(criar().temAlteracoes).toBeTrue();
+    });
+
+    it('dados guardados fora do formato esperado são ignorados (nada é restaurado)', () => {
+      localStorage.setItem(CHAVE_NOVO, JSON.stringify({ titulo: 1, texto: 2 }));
+
+      const c = criar();
+
+      expect(c.titulo.value).toBe('');
+      expect(el().querySelector('.aviso-recuperado')).toBeNull();
+    });
+
+    describe('na edição de um rascunho publicado', () => {
+      const publicado: Postagem = { id: 5, tipo: 'BLOG', titulo: 'Título publicado', texto: 'Texto publicado válido', tema: { id: 2, descricao: 'Java' }, fonte: null };
+      beforeEach(() => postagens.getById.and.returnValue(of(publicado)));
+
+      it('restaura as alterações guardadas, e o aviso oferece voltar à versão publicada', () => {
+        guardarSalvo('rasura:rascunho:5:5', { ...salvo, titulo: 'Título editado e não publicado', fonte: null });
+
+        const c = criar('5');
+
+        expect(c.titulo.value).toBe('Título editado e não publicado');
+        expect(el().querySelector('.aviso-recuperado button')!.textContent).toContain('Voltar à versão publicada');
+      });
+
+      it('voltar à versão publicada devolve o que está na API e apaga o guardado', () => {
+        guardarSalvo('rasura:rascunho:5:5', { ...salvo, titulo: 'Título editado e não publicado', fonte: null });
+        const c = criar('5');
+
+        el().querySelector<HTMLButtonElement>('.aviso-recuperado button')!.click();
+        fixture.detectChanges();
+
+        expect(c.titulo.value).toBe('Título publicado');
+        expect(c.texto.value).toBe('Texto publicado válido');
+        expect(localStorage.getItem('rasura:rascunho:5:5')).toBeNull();
+        expect(c.temAlteracoes).toBeFalse();
+      });
+
+      it('se o guardado é igual ao publicado, não há o que recuperar (e é apagado)', () => {
+        guardarSalvo('rasura:rascunho:5:5', { titulo: 'Título publicado', texto: 'Texto publicado válido', temaId: 2, fonte: null, salvoEm: '2026-10-14T17:32:00Z' });
+
+        criar('5');
+
+        expect(el().querySelector('.aviso-recuperado')).toBeNull();
+        expect(localStorage.getItem('rasura:rascunho:5:5')).toBeNull();
+      });
+
+      it('sem nada guardado e sem mexer, não há alteração', () => {
+        expect(criar('5').temAlteracoes).toBeFalse();
+      });
+    });
+  });
+
+  describe('sair da tela com alterações não publicadas', () => {
+    const botaoDaJanela = (texto: string) =>
+      Array.from(el().querySelectorAll<HTMLButtonElement>(':scope > app-modal .modal-rodape button')).find(b => b.textContent!.includes(texto))!;
+    const janela = () => el().querySelector<HTMLDialogElement>(':scope > app-modal dialog')!;
+
+    it('sem alterações, sair é livre e nenhuma janela abre', () => {
+      const c = criar();
+
+      expect(c.podeSair()).toBeTrue();
+      expect(janela().open).toBeFalse();
+    });
+
+    it('com alterações, abre "Sair sem publicar?" e espera a resposta', async () => {
+      const c = criar();
+      escrever(c);
+
+      const resposta = c.podeSair() as Promise<boolean>;
+      fixture.detectChanges();
+
+      expect(resposta instanceof Promise).toBeTrue();
+      expect(janela().open).toBeTrue();
+      expect(el().querySelector(':scope > app-modal .modal-titulo')!.textContent).toBe('Sair sem publicar?');
+      expect(el().querySelector(':scope > app-modal .modal-corpo')!.textContent).toContain('ficam guardadas neste navegador');
+      botaoDaJanela('Continuar').click();
+      await resposta;
+    });
+
+    it('"Continuar escrevendo" fica na tela (e é o botão que recebe o foco)', async () => {
+      const c = criar();
+      escrever(c);
+      const resposta = c.podeSair() as Promise<boolean>;
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(botaoDaJanela('Continuar'));
+      botaoDaJanela('Continuar').click();
+      fixture.detectChanges();
+
+      expect(await resposta).toBeFalse();
+      expect(janela().open).toBeFalse();
+    });
+
+    it('"Sair" deixa sair', async () => {
+      const c = criar();
+      escrever(c);
+      const resposta = c.podeSair() as Promise<boolean>;
+      fixture.detectChanges();
+
+      botaoDaJanela('Sair').click();
+      fixture.detectChanges();
+
+      expect(await resposta).toBeTrue();
+      expect(janela().open).toBeFalse();
+    });
+
+    it('Esc ou X na janela contam como continuar escrevendo', async () => {
+      const c = criar();
+      escrever(c);
+      const resposta = c.podeSair() as Promise<boolean>;
+      fixture.detectChanges();
+
+      el().querySelector<HTMLButtonElement>(':scope > app-modal .modal-x')!.click();
+      fixture.detectChanges();
+
+      expect(await resposta).toBeFalse();
+    });
+
+    it('o texto fica guardado no navegador mesmo se a pessoa escolher sair', async () => {
+      const c = criar();
+      escrever(c);
+      const resposta = c.podeSair() as Promise<boolean>;
+      fixture.detectChanges();
+
+      expect(JSON.parse(localStorage.getItem(CHAVE_NOVO)!).titulo).toBe('Meu título');
+      botaoDaJanela('Sair').click();
+      await resposta;
+    });
+
+    it('depois de publicar, sair é livre (nada de pergunta por causa do texto que acabou de ser enviado)', () => {
+      postagens.create.and.returnValue(of({ id: 9, titulo: 't', texto: 'x' }));
+      const c = criar();
+      escrever(c);
+
+      c.onSubmit();
+
+      expect(c.podeSair()).toBeTrue();
+      expect(localStorage.getItem(CHAVE_NOVO)).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith(['/postagens']);
+    });
+
+    it('se a publicação falhar, as alterações continuam valendo (e o texto guardado)', () => {
+      postagens.create.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+      const c = criar();
+      escrever(c);
+
+      c.onSubmit();
+
+      expect(c.temAlteracoes).toBeTrue();
+    });
+
+    it('o rabisco nunca pergunta ao sair', () => {
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));
+      const c = criar('8');
+      c.texto.setValue('Rabisco editado');
+
+      expect(c.podeSair()).toBeTrue();
+    });
+
+    it('fechar a aba com alterações pede confirmação ao navegador; sem alterações, não', () => {
+      const c = criar();
+      const sem = new Event('beforeunload', { cancelable: true }) as BeforeUnloadEvent;
+      c.aoFecharAAba(sem);
+      expect(sem.defaultPrevented).toBeFalse();
+
+      escrever(c);
+      const com = new Event('beforeunload', { cancelable: true }) as BeforeUnloadEvent;
+      c.aoFecharAAba(com);
+      expect(com.defaultPrevented).toBeTrue();
+      expect(localStorage.getItem(CHAVE_NOVO)).not.toBeNull();
+    });
+  });
+
+  describe('barra de ações e campo de texto', () => {
+    it('a barra com Cancelar e Publicar existe (fica fixa embaixo por CSS)', () => {
+      criar();
+
+      expect(el().querySelector('form .form-actions .btn-primary')).not.toBeNull();
+      expect(getComputedStyle(el().querySelector('.form-actions')!).position).toBe('sticky');
+    });
+
+    it('o campo de texto cresce com o conteúdo (sem barra de rolagem própria)', () => {
+      criar();
+
+      expect(getComputedStyle(el().querySelector('#texto')!).overflowY).toBe('hidden');
     });
   });
 

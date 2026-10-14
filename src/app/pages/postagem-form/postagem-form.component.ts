@@ -1,19 +1,40 @@
-
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
+import { ModalComponent } from '../../components/modal/modal.component';
+import { PreviaRascunhoComponent } from '../../components/previa-rascunho/previa-rascunho.component';
+import { SeletorDeFonteComponent } from '../../components/seletor-de-fonte/seletor-de-fonte.component';
+import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
+import { RascunhoLocalService } from '../../services/rascunho-local.service';
 import { TemaService } from '../../services/tema.service';
+import { AutoAjusteDirective } from '../../shared/auto-ajuste.directive';
+import { contarPalavras, minutosDeLeitura } from '../../shared/leitura';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
-import { FONTES, FontePostagem, pilhaDe } from '../../models/Fonte';
+import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
+import { FontePostagem, pilhaDe } from '../../models/Fonte';
 import { LIMITE_COMENTARIO, LIMITES_POSTAGEM, PostagemRequest } from '../../models/Postagem';
 import { Tema } from '../../models/Tema';
+
+/** Espera depois da última tecla antes de guardar o rascunho no navegador (evita gravar a cada letra). */
+const ESPERA_DO_SALVAMENTO_EM_MS = 500;
+
+export type AbaDoFormulario = 'escrever' | 'previa';
 
 @Component({
   selector: 'app-postagem-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [
+    ReactiveFormsModule,
+    AutoAjusteDirective,
+    DateBrPipe,
+    ModalComponent,
+    PreviaRascunhoComponent,
+    SeletorDeFonteComponent
+  ],
   templateUrl: './postagem-form.component.html',
   styleUrls: ['./postagem-form.component.scss']
 })
@@ -23,11 +44,13 @@ export class PostagemFormComponent implements OnInit {
   private readonly temaService = inject(TemaService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly rascunhoLocal = inject(RascunhoLocalService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private readonly fonteService = inject(FonteService);
 
   readonly limites = LIMITES_POSTAGEM;
-  readonly fontes = FONTES;
   readonly pilhaDe = pilhaDe;
   readonly limiteComentario = LIMITE_COMENTARIO;
 
@@ -56,6 +79,21 @@ export class PostagemFormComponent implements OnInit {
   semTemas = false;
   errorMessage: string | null = null;
 
+  /** Aba aberta no rascunho: escrever ou ver a prévia de como vai aparecer. */
+  aba: AbaDoFormulario = 'escrever';
+
+  /** Quando foi guardado o texto recuperado do navegador (nulo = nada foi recuperado, ou a pessoa já descartou). */
+  recuperadoEm: string | null = null;
+  /** A janela "Sair sem publicar?" está aberta. */
+  confirmandoSaida = false;
+
+  private chaveLocal = '';
+  /** Valores com que o formulário começou (vazio, ou a postagem como está publicada): o que difere disso é "alteração". */
+  private valoresBase: { titulo: string; texto: string; temaId: number | null; fonte: FontePostagem | null } | null = null;
+  private baseline = '';
+  private publicado = false;
+  private respostaDaSaida: ((sair: boolean) => void) | null = null;
+
   /** Limite do texto do tipo em edição (o blog aceita bem mais que o comentário). */
   get limiteTexto(): number {
     return this.isComentario ? this.limiteComentario : this.limites.textoMax;
@@ -74,6 +112,29 @@ export class PostagemFormComponent implements OnInit {
     return this.postagemForm.controls.fonte;
   }
 
+  get palavras(): number {
+    return contarPalavras(this.texto.value ?? '');
+  }
+
+  get minutosDeLeitura(): number {
+    return minutosDeLeitura(this.texto.value ?? '');
+  }
+
+  /** Nome do tema escolhido, sem as aspas que alguns temas antigos têm no banco. */
+  get nomeDoTema(): string | null {
+    const descricao = this.temas.find(t => t.id === this.temaId.value)?.descricao;
+    return descricao ? descricao.replace(/^['"]+|['"]+$/g, '') : null;
+  }
+
+  get nomeDoAutor(): string {
+    return this.authService.getUsuario()?.nome ?? 'Você';
+  }
+
+  /** Há um rascunho com alterações que ainda não foram publicadas (rabisco não entra: é curto e vai direto). */
+  get temAlteracoes(): boolean {
+    return !this.isComentario && !this.publicado && this.chaveLocal !== '' && this.instantaneo() !== this.baseline;
+  }
+
   ngOnInit(): void {
     this.carregarTemas();
 
@@ -84,11 +145,26 @@ export class PostagemFormComponent implements OnInit {
       this.carregarPostagem(id);
     } else {
       this.fonteService.carregarTodas(); // o seletor mostra cada opção na própria fonte
+      this.iniciarRascunhoLocal();
     }
   }
 
   cancelar(): void {
     this.router.navigate(['/postagens']);
+  }
+
+  selecionarAba(aba: AbaDoFormulario): void {
+    this.aba = aba;
+  }
+
+  /** Setas esquerda e direita trocam de aba (padrão de abas acessíveis). */
+  teclaDaAba(evento: KeyboardEvent): void {
+    if (evento.key !== 'ArrowRight' && evento.key !== 'ArrowLeft') {
+      return;
+    }
+    evento.preventDefault();
+    this.aba = this.aba === 'escrever' ? 'previa' : 'escrever';
+    document.getElementById(this.aba === 'escrever' ? 'aba-escrever' : 'aba-previa')?.focus();
   }
 
   onSubmit(): void {
@@ -111,13 +187,115 @@ export class PostagemFormComponent implements OnInit {
       : this.postagemService.create(dados);
 
     operacao.subscribe({
-      next: () => this.router.navigate(['/postagens']),
+      next: () => {
+        // publicado: o rascunho guardado no navegador não vale mais, e sair da tela não pede confirmação
+        this.publicado = true;
+        if (this.chaveLocal) {
+          this.rascunhoLocal.limpar(this.chaveLocal);
+        }
+        this.router.navigate(['/postagens']);
+      },
       error: erro => {
         this.errorMessage = mensagemDeErro(erro, 'Erro ao salvar postagem. Tente novamente.');
         this.isLoading = false;
       }
     });
   }
+
+  // ---------------------------------------------------------------- rascunho guardado no navegador
+
+  /** Joga fora o texto recuperado e volta ao começo (vazio, ou a postagem como está publicada). */
+  descartarRecuperado(): void {
+    if (this.chaveLocal) {
+      this.rascunhoLocal.limpar(this.chaveLocal);
+    }
+    if (this.valoresBase) {
+      this.postagemForm.patchValue(this.valoresBase);
+      this.postagemForm.markAsPristine();
+    }
+    this.recuperadoEm = null;
+  }
+
+  /**
+   * Chamado pelo guard ao sair da tela. Sem alterações a saída é livre; com alterações abre a janela "Sair sem
+   * publicar?" e espera a resposta. O texto já fica guardado no navegador de qualquer jeito.
+   */
+  podeSair(): boolean | Promise<boolean> {
+    if (!this.temAlteracoes) {
+      return true;
+    }
+    this.gravarAgora();
+    return new Promise<boolean>(resolver => {
+      this.respostaDaSaida = resolver;
+      this.confirmandoSaida = true;
+    });
+  }
+
+  responderSaida(sair: boolean): void {
+    this.confirmandoSaida = false;
+    this.respostaDaSaida?.(sair);
+    this.respostaDaSaida = null;
+  }
+
+  /** Fechar a aba ou recarregar com um rascunho não publicado: o navegador pergunta antes. */
+  @HostListener('window:beforeunload', ['$event'])
+  aoFecharAAba(evento: BeforeUnloadEvent): void {
+    if (this.temAlteracoes) {
+      this.gravarAgora();
+      evento.preventDefault();
+    }
+  }
+
+  /**
+   * Liga o salvamento automático (só para rascunho, nunca para rabisco): restaura o que estava guardado, se for
+   * diferente do ponto de partida, e passa a guardar a cada pausa na digitação. Chamado quando o tipo já é conhecido.
+   */
+  private iniciarRascunhoLocal(): void {
+    this.chaveLocal = this.rascunhoLocal.chave(this.authService.getUsuario()?.id, this.postagemId ?? null);
+    this.valoresBase = this.valores();
+    this.baseline = this.instantaneo();
+
+    const salvo = this.rascunhoLocal.carregar(this.chaveLocal);
+    if (salvo) {
+      const { salvoEm, ...dados } = salvo;
+      if (JSON.stringify(dados) !== this.baseline) {
+        this.postagemForm.patchValue(dados);
+        this.recuperadoEm = salvoEm;
+      } else {
+        this.rascunhoLocal.limpar(this.chaveLocal); // igual ao ponto de partida: não há o que recuperar
+      }
+    }
+
+    this.postagemForm.valueChanges
+      .pipe(debounceTime(ESPERA_DO_SALVAMENTO_EM_MS), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.gravarAgora());
+    // sair da tela antes da pausa não perde as últimas letras
+    this.destroyRef.onDestroy(() => this.gravarAgora());
+  }
+
+  /** Guarda (ou, se voltou ao ponto de partida, apaga) o rascunho no navegador. */
+  private gravarAgora(): void {
+    if (!this.chaveLocal || this.isComentario || this.publicado) {
+      return;
+    }
+    if (this.temAlteracoes) {
+      this.rascunhoLocal.salvar(this.chaveLocal, this.valores());
+    } else {
+      this.rascunhoLocal.limpar(this.chaveLocal);
+    }
+  }
+
+  private valores() {
+    const { titulo, texto, temaId, fonte } = this.postagemForm.getRawValue();
+    return { titulo: titulo ?? '', texto: texto ?? '', temaId, fonte };
+  }
+
+  /** O conteúdo do formulário numa forma fixa, para comparar com o ponto de partida. */
+  private instantaneo(): string {
+    return JSON.stringify(this.valores());
+  }
+
+  // ---------------------------------------------------------------- carregamento
 
   /** Comentário não tem título nem tema obrigatórios, e o texto vai só até 280 caracteres. */
   private usarRegrasDeComentario(): void {
@@ -158,6 +336,9 @@ export class PostagemFormComponent implements OnInit {
         });
         this.isLoading = false;
         this.carregandoPostagem = false;
+        if (!this.isComentario) {
+          this.iniciarRascunhoLocal();
+        }
       },
       error: erro => {
         this.errorMessage = mensagemDeErro(erro, 'Erro ao carregar postagem.');

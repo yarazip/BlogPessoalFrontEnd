@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { saidaDoFormulario } from './guards/saida-do-formulario';
 import { paraMeuPerfil } from './guards/meu-perfil';
 
 export const routes: Routes = [
@@ -57,12 +58,14 @@ export const routes: Routes = [
     path: 'postagens/nova',
     loadComponent: () => import('./pages/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent),
     canActivate: [authGuard],
+    canDeactivate: [saidaDoFormulario],
     title: 'Rasura - Novo Rascunho'
   },
   {
     path: 'postagens/:id/editar',
     loadComponent: () => import('./pages/postagem-form/postagem-form.component').then(m => m.PostagemFormComponent),
     canActivate: [authGuard],
+    canDeactivate: [saidaDoFormulario],
     title: 'Rasura - Editar Postagem'
   },
   {

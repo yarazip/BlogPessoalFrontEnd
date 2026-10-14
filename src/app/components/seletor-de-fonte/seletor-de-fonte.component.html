@@ -1,0 +1,45 @@
+<div class="seletor">
+  <span class="seletor-rotulo" id="rotulo-fonte">Fonte</span>
+  <button
+    type="button"
+    class="fonte-botao"
+    aria-haspopup="dialog"
+    aria-labelledby="rotulo-fonte fonte-atual"
+    (click)="abrir()"
+  >
+    <span class="fonte-amostra" [style.font-family]="atual?.pilha" aria-hidden="true">Aa</span>
+    <span class="fonte-atual" id="fonte-atual" [style.font-family]="atual?.pilha">{{ atual?.nome ?? 'Padrão do site' }}</span>
+    <span class="fonte-seta" aria-hidden="true">▾</span>
+  </button>
+</div>
+
+<app-modal [aberto]="aberto" titulo="Escolher a fonte" (fechar)="fechar()">
+  <p class="fonte-ajuda">O que você escrever aparece nessa fonte para quem ler.</p>
+
+  <div class="fonte-opcoes" role="radiogroup" aria-label="Fonte do rascunho">
+    <button
+      type="button"
+      class="fonte-opcao"
+      role="radio"
+      [attr.aria-checked]="controle().value === null"
+      [class.escolhida]="controle().value === null"
+      (click)="escolher(null)"
+    >
+      <span class="opcao-nome">Padrão do site</span>
+      <span class="opcao-exemplo">{{ exemplo }}</span>
+    </button>
+    @for (f of fontes; track f.id) {
+      <button
+        type="button"
+        class="fonte-opcao"
+        role="radio"
+        [attr.aria-checked]="controle().value === f.id"
+        [class.escolhida]="controle().value === f.id"
+        (click)="escolher(f.id)"
+      >
+        <span class="opcao-nome" [style.font-family]="f.pilha">{{ f.nome }}</span>
+        <span class="opcao-exemplo" [style.font-family]="f.pilha">{{ exemplo }}</span>
+      </button>
+    }
+  </div>
+</app-modal>

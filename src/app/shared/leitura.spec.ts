@@ -1,4 +1,4 @@
-import { minutosDeLeitura } from './leitura';
+import { contarPalavras, minutosDeLeitura } from './leitura';
 
 describe('minutosDeLeitura', () => {
   const palavras = (n: number) => Array(n).fill('palavra').join(' ');
@@ -15,5 +15,14 @@ describe('minutosDeLeitura', () => {
 
   it('ignora espaços e quebras de linha repetidos', () => {
     expect(minutosDeLeitura(`  ${palavras(400)}\n\n\n  `)).toBe(2);
+  });
+
+  describe('contarPalavras', () => {
+    it('conta palavras ignorando espaços e quebras de linha repetidos', () => {
+      expect(contarPalavras('')).toBe(0);
+      expect(contarPalavras('   ')).toBe(0);
+      expect(contarPalavras('uma')).toBe(1);
+      expect(contarPalavras('  uma   frase\n\ncom  cinco palavras ')).toBe(5);
+    });
   });
 });
