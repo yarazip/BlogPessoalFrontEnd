@@ -10,9 +10,10 @@
 @media (min-width: 1024px) {
   .layout {
     display: flex;
+    flex-direction: row-reverse; // no HTML o conteúdo vem primeiro (leitura e celular); no computador a barra fica à esquerda
     align-items: flex-start;
     gap: 24px;
-    max-width: 1120px;
+    max-width: 1480px;
     padding: 24px 16px;
   }
 
@@ -34,7 +35,30 @@
     max-height: calc(100vh - var(--header-height) - 48px);
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 0 6px 6px 0;
+    padding: 0 6px 6px 0; // folga para a sombra das caixas não ser cortada
+
+    /* Barra de rolagem fina, discreta e do lado esquerdo (direction: rtl leva a barra para a esquerda;
+       os filhos voltam para ltr para o texto não ser invertido). */
+    direction: rtl;
+    scrollbar-width: thin;
+    scrollbar-color: var(--header-border) transparent;
+
+    > * {
+      direction: ltr;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background: var(--header-border);
+    }
   }
 }
 
