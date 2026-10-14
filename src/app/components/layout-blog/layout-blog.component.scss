@@ -36,6 +36,29 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 0 6px 6px 0; // folga para a sombra das caixas não ser cortada
+
+    /* Barra de rolagem fina, discreta e do lado esquerdo (direction: rtl leva a barra para a esquerda;
+       os filhos voltam para ltr para o texto não ser invertido). */
+    direction: rtl;
+    scrollbar-width: thin;
+    scrollbar-color: var(--header-border) transparent;
+
+    > * {
+      direction: ltr;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background: var(--header-border);
+    }
   }
 }
 
