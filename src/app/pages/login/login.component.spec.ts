@@ -56,6 +56,12 @@ describe('LoginComponent', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/explorar');
   });
 
+  it('depois de trocar a senha, mostra o aviso para entrar com a nova', () => {
+    iniciar({ senhaTrocada: '1' });
+
+    expect(fixture.nativeElement.querySelector('.aviso-sucesso').textContent).toContain('Senha trocada');
+  });
+
   it('volta para a página que exigiu o login', () => {
     auth.login.and.returnValue(of(resposta));
     iniciar({ returnUrl: '/postagens/3' });

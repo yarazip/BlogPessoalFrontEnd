@@ -1,10 +1,44 @@
-<div class="development-notice">
-  <div class="notice-content">
-    <app-icon name="tools" />
-    <h1>Página em Desenvolvimento</h1>
-    <p>Estamos trabalhando para trazer esta funcionalidade em breve.</p>
-    <a routerLink="/login" class="back-button">
-      <app-icon name="arrow-left" /> Voltar para o Login
-    </a>
+<main class="recuperacao">
+  <div class="recuperacao-card">
+    @if (enviadoPara) {
+      <h1>Confira seu e-mail</h1>
+      <p class="subtitle" role="status">
+        Se existir uma conta com <strong>{{ enviadoPara }}</strong>, enviamos um link para escolher uma nova senha. Ele vale por 1
+        hora.
+      </p>
+      <p class="dica">Não chegou? Olhe a caixa de spam. Se o e-mail estiver certo, o link pode levar alguns minutos.</p>
+      <a routerLink="/login" class="recuperacao-link">Voltar para o login</a>
+    } @else {
+      <h1>Esqueceu a senha?</h1>
+      <p class="subtitle">Informe o e-mail da sua conta e enviaremos um link para criar uma nova senha.</p>
+
+      <form class="recuperacao-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" autocomplete="username" formControlName="email" placeholder="seu@email.com" />
+          @if (submitted && f['email'].errors) {
+            <div class="error-message">
+              @if (f['email'].errors['required']) {
+                <small>O e-mail é obrigatório.</small>
+              } @else {
+                <small>Informe um e-mail válido.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @if (errorMessage) {
+          <div class="error-message" role="alert">
+            <small>{{ errorMessage }}</small>
+          </div>
+        }
+
+        <button type="submit" class="recuperacao-botao" [disabled]="isLoading">
+          {{ isLoading ? 'Enviando...' : 'Enviar link' }}
+        </button>
+
+        <a routerLink="/login" class="recuperacao-link">Voltar para o login</a>
+      </form>
+    }
   </div>
-</div>
+</main>

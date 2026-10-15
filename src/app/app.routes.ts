@@ -25,6 +25,12 @@ export const routes: Routes = [
     title: 'Rasura - Recuperar Senha'
   },
   {
+    path: 'redefinir-senha',
+    loadComponent: () =>
+      import('./pages/redefinir-senha/redefinir-senha.component').then(m => m.RedefinirSenhaComponent),
+    title: 'Rasura - Nova Senha'
+  },
+  {
     path: 'explorar',
     loadComponent: () => import('./pages/explorar/explorar.component').then(m => m.ExplorarComponent),
     title: 'Rasura - Mural'
