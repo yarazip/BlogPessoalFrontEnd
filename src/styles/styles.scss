@@ -11,6 +11,8 @@
   --zine-laranja: #ff7a2f;
   --zine-roxo: #7b4dff;
   --zine-marca: #ffe35c;
+  /* letra escura sobre o amarelo sólido (logo, títulos das caixinhas): igual nos dois temas, para nunca ficar apagada */
+  --zine-tinta-marca: #1f1a2e;
   --zine-marca-leve: #ffe35c;
   --zine-linha: rgba(90, 120, 200, 0.22);
   --bg-color: #fbf6e9;
@@ -30,29 +32,29 @@
 }
 
 .dark-mode {
-  --zine-papel: #1a1727;
-  --zine-folha: #262238;
-  --zine-tinta: #f3eefc;
-  --zine-suave: #b3abc7;
-  --zine-contorno: #b9a8ee;
+  --zine-papel: #151515;
+  --zine-folha: #212121;
+  --zine-tinta: #f1f1f1;
+  --zine-suave: #a8a8a8;
+  --zine-contorno: #d8d8d8;
   --zine-sombra: #000000;
   --zine-roxo: #b79bff;
   --zine-marca-leve: rgba(255, 227, 92, 0.32);
-  --zine-linha: rgba(160, 175, 235, 0.12);
-  --bg-color: #1a1727;
-  --text-color: #f3eefc;
-  --text-muted: #b3abc7;
+  --zine-linha: rgba(255, 255, 255, 0.07);
+  --bg-color: #151515;
+  --text-color: #f1f1f1;
+  --text-muted: #a8a8a8;
   --primary-color: #8f6bff;
-  --secondary-color: #2d2842;
-  --card-bg: #262238;
-  --header-border: #3d3656;
-  --footer-bg: #1a1727;
-  --footer-text: #f3eefc;
-  --footer-link: #b3abc7;
+  --secondary-color: #2a2a2a;
+  --card-bg: #212121;
+  --header-border: #3a3a3a;
+  --footer-bg: #151515;
+  --footer-text: #f1f1f1;
+  --footer-link: #a8a8a8;
   --shadow-color: rgba(0, 0, 0, 0.5);
-  --testimonial-bg: #262238;
-  --hero-bg: #1a1727;
-  --rec-senha: #2d2842;
+  --testimonial-bg: #212121;
+  --hero-bg: #151515;
+  --rec-senha: #2a2a2a;
 }
 
 

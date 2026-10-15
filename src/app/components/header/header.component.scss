@@ -393,13 +393,14 @@ header {
 
 .logo-wordmark {
   padding: 0 6px;
-  color: var(--zine-tinta);
-  background: linear-gradient(transparent 58%, var(--zine-marca-leve) 58% 90%, transparent 90%);
+  color: var(--zine-tinta-marca);
+  background: linear-gradient(transparent 58%, var(--zine-marca) 58% 90%, transparent 90%);
 }
 
 .logo-link:hover .logo-wordmark,
 .logo-link:focus-visible .logo-wordmark {
-  color: var(--zine-roxo);
+  color: var(--zine-tinta-marca);
+  filter: brightness(1.15);
 }
 
 .main-nav .nav-links a {
@@ -494,4 +495,11 @@ header {
 /* respiro entre os links e o botão de tema em telas médias (antes se encostavam) */
 .main-nav {
   margin-right: 20px;
+}
+
+/* Modo escuro: a letra do logo é escura, então ela precisa de um fundo amarelo inteiro (a faixa só embaixo deixaria
+   a parte de cima da letra escura sobre o fundo escuro, sumindo). */
+:host-context(.dark-mode) .logo-wordmark {
+  background: var(--zine-marca);
+  border-radius: 3px;
 }
