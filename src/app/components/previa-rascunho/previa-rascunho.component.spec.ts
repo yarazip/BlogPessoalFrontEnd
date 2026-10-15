@@ -49,7 +49,7 @@ describe('PreviaRascunhoComponent', () => {
       expect(el.querySelector('.previa-post .previa-texto')!.classList).not.toContain('resumido');
     });
 
-    it('texto longo é cortado como no feed de verdade, com "Ler mais"', () => {
+    it('texto longo é cortado como no mural de verdade, com "Ler mais"', () => {
       definir({ titulo: 'Título', texto: palavras(200) });
 
       const texto = el.querySelector('.previa-post .previa-texto')!;
@@ -64,7 +64,7 @@ describe('PreviaRascunhoComponent', () => {
 
     expect(el.querySelectorAll('.previa-post').length).toBe(1);
     expect(el.querySelectorAll('.previa-bloco').length).toBe(1);
-    expect(el.querySelector('.previa-rotulo')!.textContent).toBe('No feed');
+    expect(el.querySelector('.previa-rotulo')!.textContent).toBe('No mural');
     expect(el.querySelector('.previa-pagina')).toBeNull();
     expect(el.querySelector('.previa-meta')).toBeNull();
     expect(el.textContent).not.toContain('min de leitura');

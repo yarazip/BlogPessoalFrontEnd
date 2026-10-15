@@ -20,7 +20,7 @@ describe('DashboardHeaderComponent', () => {
     el = fixture.nativeElement;
   });
 
-  it('o menu começa pelo Feed, tem o Perfil (com as postagens dentro) e deixa Insights por último', () => {
+  it('o menu começa pelo Mural, tem o Eu (perfil, com as postagens dentro) e deixa Novidades por último', () => {
     const itens = Array.from(el.querySelectorAll<HTMLAnchorElement>('.nav-links a')).map(a => a.getAttribute('href'));
 
     expect(itens).toEqual(['/explorar', '/perfil/24', '/dashboard']);

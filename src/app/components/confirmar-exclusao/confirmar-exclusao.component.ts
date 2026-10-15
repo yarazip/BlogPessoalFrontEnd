@@ -26,7 +26,7 @@ export class ConfirmarExclusaoComponent {
   /** A exclusão está em andamento. */
   readonly excluindo = input(false);
   readonly titulo = input('Excluir esta postagem?');
-  readonly texto = input('Esta ação não pode ser desfeita. A postagem some do feed e do seu perfil.');
+  readonly texto = input('Esta ação não pode ser desfeita. A postagem some do mural e do seu perfil.');
 
   readonly confirmar = output<void>();
   readonly cancelar = output<void>();

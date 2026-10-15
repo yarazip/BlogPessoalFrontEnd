@@ -30,7 +30,8 @@ footer {
 
   app-logo {
     padding: 0 6px;
-    background: linear-gradient(transparent 58%, var(--zine-marca-leve) 58% 90%, transparent 90%);
+    color: var(--zine-tinta-marca);
+    background: linear-gradient(transparent 58%, var(--zine-marca) 58% 90%, transparent 90%);
   }
 }
 
@@ -76,4 +77,10 @@ footer {
   border-top: 1px dashed var(--zine-suave);
   font-size: 0.8rem;
   color: var(--zine-suave);
+}
+
+/* Modo escuro: fita roxa com pouca opacidade atrás do logo, com a letra clara por cima (igual ao cabeçalho). */
+:host-context(.dark-mode) .footer-marca app-logo {
+  color: var(--zine-tinta);
+  background: linear-gradient(transparent 58%, var(--zine-fita-logo) 58% 90%, transparent 90%);
 }

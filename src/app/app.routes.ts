@@ -27,14 +27,14 @@ export const routes: Routes = [
   {
     path: 'explorar',
     loadComponent: () => import('./pages/explorar/explorar.component').then(m => m.ExplorarComponent),
-    title: 'Rasura - Explorar'
+    title: 'Rasura - Mural'
   },
 
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard],
-    title: 'Rasura - Insights'
+    title: 'Rasura - Novidades'
   },
   {
     // atalho para a própria página: leva ao perfil de quem está logado (ou ao login, voltando depois)
