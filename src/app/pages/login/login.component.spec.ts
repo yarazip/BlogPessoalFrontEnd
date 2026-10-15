@@ -34,7 +34,7 @@ describe('LoginComponent', () => {
 
   beforeEach(() => {
     auth = jasmine.createSpyObj('AuthService', ['login', 'saveAuthData']);
-    router = jasmine.createSpyObj('Router', ['navigateByUrl', 'createUrlTree', 'serializeUrl'], { events: of() });
+    router = jasmine.createSpyObj('Router', ['navigateByUrl', 'navigate', 'createUrlTree', 'serializeUrl'], { events: of() });
   });
 
   it('não envia o formulário inválido', () => {
@@ -60,6 +60,17 @@ describe('LoginComponent', () => {
     iniciar({ senhaTrocada: '1' });
 
     expect(fixture.nativeElement.querySelector('.aviso-sucesso').textContent).toContain('Senha trocada');
+  });
+
+  it('senha certa com e-mail ainda sem confirmar (403): leva à tela de confirmação, sem mostrar erro de senha', () => {
+    auth.login.and.returnValue(throwError(() => new HttpErrorResponse({ status: 403 })));
+    iniciar();
+
+    entrar();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/confirme-seu-email'], { state: { email: 'a@a.com', daEntrada: true } });
+    expect(component.loginError).toBeFalse();
+    expect(auth.saveAuthData).not.toHaveBeenCalled();
   });
 
   it('volta para a página que exigiu o login', () => {

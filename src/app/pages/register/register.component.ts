@@ -64,7 +64,8 @@ export class RegisterComponent {
     this.authService.register(nome, email, senha).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/login']);
+        // o e-mail vai no estado da navegação (e não na URL) para a próxima tela poder oferecer o reenvio
+        this.router.navigate(['/confirme-seu-email'], { state: { email } });
       },
       error: erro => {
         this.isLoading = false;

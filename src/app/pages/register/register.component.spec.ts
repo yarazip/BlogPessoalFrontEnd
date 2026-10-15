@@ -56,7 +56,7 @@ describe('RegisterComponent', () => {
     component.onSubmit();
 
     expect(auth.register).toHaveBeenCalledWith('Ana', 'a@a.com', 'senha1234');
-    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+    expect(router.navigate).toHaveBeenCalledWith(['/confirme-seu-email'], { state: { email: 'a@a.com' } });
   });
 
   it('mostra o detalhe do servidor quando o email já existe (409)', () => {

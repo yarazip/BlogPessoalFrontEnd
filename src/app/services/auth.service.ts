@@ -51,6 +51,16 @@ export class AuthService {
     return this.http.post<void>(`${this.authUrl}/redefinir-senha`, { token, senha });
   }
 
+  /** Confirma o e-mail com o token que veio no link. */
+  confirmarEmail(token: string): Observable<void> {
+    return this.http.post<void>(`${this.authUrl}/confirmar-email`, { token });
+  }
+
+  /** Pede outro link de confirmação. A API responde igual exista ou não a conta. */
+  reenviarConfirmacao(email: string): Observable<void> {
+    return this.http.post<void>(`${this.authUrl}/reenviar-confirmacao`, { email });
+  }
+
   atualizarFoto(id: number, arquivoFoto: File): Observable<{ foto: string }> {
     const formData = new FormData();
     formData.append('foto', arquivoFoto);
