@@ -378,20 +378,7 @@ header {
   background: linear-gradient(transparent 58%, var(--zine-fita-logo) 58% 90%, transparent 90%);
 }
 
-// Modo escuro: o link ativo (e o que está sob o mouse) vira uma etiqueta amarela inteira com letra escura. A faixa
-// translúcida de baixo deixava a letra clara sobre um bege apagado.
-:host-context(.dark-mode) .nav-links a {
-  &:hover,
-  &.active {
-    color: var(--zine-tinta-marca);
-  }
-
-  &:hover::after,
-  &.active::after {
-    bottom: 0;
-    height: 100%;
-    border-radius: 3px;
-    background-color: var(--zine-marca);
-    transform: none;
-  }
+/* Modo escuro: o fundo do link ativo (e do que está sob o mouse) é a mesma fita roxa translúcida do logo. */
+:host-context(.dark-mode) .nav-links a::after {
+  background-color: var(--zine-fita-logo);
 }
