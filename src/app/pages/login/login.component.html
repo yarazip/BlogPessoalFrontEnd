@@ -3,6 +3,10 @@
     <h1>Bem-vindo de volta</h1>
     <p class="subtitle">Acesse sua conta para continuar</p>
 
+    @if (aviso) {
+      <p class="aviso-sucesso" role="status">{{ aviso }}</p>
+    }
+
     <form class="login-form" (ngSubmit)="onSubmit()" [formGroup]="loginForm">
       <div class="form-group">
         <label for="email">E-mail</label>

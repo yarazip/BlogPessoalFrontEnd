@@ -28,12 +28,17 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   loginError = false;
   errorMessage: string | null = null;
+  /** Aviso de sucesso (ex.: acabou de trocar a senha). */
+  aviso: string | null = null;
 
   get f() {
     return this.loginForm.controls;
   }
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.has('senhaTrocada')) {
+      this.aviso = 'Senha trocada! Entre com a nova senha.';
+    }
     if (this.route.snapshot.queryParamMap.has('expirada')) {
       this.mostrarErro('Sua sessão expirou. Entre novamente para continuar.');
     }

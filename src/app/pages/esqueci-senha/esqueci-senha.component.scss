@@ -1,107 +1,119 @@
-/* Variáveis de tema */
-/* Estilos base */
+/* Telas de recuperação de senha (esqueci a senha e nova senha): um cartão no mesmo estilo do login. */
 :host {
-  margin: 0;
-  padding: 0;
+  display: block;
   font-family: 'Open Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   color: var(--text-color);
-  min-height: calc(100vh - 150px);
+}
+
+.recuperacao {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: calc(100vh - 150px);
+  padding: 40px 20px;
 }
 
-.development-notice {
-  max-width: 500px;
-  width: 90%;
-  text-align: center;
-}
-
-.notice-content {
-  background: var(--card-bg);
-  padding: 2.5rem;
+.recuperacao-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 30px;
   border: 2px solid var(--zine-contorno);
   border-radius: 6px;
+  background-color: var(--card-bg);
   box-shadow: 6px 6px 0 var(--zine-sombra);
-  transition: all 0.3s ease;
-
-  app-icon {
-    font-size: 3.5rem;
-    color: var(--warning-color);
-    margin-bottom: 1.5rem;
-  }
 
   h1 {
-    color: var(--primary-color);
-    margin: 0 0 1rem 0;
-    font-size: 1.8rem;
+    margin: 0 0 8px;
+    font-size: 28px;
+    color: var(--text-color);
   }
 
-  p {
-    margin: 0 0 2rem 0;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    opacity: 0.9;
+  @media (min-width: 768px) {
+    padding: 40px;
   }
 }
 
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background: var(--zine-laranja);
-  color: white;
-  text-decoration: none;
+.subtitle {
+  margin: 0 0 24px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.dica {
+  margin: 0 0 24px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.recuperacao-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  input {
+    padding: 12px 16px;
+    border: 2px solid var(--zine-contorno);
+    border-radius: 6px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+
+    &:focus {
+      outline: none;
+      box-shadow: 3px 3px 0 var(--zine-roxo);
+    }
+  }
+}
+
+.error-message {
+  color: #e74c3c;
+  font-weight: 480;
+}
+
+.recuperacao-botao {
+  padding: 14px;
   border: 2px solid var(--zine-contorno);
   border-radius: 10px;
+  background-color: var(--zine-laranja);
+  color: #fff;
   font-weight: 800;
+  cursor: pointer;
   box-shadow: 4px 4px 0 var(--zine-sombra);
   transition: transform 0.1s, box-shadow 0.1s;
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0 var(--zine-sombra);
   }
 
-  app-icon {
-    color: inherit;
-    font-size: 1rem;
-    margin: 0;
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 48px;
   }
 }
 
-/* Dark mode adjustments */
+.recuperacao-link {
+  align-self: center;
+  color: var(--text-color);
+  font-size: 0.9rem;
 
-
-/* Responsividade */
-@media (max-width: 600px) {
-  .notice-content {
-    padding: 1.5rem;
-    
-    app-icon {
-      font-size: 2.5rem;
-    }
-    
-    h1 {
-      font-size: 1.5rem;
-    }
-    
-    p {
-      font-size: 1rem;
-      margin-bottom: 1.5rem;
-    }
-  }
-  
-  .back-button {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
+  &:hover,
+  &:focus-visible {
+    color: var(--primary-color);
   }
 }
 
-@media (max-width: 400px) {
-  .notice-content {
-    padding: 1.2rem;
-  }
+.botao-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
 }

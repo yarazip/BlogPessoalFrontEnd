@@ -259,3 +259,13 @@
   box-shadow: none;
   border-color: var(--header-border);
 }
+
+.aviso-sucesso {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--zine-marca-leve);
+  color: var(--zine-tinta);
+  font-weight: 600;
+}

@@ -41,6 +41,16 @@ export class AuthService {
     return this.http.post<Usuario>(`${this.authUrl}/register`, { nome, email, senha });
   }
 
+  /** Pede o link de redefinição por e-mail. A API responde igual exista ou não a conta. */
+  esqueciSenha(email: string): Observable<void> {
+    return this.http.post<void>(`${this.authUrl}/esqueci-senha`, { email });
+  }
+
+  /** Troca a senha com o token que veio no link do e-mail. */
+  redefinirSenha(token: string, senha: string): Observable<void> {
+    return this.http.post<void>(`${this.authUrl}/redefinir-senha`, { token, senha });
+  }
+
   atualizarFoto(id: number, arquivoFoto: File): Observable<{ foto: string }> {
     const formData = new FormData();
     formData.append('foto', arquivoFoto);
