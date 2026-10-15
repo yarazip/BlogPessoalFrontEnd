@@ -20,6 +20,17 @@ export const routes: Routes = [
     title: 'Rasura - Cadastro'
   },
   {
+    path: 'confirme-seu-email',
+    loadComponent: () =>
+      import('./pages/confirme-seu-email/confirme-seu-email.component').then(m => m.ConfirmeSeuEmailComponent),
+    title: 'Rasura - Confirme seu e-mail'
+  },
+  {
+    path: 'confirmar-email',
+    loadComponent: () => import('./pages/confirmar-email/confirmar-email.component').then(m => m.ConfirmarEmailComponent),
+    title: 'Rasura - Confirmar e-mail'
+  },
+  {
     path: 'esqueci-senha',
     loadComponent: () => import('./pages/esqueci-senha/esqueci-senha.component').then(m => m.EsqueciSenhaComponent),
     title: 'Rasura - Recuperar Senha'

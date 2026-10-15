@@ -63,6 +63,11 @@ export class LoginComponent implements OnInit {
       },
       error: erro => {
         this.isLoading = false;
+        if (erro?.status === 403) {
+          // senha certa, e-mail ainda sem confirmar: leva à tela que explica e oferece o reenvio do link
+          this.router.navigate(['/confirme-seu-email'], { state: { email: this.loginForm.getRawValue().email, daEntrada: true } });
+          return;
+        }
         this.mostrarErro(
           erro?.status === 401 ? 'E-mail ou senha inválidos!' : mensagemDeErro(erro, 'Não foi possível entrar. Tente novamente.')
         );

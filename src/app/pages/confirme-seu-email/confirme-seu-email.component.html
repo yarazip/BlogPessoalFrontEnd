@@ -1,0 +1,58 @@
+<main class="recuperacao">
+  <div class="recuperacao-card">
+    <h1>{{ daEntrada ? 'Falta confirmar seu e-mail' : 'Confirme seu e-mail' }}</h1>
+
+    @if (daEntrada) {
+      <p class="subtitle">
+        Para entrar, abra o link que enviamos para
+        @if (email) {
+          <strong>{{ email }}</strong>
+        } @else {
+          o seu e-mail
+        }
+        quando a conta foi criada.
+      </p>
+    } @else {
+      <p class="subtitle">
+        Enviamos um link para
+        @if (email) {
+          <strong>{{ email }}</strong>
+        } @else {
+          o e-mail cadastrado
+        }
+        . Abra-o para ativar a conta e poder entrar. O link vale por 24 horas.
+      </p>
+    }
+    <p class="dica">Não chegou? Olhe a caixa de spam ou peça outro link abaixo.</p>
+
+    @if (reenviado) {
+      <p class="subtitle" role="status">
+        Se esta conta ainda não foi confirmada, enviamos um novo link. O anterior deixou de valer.
+      </p>
+    } @else {
+      <form class="recuperacao-form" [formGroup]="form" (ngSubmit)="reenviar()">
+        @if (!email) {
+          <div class="form-group">
+            <label for="email">E-mail da conta</label>
+            <input type="email" id="email" autocomplete="username" formControlName="email" placeholder="seu@email.com" />
+            @if (submitted && f['email'].errors) {
+              <div class="error-message"><small>Informe um e-mail válido.</small></div>
+            }
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="error-message" role="alert">
+            <small>{{ errorMessage }}</small>
+          </div>
+        }
+
+        <button type="submit" class="recuperacao-botao" [disabled]="isLoading">
+          {{ isLoading ? 'Enviando...' : 'Reenviar o link' }}
+        </button>
+      </form>
+    }
+
+    <a routerLink="/login" class="recuperacao-link">Ir para o login</a>
+  </div>
+</main>

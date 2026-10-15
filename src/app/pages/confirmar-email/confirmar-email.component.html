@@ -1,0 +1,20 @@
+<main class="recuperacao">
+  <div class="recuperacao-card">
+    @switch (estado) {
+      @case ('confirmando') {
+        <h1>Confirmando...</h1>
+        <p class="subtitle" role="status">Só um instante.</p>
+      }
+      @case ('confirmado') {
+        <h1>E-mail confirmado!</h1>
+        <p class="subtitle" role="status">Pronto, sua conta está ativa. Agora é só entrar.</p>
+        <a routerLink="/login" class="recuperacao-botao botao-link">Entrar</a>
+      }
+      @case ('erro') {
+        <h1>Não deu para confirmar</h1>
+        <p class="subtitle" role="alert">{{ errorMessage }}</p>
+        <a routerLink="/login" class="recuperacao-botao botao-link">Ir para o login</a>
+      }
+    }
+  </div>
+</main>
