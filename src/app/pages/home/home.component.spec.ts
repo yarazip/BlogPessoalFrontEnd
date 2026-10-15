@@ -118,6 +118,15 @@ describe('HomeComponent', () => {
       expect(posts[1].querySelector('img.foto')!.getAttribute('src')).toBe('https://cdn/bruno.png');
     });
 
+    it('a vitrine é só uma prévia e convida a criar conta (não leva ao mural completo)', () => {
+      abrir(of(pagina([rascunho, rabisco])));
+
+      const convite = el.querySelector('.vitrine .vitrine-convite a')!;
+      expect(convite.getAttribute('href')).toBe('/register');
+      expect(convite.textContent).toContain('Crie sua conta');
+      expect(el.querySelector('.vitrine a[href="/explorar"]')).toBeNull();
+    });
+
     it('SEGURANÇA: HTML no texto aparece como texto, nunca é executado', () => {
       abrir(of(pagina([{ ...rabisco, texto: '<img src=x onerror="window.__xss = true">' }])));
 
