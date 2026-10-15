@@ -35,12 +35,14 @@ describe('HomeComponent', () => {
     });
   });
 
-  it('a abertura traz a frase da marca e os dois caminhos (criar conta e ver o feed)', () => {
-    abrir();
+  it('a abertura traz a frase da marca e os dois caminhos (criar conta e ver a prévia)', () => {
+    abrir(of(pagina([{ id: 1, titulo: 'Um texto', texto: 'corpo' } as Postagem])));
 
     expect(el.querySelector('h1')!.textContent!.replace(/\s+/g, ' ')).toContain('Escreva rascunhos. Solte rabiscos.');
     const links = Array.from(el.querySelectorAll('.acoes a')).map(a => a.getAttribute('href'));
-    expect(links).toEqual(['/register', '/explorar']);
+    expect(links).toEqual(['/register', '/#vitrine']);
+    expect(el.querySelector('.acoes a.leve')!.getAttribute('href')).toContain('#vitrine');
+    expect(el.querySelector('#vitrine.vitrine')).not.toBeNull();
   });
 
   it('a faixa corre com as frases da marca (e só uma cópia é lida por leitores de tela)', () => {

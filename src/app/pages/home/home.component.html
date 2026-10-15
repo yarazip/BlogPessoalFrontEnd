@@ -10,7 +10,9 @@
     </p>
     <div class="acoes">
       <a [routerLink]="['/register']" class="botao">Começar a escrever</a>
-      <a [routerLink]="['/explorar']" class="botao leve">Ver o que estão escrevendo</a>
+      @if (postagens.length > 0) {
+        <a [routerLink]="[]" fragment="vitrine" class="botao leve">Ver o que estão escrevendo</a>
+      }
     </div>
     <p class="bilhete" aria-hidden="true">
       sem medo<br />do erro
@@ -68,7 +70,7 @@
   </section>
 
   @if (postagens.length > 0) {
-    <section class="vitrine" aria-labelledby="titulo-vitrine">
+    <section id="vitrine" class="vitrine" aria-labelledby="titulo-vitrine">
       <h2 id="titulo-vitrine">O mural, <span>do jeito que ele é</span></h2>
       <div class="vitrine-lista">
         @for (postagem of postagens; track postagem.id) {

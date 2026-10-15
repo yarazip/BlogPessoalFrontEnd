@@ -396,6 +396,8 @@ h1 {
 
 /* ---------- vitrine com postagens de verdade ---------- */
 .vitrine {
+  /* o botão da abertura rola até aqui: deixa o cabeçalho fixo de fora */
+  scroll-margin-top: calc(var(--header-height) + 16px);
   margin-top: 64px;
 
   h2 {
