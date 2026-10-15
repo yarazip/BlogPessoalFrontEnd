@@ -79,9 +79,8 @@ footer {
   color: var(--zine-suave);
 }
 
-/* Modo escuro: a letra do logo é escura, então ela precisa de um fundo amarelo inteiro (a faixa só embaixo deixaria
-   a parte de cima da letra escura sobre o fundo escuro, sumindo). */
+/* Modo escuro: fita roxa com pouca opacidade atrás do logo, com a letra clara por cima (igual ao cabeçalho). */
 :host-context(.dark-mode) .footer-marca app-logo {
-  background: var(--zine-marca);
-  border-radius: 3px;
+  color: var(--zine-tinta);
+  background: linear-gradient(transparent 58%, var(--zine-fita-logo) 58% 90%, transparent 90%);
 }

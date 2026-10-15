@@ -497,9 +497,11 @@ header {
   margin-right: 20px;
 }
 
-/* Modo escuro: a letra do logo é escura, então ela precisa de um fundo amarelo inteiro (a faixa só embaixo deixaria
-   a parte de cima da letra escura sobre o fundo escuro, sumindo). */
-:host-context(.dark-mode) .logo-wordmark {
-  background: var(--zine-marca);
-  border-radius: 3px;
+/* Modo escuro: a fita atrás do logo é roxa com pouca opacidade, e a letra volta a ser clara. A faixa é a mesma do modo
+   claro (só na parte de baixo da letra), só que na cor roxa. */
+:host-context(.dark-mode) .logo-wordmark,
+:host-context(.dark-mode) .logo-link:hover .logo-wordmark,
+:host-context(.dark-mode) .logo-link:focus-visible .logo-wordmark {
+  color: var(--zine-tinta);
+  background: linear-gradient(transparent 58%, var(--zine-fita-logo) 58% 90%, transparent 90%);
 }
