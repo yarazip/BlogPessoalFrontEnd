@@ -506,8 +506,7 @@ header {
   background: linear-gradient(transparent 58%, var(--zine-fita-logo) 58% 90%, transparent 90%);
 }
 
-/* Modo escuro: todo link tem de fundo a mesma fita roxa translúcida do logo. */
+/* Modo escuro: o fundo do link ativo (e do que está sob o mouse) é a mesma fita roxa translúcida do logo. */
 :host-context(.dark-mode) .main-nav .nav-links a::after {
-  width: calc(100% + 8px);
   background-color: var(--zine-fita-logo);
 }
