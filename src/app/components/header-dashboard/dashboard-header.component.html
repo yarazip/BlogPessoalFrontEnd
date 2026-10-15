@@ -6,20 +6,20 @@
 
     <nav class="main-nav" [class.mobile-open]="isMobileMenuOpen">
       <div class="nav-links">
-        <a routerLink="/explorar" routerLinkActive="active" (click)="closeMobileMenu()">Feed</a>
+        <a routerLink="/explorar" routerLinkActive="active" (click)="closeMobileMenu()">Mural</a>
         <a
           [routerLink]="['/perfil', idDoUsuario]"
           routerLinkActive="active"
           (click)="closeMobileMenu()"
         >
-          <app-icon name="user" /> Perfil
+          <app-icon name="user" /> Eu
         </a>
         <a
           routerLink="/dashboard"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{ exact: true }"
           (click)="closeMobileMenu()"
-          >Insights</a
+          >Novidades</a
         >
       </div>
 

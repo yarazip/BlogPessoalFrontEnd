@@ -1,6 +1,6 @@
 /**
  * Páginas só para visitantes: mesmo logado, quem abre uma delas vê o cabeçalho público.
- * Todas as demais (inclusive /explorar, que o menu do usuário chama de "Feed") mostram o cabeçalho
+ * Todas as demais (inclusive /explorar, que o menu do usuário chama de "Mural") mostram o cabeçalho
  * do usuário quando há sessão.
  */
 export const ROTAS_DE_VISITANTE = ['/', '/login', '/register', '/esqueci-senha'];

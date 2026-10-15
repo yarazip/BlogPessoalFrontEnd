@@ -63,13 +63,13 @@
     <p>
       <app-logo /> é o risco que se passa por cima do erro. Aqui errar faz parte de escrever: dá para riscar, refazer e
       recomeçar quantas vezes quiser. Cada pessoa tem o seu perfil, com bio e foto, e o que você publica aparece para todo
-      mundo no feed. Dá para curtir e descurtir, e quem escreve um rascunho escolhe a fonte dele.
+      mundo no mural. Dá para curtir e descurtir, e quem escreve um rascunho escolhe a fonte dele.
     </p>
   </section>
 
   @if (postagens.length > 0) {
     <section class="vitrine" aria-labelledby="titulo-vitrine">
-      <h2 id="titulo-vitrine">O feed, <span>do jeito que ele é</span></h2>
+      <h2 id="titulo-vitrine">O mural, <span>do jeito que ele é</span></h2>
       <div class="vitrine-lista">
         @for (postagem of postagens; track postagem.id) {
           <article class="post">
@@ -99,7 +99,7 @@
           </article>
         }
       </div>
-      <a [routerLink]="['/explorar']" class="ver-mais">Ver o feed completo »</a>
+      <a [routerLink]="['/explorar']" class="ver-mais">Ver o mural completo »</a>
     </section>
   }
 
