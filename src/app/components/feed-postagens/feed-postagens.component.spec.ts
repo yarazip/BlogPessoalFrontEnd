@@ -252,10 +252,11 @@ describe('FeedPostagensComponent', () => {
     const comReacoes = (extra: Partial<Postagem>): Postagem => ({ id: 4, tipo: 'COMENTARIO', texto: 'com reações', usuario: { id: 2, nome: 'Bia' }, ...extra });
 
     it('cada postagem mostra os botões com os totais, inclusive o de descurtidas', () => {
-      const el = criar(of(pagina([comReacoes({ curtidas: 12, descurtidas: 3, minhaReacao: 'CURTIDA' })], 0, true)));
+      const el = criar(of(pagina([comReacoes({ curtidas: 12, descurtidas: 3, minhaReacao: 'CURTIDA', comentarios: 5 })], 0, true)));
 
       const numeros = Array.from(el.querySelectorAll('app-reacoes .contagem')).map(n => n.textContent);
-      expect(numeros).toEqual(['12', '3']);
+      // curtidas, descurtidas e, por último, os comentários
+      expect(numeros).toEqual(['12', '3', '5']);
       expect(el.querySelector('.reacao-curtir')!.classList).toContain('ativa');
     });
 
@@ -263,7 +264,15 @@ describe('FeedPostagensComponent', () => {
       const el = criar(of(pagina([comReacoes({})], 0, true)));
 
       const numeros = Array.from(el.querySelectorAll('app-reacoes .contagem')).map(n => n.textContent);
-      expect(numeros).toEqual(['0', '0']);
+      expect(numeros).toEqual(['0', '0', '0']);
+    });
+
+    it('o balão de comentários leva à página da postagem, na seção de comentários', () => {
+      const el = criar(of(pagina([comReacoes({ id: 4, comentarios: 2 })], 0, true)));
+
+      const link = el.querySelector<HTMLAnchorElement>('.reacao-comentarios')!;
+      expect(link.getAttribute('href')).toBe('/postagens/4#comentarios');
+      expect(link.getAttribute('aria-label')).toBe('2 comentários');
     });
   });
 

@@ -23,6 +23,18 @@
     <span class="contagem">{{ estado.descurtidas }}</span>
   </button>
 
+  @if (comentarios() !== null) {
+    <a
+      class="reacao reacao-comentarios"
+      [routerLink]="['/postagens', postagemId()]"
+      fragment="comentarios"
+      [attr.aria-label]="comentarios() === 1 ? '1 comentário' : comentarios() + ' comentários'"
+    >
+      <app-icon name="balao" />
+      <span class="contagem">{{ comentarios() }}</span>
+    </a>
+  }
+
   @if (erro) {
     <span class="reacoes-erro" role="alert">{{ erro }}</span>
   }

@@ -36,6 +36,8 @@ export interface Postagem {
   curtidas?: number;
   descurtidas?: number;
   minhaReacao?: TipoReacao | null;
+  /** Quantos comentários a postagem tem (a lista vem de GET /postagens/{id}/comentarios); ausente em respostas antigas. */
+  comentarios?: number;
 }
 
 /** Dados enviados para criar ou atualizar uma postagem. */

@@ -225,4 +225,34 @@ describe('ReacoesComponent', () => {
       expect(service.reagir).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('link de comentários', () => {
+    it('sem a contagem de comentários, não mostra o link (ex.: na página da postagem, que já tem a lista)', () => {
+      criar();
+
+      expect(el.querySelector('.reacao-comentarios')).toBeNull();
+    });
+
+    it('com a contagem, mostra o balão com o número e leva aos comentários da postagem', () => {
+      criar();
+      fixture.componentRef.setInput('comentarios', 3);
+      fixture.detectChanges();
+
+      const link = el.querySelector<HTMLAnchorElement>('.reacao-comentarios')!;
+      expect(link.textContent).toContain('3');
+      expect(link.getAttribute('href')).toBe('/postagens/7#comentarios');
+      expect(link.getAttribute('aria-label')).toBe('3 comentários');
+    });
+
+    it('no singular e no zero', () => {
+      criar();
+      fixture.componentRef.setInput('comentarios', 1);
+      fixture.detectChanges();
+      expect(el.querySelector('.reacao-comentarios')!.getAttribute('aria-label')).toBe('1 comentário');
+
+      fixture.componentRef.setInput('comentarios', 0);
+      fixture.detectChanges();
+      expect(el.querySelector('.reacao-comentarios')!.getAttribute('aria-label')).toBe('0 comentários');
+    });
+  });
 });

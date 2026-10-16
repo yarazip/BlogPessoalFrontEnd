@@ -1,0 +1,94 @@
+<section class="comentarios" id="comentarios" aria-labelledby="comentarios-titulo">
+  <h2 class="comentarios-titulo" id="comentarios-titulo">
+    Comentários <span class="comentarios-total">({{ total }})</span>
+  </h2>
+
+  @if (logado) {
+    <form class="comentarios-form" (ngSubmit)="enviar()">
+      <img class="comentarios-foto" [src]="fotoDeQuemEscreve" alt="" />
+      <div class="comentarios-campo">
+        <label for="novo-comentario" class="visually-hidden">Escreva um comentário</label>
+        <textarea
+          id="novo-comentario"
+          [formControl]="texto"
+          rows="2"
+          placeholder="Escreva um comentário..."
+          [attr.maxlength]="limite"
+        ></textarea>
+
+        @if (erroEnvio) {
+          <p class="comentarios-erro" role="alert">{{ erroEnvio }}</p>
+        }
+
+        <div class="comentarios-rodape">
+          <span class="comentarios-contador" [class.perto-do-limite]="restantes <= 20" aria-live="polite">{{ restantes }}</span>
+          <button type="submit" class="zine-botao primario" [disabled]="!podeEnviar">
+            {{ enviando ? 'Enviando...' : 'Comentar' }}
+          </button>
+        </div>
+      </div>
+    </form>
+  } @else {
+    <p class="comentarios-convite">
+      <a routerLink="/login" [queryParams]="{ returnUrl: '/postagens/' + postagemId() }">Entre</a> ou
+      <a routerLink="/register">crie sua conta</a> para comentar.
+    </p>
+  }
+
+  @if (erroAcao) {
+    <p class="comentarios-erro" role="alert">{{ erroAcao }}</p>
+  }
+
+  @if (carregando) {
+    <p class="comentarios-aviso">Carregando comentários...</p>
+  } @else if (erroLista) {
+    <div class="comentarios-aviso" role="alert">
+      <p>{{ erroLista }}</p>
+      <button type="button" class="zine-botao" (click)="carregar()">Tentar de novo</button>
+    </div>
+  } @else if (comentarios.length === 0) {
+    <p class="comentarios-aviso">Ainda não há comentários. Seja a primeira pessoa!</p>
+  }
+
+  <ul class="comentarios-lista">
+    @for (comentario of comentarios; track comentario.id) {
+      <li class="comentario">
+        <a class="comentario-foto" [routerLink]="['/perfil', comentario.usuario?.id]" [attr.aria-label]="'Perfil de ' + comentario.usuario?.nome">
+          <img [src]="comentario.usuario?.foto || fotoPadrao" alt="" loading="lazy" />
+        </a>
+        <div class="comentario-corpo">
+          <p class="comentario-cabecalho">
+            <a class="comentario-autor" [routerLink]="['/perfil', comentario.usuario?.id]">{{ comentario.usuario?.nome }}</a>
+            <span class="comentario-data">· {{ comentario.data | dateBr: 'dd/MM/yyyy' }}</span>
+          </p>
+          <p class="comentario-texto texto-postagem">{{ comentario.texto }}</p>
+        </div>
+        @if (comentario.podeExcluir) {
+          <button
+            type="button"
+            class="comentario-apagar"
+            aria-label="Apagar comentário"
+            (click)="pedirExclusao(comentario)"
+          >
+            <app-icon name="trash" />
+          </button>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (haMais && !erroLista) {
+    <button type="button" class="zine-botao comentarios-mais" [disabled]="carregandoMais" (click)="carregar()">
+      {{ carregandoMais ? 'Carregando...' : 'Ver mais comentários' }}
+    </button>
+  }
+
+  <app-confirmar-exclusao
+    [aberto]="paraExcluir !== null"
+    [excluindo]="excluindo"
+    titulo="Apagar este comentário?"
+    texto="Esta ação não pode ser desfeita."
+    (confirmar)="confirmarExclusao()"
+    (cancelar)="cancelarExclusao()"
+  />
+</section>

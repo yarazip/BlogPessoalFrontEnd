@@ -4,6 +4,7 @@
  */
 export const ICON_NAMES = [
   'arrow-left',
+  'balao',
   'camera',
   'coracao',
   'coracao-cheio',
