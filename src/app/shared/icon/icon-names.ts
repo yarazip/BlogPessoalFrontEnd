@@ -18,6 +18,7 @@ export const ICON_NAMES = [
   'list',
   'logout',
   'moon',
+  'sino',
   'olho',
   'olho-riscado',
   'plus',

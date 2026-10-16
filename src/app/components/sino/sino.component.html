@@ -1,0 +1,56 @@
+<button
+  type="button"
+  class="sino-botao"
+  [attr.aria-label]="rotuloDoBotao"
+  [attr.aria-expanded]="aberto"
+  aria-haspopup="true"
+  aria-controls="sino-painel"
+  (click)="alternar()"
+>
+  <app-icon name="sino" />
+  @if (naoLidas > 0) {
+    <span class="sino-numero" aria-hidden="true">{{ rotuloDoNumero }}</span>
+  }
+</button>
+
+@if (aberto) {
+  <div class="sino-painel" id="sino-painel" role="region" aria-label="Notificações">
+    <h2 class="sino-titulo">Notificações</h2>
+
+    @if (carregando) {
+      <p class="sino-aviso">Carregando...</p>
+    } @else if (erro) {
+      <p class="sino-aviso sino-erro" role="alert">{{ erro }}</p>
+    } @else if (itens.length === 0) {
+      <p class="sino-aviso">Nada por aqui ainda. Quando alguém curtir ou comentar uma postagem sua, aparece aqui.</p>
+    } @else {
+      <ul class="sino-lista">
+        @for (n of itens; track n.id) {
+          <li>
+            <a
+              class="sino-item"
+              [class.nao-lida]="!n.lida"
+              [routerLink]="['/postagens', n.postagemId]"
+              [fragment]="fragmentoDe(n)"
+              (click)="fechar()"
+            >
+              <span class="sino-texto">
+                <strong>{{ n.ator.nome }}</strong>
+                @if (n.tipo === 'CURTIDA') {
+                  curtiu sua postagem
+                } @else {
+                  comentou na sua postagem
+                }
+                <span class="sino-postagem">“{{ n.postagemResumo }}”</span>
+              </span>
+              @if (n.tipo === 'COMENTARIO' && n.comentarioResumo) {
+                <span class="sino-comentario">{{ n.comentarioResumo }}</span>
+              }
+              <span class="sino-data">{{ n.data | dateBr: 'dd/MM · HH:mm' }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+}
