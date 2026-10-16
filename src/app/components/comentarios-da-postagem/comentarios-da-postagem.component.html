@@ -4,7 +4,8 @@
   </h2>
 
   @if (logado) {
-    <form class="comentarios-form" (ngSubmit)="enviar()">
+    <!-- sem [formGroup] não existe o evento ngSubmit: o envio é tratado aqui, e o preventDefault evita o envio nativo (que recarregaria a página) -->
+    <form class="comentarios-form" (submit)="$event.preventDefault(); enviar()">
       <img class="comentarios-foto" [src]="fotoDeQuemEscreve" alt="" />
       <div class="comentarios-campo">
         <label for="novo-comentario" class="visually-hidden">Escreva um comentário</label>
