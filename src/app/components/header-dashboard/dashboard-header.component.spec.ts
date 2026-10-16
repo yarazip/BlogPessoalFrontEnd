@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { NotificacaoService } from '../../services/notificacao.service';
 import { DashboardHeaderComponent } from './dashboard-header.component';
 
 describe('DashboardHeaderComponent', () => {
@@ -11,9 +13,11 @@ describe('DashboardHeaderComponent', () => {
     localStorage.clear();
     auth = jasmine.createSpyObj('AuthService', ['logout', 'getUsuario']);
     auth.getUsuario.and.returnValue({ id: 24 });
+    const notificacoes = jasmine.createSpyObj('NotificacaoService', ['contarNaoLidas']);
+    notificacoes.contarNaoLidas.and.returnValue(of(0));
     TestBed.configureTestingModule({
       imports: [DashboardHeaderComponent],
-      providers: [provideRouter([]), { provide: AuthService, useValue: auth }]
+      providers: [provideRouter([]), { provide: AuthService, useValue: auth }, { provide: NotificacaoService, useValue: notificacoes }]
     });
     const fixture = TestBed.createComponent(DashboardHeaderComponent);
     fixture.detectChanges();
@@ -24,6 +28,10 @@ describe('DashboardHeaderComponent', () => {
     const itens = Array.from(el.querySelectorAll<HTMLAnchorElement>('.nav-links a')).map(a => a.getAttribute('href'));
 
     expect(itens).toEqual(['/explorar', '/perfil/24', '/dashboard']);
+  });
+
+  it('o sino de notificações fica no cabeçalho de quem está logado', () => {
+    expect(el.querySelector('.header-right app-sino .sino-botao')).not.toBeNull();
   });
 
   it('o logo leva ao feed, não à página de entrada pública', () => {

@@ -1,0 +1,141 @@
+:host {
+  position: relative;
+  display: inline-flex;
+}
+
+.sino-botao {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--secondary-color);
+  color: var(--text-color);
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--zine-contorno);
+    outline-offset: 2px;
+  }
+}
+
+.sino-numero {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 999px;
+  background: var(--zine-laranja);
+  color: #fff;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
+}
+
+.sino-painel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 1100;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, 480px);
+  overflow-y: auto;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  box-shadow: 6px 6px 0 var(--zine-sombra);
+
+  /* celular: o painel ocupa a largura da tela, logo abaixo do cabeçalho, em vez de estourar para a esquerda */
+  @media (max-width: 480px) {
+    position: fixed;
+    top: calc(var(--header-height, 70px) + 8px);
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}
+
+.sino-titulo {
+  margin: 0;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--zine-contorno);
+  font-family: 'Mansalva', cursive;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.sino-aviso {
+  margin: 0;
+  padding: 18px 16px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.sino-erro {
+  color: #d93025;
+}
+
+.sino-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sino-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--header-border);
+  color: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--secondary-color);
+  }
+
+  /* o que ainda não foi visto ganha uma fita lateral roxa, como a do logo */
+  &.nao-lida {
+    border-left: 5px solid var(--zine-roxo);
+    padding-left: 11px;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 44px;
+  }
+}
+
+.sino-postagem {
+  color: var(--text-muted);
+}
+
+.sino-comentario {
+  padding: 4px 8px;
+  border-left: 3px solid var(--zine-contorno);
+  color: var(--text-color);
+  overflow-wrap: anywhere;
+}
+
+.sino-data {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
