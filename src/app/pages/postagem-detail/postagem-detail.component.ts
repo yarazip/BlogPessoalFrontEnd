@@ -2,22 +2,39 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { ConfirmarExclusaoComponent } from '../../components/confirmar-exclusao/confirmar-exclusao.component';
 import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-postagem/comentarios-da-postagem.component';
 import { TextoComEmojisComponent } from '../../components/texto-com-emojis/texto-com-emojis.component';
+import { BarraLateralLeituraComponent } from '../../components/barra-lateral-leitura/barra-lateral-leitura.component';
 import { ReacoesComponent } from '../../components/reacoes/reacoes.component';
 import { Component, OnInit, inject } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
+import { PerfilService } from '../../services/perfil.service';
 import { PostagemService } from '../../services/postagem.service';
 import { minutosDeLeitura } from '../../shared/leitura';
+import { POSTAGENS_DA_AUTORA, ehRascunho, rotuloDe, vizinhasDe } from '../../shared/leitura-lateral';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
+import { Perfil } from '../../models/Perfil';
 import { Postagem } from '../../models/Postagem';
+
+/** Meses abreviados da etiqueta de calendário do cabeçalho do post. */
+const MESES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [DateBrPipe, IconComponent, RouterLink, ReacoesComponent, ComentariosDaPostagemComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
+  imports: [
+    IconComponent,
+    RouterLink,
+    ReacoesComponent,
+    ComentariosDaPostagemComponent,
+    ConfirmarExclusaoComponent,
+    TextoComEmojisComponent,
+    BarraLateralLeituraComponent
+  ],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })
@@ -25,10 +42,13 @@ export class PostagemDetailComponent implements OnInit {
   private readonly postagemService = inject(PostagemService);
   private readonly authService = inject(AuthService);
   private readonly fontes = inject(FonteService);
+  private readonly perfilService = inject(PerfilService);
+  private readonly dateBr = new DateBrPipe();
 
   /** Para o template: a fonte escolhida pela autora (nulo = a padrão do site, sem estilo). */
   readonly pilhaDe = pilhaDe;
   readonly pesoDoTituloDe = pesoDoTituloDe;
+  readonly rotuloDe = rotuloDe;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -37,6 +57,16 @@ export class PostagemDetailComponent implements OnInit {
   postagem?: Postagem;
   isLoading = true;
   mensagemErro: string | null = null;
+
+  /** Barra lateral e navegação: vêm do perfil e das postagens recentes da autora (se falharem, a leitura segue sem eles). */
+  perfil: Perfil | null = null;
+  postagensDaAutora: Postagem[] = [];
+  anterior?: Postagem;
+  proxima?: Postagem;
+
+  /** Quantos recados (comentários) a postagem tem; o livro de visitas avisa quando muda. */
+  totalRecados = 0;
+  linkCopiado = false;
 
   /** Minutos de leitura do rascunho (o rabisco, curto, não mostra). Aqui o texto vem inteiro, então dá para calcular. */
   get minutos(): number | null {
@@ -61,12 +91,81 @@ export class PostagemDetailComponent implements OnInit {
       next: postagem => {
         this.fontes.carregar(postagem.fonte);
         this.postagem = postagem;
+        this.totalRecados = postagem.comentarios ?? 0;
         this.isLoading = false;
+        this.carregarLateral(postagem);
       },
       error: erro => {
         this.mensagemErro = mensagemDeErro(erro, 'Postagem não encontrada.');
         this.isLoading = false;
       }
+    });
+  }
+
+  /** "3 recados no livro de visitas" (ou "nenhum recado ainda"). */
+  get textoDosRecados(): string {
+    if (this.totalRecados === 0) {
+      return 'nenhum recado no livro de visitas';
+    }
+    return `${this.totalRecados} ${this.totalRecados === 1 ? 'recado' : 'recados'} no livro de visitas`;
+  }
+
+  diaDe(data: Postagem['data']): string {
+    return this.dateBr.transform(data, 'dd');
+  }
+
+  mesDe(data: Postagem['data']): string {
+    return MESES[Number(this.dateBr.transform(data, 'M')) - 1] ?? '';
+  }
+
+  anoDe(data: Postagem['data']): string {
+    return this.dateBr.transform(data, 'yyyy');
+  }
+
+  horaDe(data: Postagem['data']): string {
+    return this.dateBr.transform(data, 'HH:mm');
+  }
+
+  /** Copia o endereço da postagem (sem o #comentarios) e avisa por alguns segundos. */
+  copiarLink(): void {
+    const id = this.postagem?.id;
+    if (id === undefined || !navigator.clipboard) {
+      return;
+    }
+    navigator.clipboard
+      .writeText(`${window.location.origin}/postagens/${id}`)
+      .then(() => {
+        this.linkCopiado = true;
+        setTimeout(() => (this.linkCopiado = false), 2500);
+      })
+      .catch(() => {
+        // sem permissão para copiar: o botão só não faz nada (o endereço continua na barra do navegador)
+      });
+  }
+
+  /**
+   * Busca o perfil e as postagens recentes da autora de uma vez. Qualquer falha vira "sem isso": a leitura não depende
+   * da barra lateral nem dos botões de anterior e próxima.
+   */
+  private carregarLateral(postagem: Postagem): void {
+    const autorId = postagem.usuario?.id;
+    if (autorId === undefined || postagem.id === undefined) {
+      return;
+    }
+    forkJoin({
+      perfil: this.perfilService.getPerfil(autorId).pipe(catchError(() => of(null))),
+      lista: this.postagemService
+        .getPagina({ autor: autorId, size: POSTAGENS_DA_AUTORA })
+        .pipe(
+          map(pagina => pagina.conteudo),
+          catchError(() => of([] as Postagem[]))
+        )
+    }).subscribe(({ perfil, lista }) => {
+      this.perfil = perfil;
+      this.postagensDaAutora = lista;
+      const vizinhas = vizinhasDe(lista, postagem.id!, ehRascunho(postagem));
+      this.anterior = vizinhas.anterior;
+      this.proxima = vizinhas.proxima;
     });
   }
 

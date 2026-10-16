@@ -1,0 +1,166 @@
+:host {
+  display: block;
+}
+
+.lateral {
+  display: grid;
+  gap: 18px;
+}
+
+/* caixa de borda grossa com sombra dura e o título no marca-texto, igual às da barra do mural */
+.caixa {
+  border: 2px solid var(--zine-contorno);
+  background: var(--card-bg);
+  box-shadow: 4px 4px 0 var(--zine-sombra);
+}
+
+.caixa-titulo {
+  margin: 0;
+  padding: 2px 8px;
+  border-bottom: 2px solid var(--zine-contorno);
+  background: var(--zine-marca);
+  color: var(--zine-tinta-marca);
+  font-family: 'Mansalva', cursive;
+  font-size: 1.1rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+.caixa-corpo {
+  padding: 12px 14px;
+  font-size: 0.88rem;
+}
+
+/* ---------- sobre a autora ---------- */
+.autora {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.autora-foto {
+  line-height: 0;
+
+  img {
+    width: 84px;
+    height: 84px;
+    border: 2px solid var(--zine-contorno);
+    border-radius: 50%;
+    box-shadow: 3px 3px 0 var(--zine-sombra);
+    object-fit: cover;
+  }
+}
+
+.autora-nome {
+  margin-top: 10px;
+  color: var(--text-color);
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+.autora-bio {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.autora-numeros {
+  align-self: stretch;
+  margin: 10px 0;
+  padding: 6px 0;
+  border-block: 1px dashed var(--zine-contorno);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+
+  strong {
+    margin-right: 2px;
+    color: var(--text-color);
+    font-size: 1.15rem;
+  }
+}
+
+.autora-botao {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 12px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+  color: var(--text-color);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+}
+
+/* ---------- mais da autora ---------- */
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--header-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  a {
+    color: var(--text-color);
+    font-weight: 600;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--primary-color);
+      text-decoration: underline;
+    }
+  }
+
+  small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+  }
+}
+
+/* ---------- temas ---------- */
+.temas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tema {
+  padding: 1px 10px;
+  border: 1.5px solid var(--zine-contorno);
+  border-radius: 999px;
+  color: var(--primary-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.tema-quantidade {
+  color: var(--text-muted);
+  font-weight: 400;
+}

@@ -99,7 +99,7 @@ export class ComentariosDaPostagemComponent implements OnInit {
         }
       },
       error: erro => {
-        this.erroLista = mensagemDeErro(erro, 'Não foi possível carregar os comentários.');
+        this.erroLista = mensagemDeErro(erro, 'Não foi possível carregar os recados.');
         this.carregando = false;
         this.carregandoMais = false;
       }
@@ -128,7 +128,7 @@ export class ComentariosDaPostagemComponent implements OnInit {
       },
       error: erro => {
         this.enviando = false;
-        this.erroEnvio = mensagemDeErro(erro, 'Não foi possível enviar o comentário. Tente novamente.');
+        this.erroEnvio = mensagemDeErro(erro, 'Não foi possível enviar o recado. Tente novamente.');
       }
     });
   }
@@ -162,7 +162,7 @@ export class ComentariosDaPostagemComponent implements OnInit {
       error: erro => {
         this.excluindo = false;
         this.paraExcluir = null;
-        this.erroAcao = mensagemDeErro(erro, 'Não foi possível apagar o comentário.');
+        this.erroAcao = mensagemDeErro(erro, 'Não foi possível apagar o recado.');
       }
     });
   }

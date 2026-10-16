@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-postagem/comentarios-da-postagem.component';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { Pagina } from '../../models/Pagina';
@@ -8,6 +10,7 @@ import { Postagem } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
 import { ComentarioPostagemService } from '../../services/comentario-postagem.service';
 import { FonteService } from '../../services/fonte.service';
+import { PerfilService } from '../../services/perfil.service';
 import { PostagemService } from '../../services/postagem.service';
 import { PostagemDetailComponent } from './postagem-detail.component';
 
@@ -18,6 +21,7 @@ describe('PostagemDetailComponent', () => {
   let auth: jasmine.SpyObj<AuthService>;
   let fontes: jasmine.SpyObj<FonteService>;
   let comentarios: jasmine.SpyObj<ComentarioPostagemService>;
+  let perfis: jasmine.SpyObj<PerfilService>;
   let router: Router;
   // a rota é um objeto simples que cada teste ajusta antes de criar o componente
   let rota: { snapshot: { paramMap: ParamMap } };
@@ -43,7 +47,10 @@ describe('PostagemDetailComponent', () => {
 
   beforeEach(() => {
     rota = { snapshot: { paramMap: convertToParamMap({}) } };
-    service = jasmine.createSpyObj('PostagemService', ['getById', 'delete']);
+    service = jasmine.createSpyObj('PostagemService', ['getById', 'delete', 'getPagina']);
+    service.getPagina.and.returnValue(of({ conteudo: [], pagina: 0, tamanho: 50, totalElementos: 0, totalPaginas: 0, ultima: true }));
+    perfis = jasmine.createSpyObj('PerfilService', ['getPerfil']);
+    perfis.getPerfil.and.returnValue(of({ id: 3, nome: 'Bia Souza', bio: 'Escrevo à mão.', totalPostagens: 12 }));
     auth = jasmine.createSpyObj('AuthService', ['getUsuario', 'isLoggedIn']);
     auth.isLoggedIn.and.returnValue(false);
     comentarios = jasmine.createSpyObj('ComentarioPostagemService', ['listar', 'comentar', 'excluir']);
@@ -58,6 +65,7 @@ describe('PostagemDetailComponent', () => {
         { provide: PostagemService, useValue: service },
         { provide: AuthService, useValue: auth },
         { provide: ComentarioPostagemService, useValue: comentarios },
+        { provide: PerfilService, useValue: perfis },
         { provide: FonteService, useValue: fontes },
         { provide: ActivatedRoute, useValue: rota }
       ]
@@ -79,9 +87,149 @@ describe('PostagemDetailComponent', () => {
     expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('Meu blog');
     expect(el.querySelector('.detalhe-nome')!.textContent).toBe('Bia');
     expect(el.querySelector('.detalhe-nome')!.getAttribute('href')).toBe('/perfil/3');
-    expect(el.querySelector('.detalhe-data')!.textContent!.replace(/\s+/g, ' ').trim()).toBe('09/10/2026 15:30 · 1 min de leitura');
+    expect(el.querySelector('.detalhe-assinatura')!.textContent!.replace(/\s+/g, ' ').trim()).toBe('postado por Bia às 15:30 em #Tecnologia');
     expect(el.querySelector('.detalhe-tema')!.textContent).toBe('#Tecnologia');
+    expect(el.querySelector('.detalhe-rodape')!.textContent).toContain('1 min de leitura');
     expect(el.querySelector('.detalhe-texto')!.textContent).toBe('Linha 1\nLinha 2 do texto completo');
+  });
+
+  describe('estilo de blog antigo', () => {
+    it('o cabeçalho tem a etiqueta de calendário com mês, dia e ano', () => {
+      abrir('7');
+
+      const calendario = el.querySelector('.calendario')!;
+      expect(calendario.querySelector('.calendario-mes')!.textContent).toBe('OUT');
+      expect(calendario.querySelector('.calendario-dia')!.textContent).toBe('09');
+      expect(calendario.querySelector('.calendario-ano')!.textContent).toBe('2026');
+    });
+
+    it('o rodapé conta os recados do livro de visitas e leva até eles', () => {
+      abrir('7', of(blog({ comentarios: 3 })));
+
+      const link = el.querySelector<HTMLAnchorElement>('.detalhe-recados')!;
+      expect(link.textContent).toBe('3 recados no livro de visitas');
+      expect(link.getAttribute('href')).toContain('#comentarios');
+    });
+
+    it('sem recados e com um só, o texto muda', () => {
+      abrir('7', of(blog({ comentarios: 0 })));
+      expect(el.querySelector('.detalhe-recados')!.textContent).toBe('nenhum recado no livro de visitas');
+
+      abrir('7', of(blog({ comentarios: 1 })));
+      expect(el.querySelector('.detalhe-recados')!.textContent).toBe('1 recado no livro de visitas');
+    });
+
+    it('quando alguém assina ou apaga um recado, o número do rodapé acompanha', () => {
+      abrir('7', of(blog({ comentarios: 3 })));
+
+      fixture.debugElement.query(By.directive(ComentariosDaPostagemComponent)).componentInstance.totalMudou.emit(4);
+      fixture.detectChanges();
+
+      expect(el.querySelector('.detalhe-recados')!.textContent).toBe('4 recados no livro de visitas');
+    });
+
+    it('o livro de visitas fica numa folha própria, fora do post, e a barra lateral é uma coluna à parte', () => {
+      abrir('7');
+
+      expect(el.querySelector('.leitura-principal > .detalhe')).not.toBeNull();
+      expect(el.querySelector('.leitura-principal > app-comentarios-da-postagem')).not.toBeNull();
+      expect(el.querySelector('.leitura > app-barra-lateral-leitura')).not.toBeNull();
+    });
+
+    it('rabisco não mostra tempo de leitura no rodapé', () => {
+      abrir('9', of(blog({ id: 9, tipo: 'COMENTARIO', titulo: null, tema: null, texto: 'Só um rabisco' })));
+
+      expect(el.querySelector('.detalhe-rodape')!.textContent).not.toContain('min de leitura');
+    });
+
+    describe('copiar link', () => {
+      it('copia o endereço da postagem (sem o #comentarios) e avisa que copiou', fakeAsync(() => {
+        const escrever = jasmine.createSpy('writeText').and.resolveTo();
+        spyOnProperty(navigator, 'clipboard', 'get').and.returnValue({ writeText: escrever } as unknown as Clipboard);
+        abrir('7');
+
+        el.querySelector<HTMLButtonElement>('.detalhe-copiar')!.click();
+        tick();
+        fixture.detectChanges();
+
+        expect(escrever).toHaveBeenCalledWith(`${window.location.origin}/postagens/7`);
+        expect(el.querySelector('.detalhe-copiar')!.textContent).toContain('link copiado');
+
+        tick(2500);
+        fixture.detectChanges();
+        expect(el.querySelector('.detalhe-copiar')!.textContent).toContain('copiar link');
+      }));
+
+      it('sem permissão para copiar, nada quebra', fakeAsync(() => {
+        spyOnProperty(navigator, 'clipboard', 'get').and.returnValue({ writeText: () => Promise.reject(new Error('negado')) } as unknown as Clipboard);
+        abrir('7');
+
+        el.querySelector<HTMLButtonElement>('.detalhe-copiar')!.click();
+        tick();
+        fixture.detectChanges();
+
+        expect(el.querySelector('.detalhe-copiar')!.textContent).toContain('copiar link');
+      }));
+    });
+
+    describe('barra lateral e anterior/próxima', () => {
+      const deBia = (id: number, titulo: string): Postagem => ({ id, tipo: 'BLOG', titulo, texto: 'texto', data: '2026-10-01T10:00:00', usuario: { id: 3, nome: 'Bia' } });
+
+      const lista = (...posts: Postagem[]) =>
+        service.getPagina.and.returnValue(of({ conteudo: posts, pagina: 0, tamanho: 50, totalElementos: posts.length, totalPaginas: 1, ultima: true }));
+
+      it('pede o perfil e as postagens recentes da autora', () => {
+        abrir('7');
+
+        expect(perfis.getPerfil).toHaveBeenCalledWith(3);
+        expect(service.getPagina).toHaveBeenCalledWith({ autor: 3, size: 50 });
+      });
+
+      it('mostra o cartão da autora com os dados do perfil', () => {
+        abrir('7');
+
+        expect(el.querySelector('app-barra-lateral-leitura .autora-nome')!.textContent).toBe('Bia Souza');
+        expect(el.querySelector('app-barra-lateral-leitura .autora-bio')!.textContent).toBe('Escrevo à mão.');
+        expect(el.querySelector('app-barra-lateral-leitura .autora-numeros')!.textContent).toContain('12');
+      });
+
+      it('mostra os botões de anterior (mais antiga) e próxima (mais nova) da mesma autora', () => {
+        lista(deBia(9, 'Mais nova'), blog({ id: 7 }), deBia(5, 'Mais antiga'));
+        abrir('7');
+
+        const anterior = el.querySelector<HTMLAnchorElement>('.navegar.anterior')!;
+        const proxima = el.querySelector<HTMLAnchorElement>('.navegar.proxima')!;
+        expect(anterior.getAttribute('href')).toBe('/postagens/5');
+        expect(anterior.textContent).toContain('Mais antiga');
+        expect(proxima.getAttribute('href')).toBe('/postagens/9');
+        expect(proxima.textContent).toContain('Mais nova');
+      });
+
+      it('a postagem mais nova só tem o botão de anterior', () => {
+        lista(blog({ id: 7 }), deBia(5, 'Mais antiga'));
+        abrir('7');
+
+        expect(el.querySelector('.navegar.anterior')).not.toBeNull();
+        expect(el.querySelector('.navegar.proxima')).toBeNull();
+      });
+
+      it('sem vizinhas (única postagem ou fora da lista), a navegação nem aparece', () => {
+        abrir('7');
+
+        expect(el.querySelector('.detalhe-navegacao')).toBeNull();
+      });
+
+      it('se o perfil e a lista falharem, a leitura segue normal, só com o cartão básico da autora', () => {
+        perfis.getPerfil.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+        service.getPagina.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+        abrir('7');
+
+        expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('Meu blog');
+        expect(el.querySelector('app-barra-lateral-leitura .autora-nome')!.textContent).toBe('Bia');
+        expect(el.querySelector('.detalhe-navegacao')).toBeNull();
+        expect(el.querySelector('app-barra-lateral-leitura .autora-numeros')).toBeNull();
+      });
+    });
   });
 
   it('o rascunho aparece na fonte escolhida pela autora e a fonte é pedida ao serviço', () => {
@@ -172,9 +320,9 @@ describe('PostagemDetailComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/postagens', 7, 'editar']);
     });
 
-    const modal = () => el.querySelector<HTMLDialogElement>('.detalhe > app-confirmar-exclusao dialog')!;
-    const confirmar = () => el.querySelector<HTMLButtonElement>('.detalhe > app-confirmar-exclusao .zine-botao.perigo')!;
-    const cancelar = () => el.querySelector<HTMLButtonElement>('.detalhe > app-confirmar-exclusao .modal-rodape .zine-botao:not(.perigo)')!;
+    const modal = () => el.querySelector<HTMLDialogElement>('.leitura > app-confirmar-exclusao dialog')!;
+    const confirmar = () => el.querySelector<HTMLButtonElement>('.leitura > app-confirmar-exclusao .zine-botao.perigo')!;
+    const cancelar = () => el.querySelector<HTMLButtonElement>('.leitura > app-confirmar-exclusao .modal-rodape .zine-botao:not(.perigo)')!;
     const clicarExcluir = () => {
       el.querySelectorAll<HTMLButtonElement>('.detalhe-acoes button')[1].click();
       fixture.detectChanges();

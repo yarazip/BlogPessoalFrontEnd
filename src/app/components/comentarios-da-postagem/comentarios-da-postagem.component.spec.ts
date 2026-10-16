@@ -66,7 +66,7 @@ describe('ComentariosDaPostagemComponent', () => {
   it('sem comentários, convida a ser a primeira pessoa', () => {
     abrir(of(pagina([])));
 
-    expect(el.textContent).toContain('Ainda não há comentários');
+    expect(el.textContent).toContain('Ainda não há recados');
   });
 
   it('visitante não vê o formulário e é convidado a entrar (voltando para a postagem)', () => {
