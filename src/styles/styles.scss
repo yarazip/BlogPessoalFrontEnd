@@ -14,6 +14,8 @@
   /* letra escura sobre o amarelo sólido (logo, títulos das caixinhas): igual nos dois temas, para nunca ficar apagada */
   --zine-tinta-marca: #1f1a2e;
   --zine-marca-leve: #ffe35c;
+  /* contorno dos emojis desenhados (a cor do traço de caneta); no escuro vira um marrom que se destaca do fundo */
+  --zine-emoji-contorno: #1f1a2e;
   --zine-linha: rgba(90, 120, 200, 0.22);
   --bg-color: #fbf6e9;
   --text-color: #1f1a2e;
@@ -42,6 +44,7 @@
   /* fita atrás do logo no escuro: roxo com pouca opacidade, com a letra clara por cima */
   --zine-fita-logo: rgba(183, 155, 255, 0.4);
   --zine-marca-leve: rgba(255, 227, 92, 0.32);
+  --zine-emoji-contorno: #ffe35c;
   --zine-linha: rgba(255, 255, 255, 0.07);
   --bg-color: #151515;
   --text-color: #f1f1f1;

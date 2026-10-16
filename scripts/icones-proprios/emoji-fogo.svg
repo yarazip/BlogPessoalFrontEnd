@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <path d="M32 5C34 16 46 22 46 38C46 50 40 58 32 58C23 58 17 51 17 41C17 34 21 30 24 26C25 31 28 33 30 33C28 24 29 14 32 5Z" fill="#ff7a2f" transform="translate(1.6 1.6)"/>
   <path d="M32 58C27 58 24 54 24 49C24 44 28 42 30 38C33 42 38 44 38 50C38 55 35 58 32 58Z" fill="#ffe35c" transform="translate(1.6 1.6)"/>
-  <path d="M32 5C34 16 46 22 46 38C46 50 40 58 32 58C23 58 17 51 17 41C17 34 21 30 24 26C25 31 28 33 30 33C28 24 29 14 32 5Z" fill="none" stroke="#1f1a2e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M32 5C34 16 46 22 46 38C46 50 40 58 32 58C23 58 17 51 17 41C17 34 21 30 24 26C25 31 28 33 30 33C28 24 29 14 32 5Z" fill="none" stroke="#1f1a2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
+  <path d="M32 5C34 16 46 22 46 38C46 50 40 58 32 58C23 58 17 51 17 41C17 34 21 30 24 26C25 31 28 33 30 33C28 24 29 14 32 5Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M32 5C34 16 46 22 46 38C46 50 40 58 32 58C23 58 17 51 17 41C17 34 21 30 24 26C25 31 28 33 30 33C28 24 29 14 32 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
 </svg>

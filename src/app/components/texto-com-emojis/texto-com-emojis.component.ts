@@ -22,6 +22,7 @@ import { iconeDe, partirEmTrechos } from '../../shared/emojis';
 
     /* o ícone se dimensiona pela fonte (1em): aumentar o font-size deixa o desenho maior que a letra, como um emoji comum */
     .emoji {
+      color: var(--zine-emoji-contorno);
       margin: 0 0.04em;
       font-size: 1.55em;
       vertical-align: -0.28em;

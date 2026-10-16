@@ -31,6 +31,7 @@
 }
 
 .emoji-botao-icone {
+  color: var(--zine-emoji-contorno);
   font-size: 1.3rem;
 }
 
@@ -62,6 +63,7 @@
   border: 2px solid transparent;
   border-radius: 6px;
   background: none;
+  color: var(--zine-emoji-contorno);
   font-size: 1.9rem;
   cursor: pointer;
   transition: transform 0.1s;
