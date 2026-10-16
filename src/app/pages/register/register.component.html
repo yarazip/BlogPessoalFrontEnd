@@ -44,14 +44,14 @@
 
               <div class="form-group">
                 <label for="password">Senha</label>
-                <input
+                <div class="campo-senha"><input #campoSenha2
                   type="password"
                   id="password" autocomplete="new-password"
                   formControlName="senha"
                   placeholder="Crie uma senha"
                   maxlength="72"
                   required
-                  >
+                  ><app-mostrar-senha [campo]="campoSenha2" /></div>
                   <div class="password-hint">De 8 a 72 caracteres</div>
                   @if (f['senha'].invalid && f['senha'].touched) {
                     <div class="invalid-feedback">
@@ -62,13 +62,13 @@
 
                 <div class="form-group">
                   <label for="confirm-password">Confirme sua senha</label>
-                  <input
+                  <div class="campo-senha"><input #campoSenha3
                     type="password"
                     id="confirm-password" autocomplete="new-password"
                     formControlName="confirmPassword"
                     placeholder="Digite a senha novamente"
                     required
-                    >
+                    ><app-mostrar-senha [campo]="campoSenha3" /></div>
                     @if (senhasDiferentes) {
                       <div class="invalid-feedback">
                         As senhas não coincidem

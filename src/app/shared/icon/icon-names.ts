@@ -17,6 +17,8 @@ export const ICON_NAMES = [
   'list',
   'logout',
   'moon',
+  'olho',
+  'olho-riscado',
   'plus',
   'sun',
   'tools',
