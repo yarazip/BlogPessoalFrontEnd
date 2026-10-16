@@ -47,9 +47,11 @@ describe('PostagemDetailComponent', () => {
 
   beforeEach(() => {
     rota = { snapshot: { paramMap: convertToParamMap({}) } };
-    service = jasmine.createSpyObj('PostagemService', ['getById', 'delete', 'getPagina']);
+    service = jasmine.createSpyObj('PostagemService', ['getById', 'delete', 'getPagina', 'registrarVisita']);
+    service.registrarVisita.and.returnValue(of({ visitas: 1234 }));
     service.getPagina.and.returnValue(of({ conteudo: [], pagina: 0, tamanho: 50, totalElementos: 0, totalPaginas: 0, ultima: true }));
-    perfis = jasmine.createSpyObj('PerfilService', ['getPerfil']);
+    perfis = jasmine.createSpyObj('PerfilService', ['getPerfil', 'getArquivo']);
+    perfis.getArquivo.and.returnValue(of([{ ano: 2026, mes: 10, total: 4 }, { ano: 2026, mes: 8, total: 1 }]));
     perfis.getPerfil.and.returnValue(of({ id: 3, nome: 'Bia Souza', bio: 'Escrevo à mão.', totalPostagens: 12 }));
     auth = jasmine.createSpyObj('AuthService', ['getUsuario', 'isLoggedIn']);
     auth.isLoggedIn.and.returnValue(false);
@@ -229,6 +231,51 @@ describe('PostagemDetailComponent', () => {
         expect(el.querySelector('.detalhe-navegacao')).toBeNull();
         expect(el.querySelector('app-barra-lateral-leitura .autora-numeros')).toBeNull();
       });
+    });
+  });
+
+  describe('etapa 2: visitas, arquivo e humor do dia', () => {
+    it('conta a visita ao abrir e mostra o contador de visor com o total', () => {
+      abrir('7');
+
+      expect(service.registrarVisita).toHaveBeenCalledOnceWith(7);
+      const digitos = Array.from(el.querySelectorAll('app-barra-lateral-leitura .digito')).map(d => d.textContent);
+      expect(digitos).toEqual(['0', '0', '1', '2', '3', '4']);
+    });
+
+    it('se a contagem falhar, usa o número que veio com a postagem; sem ele, a caixa nem aparece', () => {
+      service.registrarVisita.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+      abrir('7', of(blog({ visitas: 42 })));
+      expect(Array.from(el.querySelectorAll('.digito')).map(d => d.textContent).join('')).toBe('000042');
+
+      abrir('7');
+      expect(el.querySelector('app-barra-lateral-leitura .contador')).toBeNull();
+    });
+
+    it('o arquivo lista os meses com a quantidade e leva ao perfil filtrado', () => {
+      abrir('7');
+
+      const itens = Array.from(el.querySelectorAll('app-barra-lateral-leitura .arquivo li'));
+      expect(itens.map(i => `${i.querySelector('a')!.textContent} (${i.querySelector('.arquivo-total')!.textContent})`)).toEqual([
+        'outubro 2026 (4)',
+        'agosto 2026 (1)'
+      ]);
+      expect(itens[0].querySelector('a')!.getAttribute('href')).toBe('/perfil/3?mes=2026-10');
+    });
+
+    it('se o arquivo falhar, a caixa não aparece e o resto segue', () => {
+      perfis.getArquivo.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));
+      abrir('7');
+
+      expect(el.querySelector('app-barra-lateral-leitura .arquivo')).toBeNull();
+      expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('Meu blog');
+    });
+
+    it('o humor do dia da autora aparece na barra lateral', () => {
+      perfis.getPerfil.and.returnValue(of({ id: 3, nome: 'Bia Souza', totalPostagens: 12, humor: 'sonolenta, mas feliz' }));
+      abrir('7');
+
+      expect(el.querySelector('app-barra-lateral-leitura .humor')!.textContent).toContain('sonolenta, mas feliz');
     });
   });
 

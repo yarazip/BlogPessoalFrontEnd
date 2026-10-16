@@ -38,6 +38,8 @@ export class FeedPostagensComponent implements OnInit {
   readonly pesoDoTituloDe = pesoDoTituloDe;
 
   readonly autor = input<number>();
+  /** Só as postagens deste mês ("aaaa-mm"), usado pelo arquivo da autora. Não reage a mudanças: quem usa recria o feed. */
+  readonly mes = input<string>();
   readonly mensagemVazia = input('Ainda não há postagens.');
   /** Avisa a página que uma postagem foi excluída daqui (ex.: o perfil atualiza a contagem). */
   readonly removida = output<Postagem>();
@@ -149,7 +151,8 @@ export class FeedPostagensComponent implements OnInit {
     this.carregandoMais = !primeira;
 
     const autor = this.autor();
-    const opcoes = { page: this.proximaPagina, size: POSTAGENS_POR_PAGINA, ...(autor !== undefined && { autor }) };
+    const mes = this.mes();
+    const opcoes = { page: this.proximaPagina, size: POSTAGENS_POR_PAGINA, ...(autor !== undefined && { autor }), ...(mes && { mes }) };
 
     this.postagemService.getPagina(opcoes).subscribe({
       next: pagina => {

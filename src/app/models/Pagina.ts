@@ -13,4 +13,6 @@ export interface OpcoesDePagina {
   size?: number;
   autor?: number;
   tema?: number;
+  /** Só as postagens deste mês, no formato "aaaa-mm" (o arquivo da autora). */
+  mes?: string;
 }

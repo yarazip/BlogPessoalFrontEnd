@@ -38,6 +38,8 @@ export interface Postagem {
   minhaReacao?: TipoReacao | null;
   /** Quantos comentários a postagem tem (a lista vem de GET /postagens/{id}/comentarios); ausente em respostas antigas. */
   comentarios?: number;
+  /** Quantas visitas a postagem teve (uma por pessoa por dia); ausente em respostas antigas. */
+  visitas?: number;
 }
 
 /** Dados enviados para criar ou atualizar uma postagem. */

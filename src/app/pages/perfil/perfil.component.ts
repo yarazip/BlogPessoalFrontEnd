@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { HumorDoDiaComponent } from '../../components/humor-do-dia/humor-do-dia.component';
 import { CompositorComentarioComponent } from '../../components/compositor-comentario/compositor-comentario.component';
 import { FeedPostagensComponent } from '../../components/feed-postagens/feed-postagens.component';
 import { LayoutBlogComponent } from '../../components/layout-blog/layout-blog.component';
@@ -10,6 +11,7 @@ import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
 import { TAMANHO_MAXIMO_FOTO, TIPOS_FOTO_PERMITIDOS } from '../../shared/foto';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { mesValido, nomeDoMesDaChave } from '../../shared/arquivo';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 
 /**
@@ -20,7 +22,16 @@ import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [LayoutBlogComponent, NoMomentoComponent, FeedPostagensComponent, CompositorComentarioComponent, IconComponent, ReactiveFormsModule, RouterLink],
+  imports: [
+    LayoutBlogComponent,
+    NoMomentoComponent,
+    FeedPostagensComponent,
+    CompositorComentarioComponent,
+    HumorDoDiaComponent,
+    IconComponent,
+    ReactiveFormsModule,
+    RouterLink
+  ],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss']
 })
@@ -39,6 +50,8 @@ export class PerfilComponent implements OnInit {
   readonly bioForm = new FormGroup({ bio: this.bio });
 
   perfil: Perfil | null = null;
+  /** O mês aberto pelo arquivo ("aaaa-mm", ?mes= na barra de endereço), ou nulo para todas as postagens. */
+  mes: string | null = null;
   carregando = true;
   mensagemErro: string | null = null;
 
@@ -75,8 +88,20 @@ export class PerfilComponent implements OnInit {
       : 'Esta pessoa ainda não publicou nada.';
   }
 
+  /** "outubro 2026", para avisar que a lista está filtrada. */
+  get nomeDoMes(): string {
+    return nomeDoMesDaChave(this.mes);
+  }
+
+  /** Depois de salvar o humor do dia: o perfil da tela recebe o novo valor. */
+  aoAtualizarHumor(humor: string | null): void {
+    this.perfil = { ...this.perfil!, humor };
+  }
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => this.carregar(Number(params.get('id'))));
+    // o mês vem da barra de endereço (qualquer pessoa pode digitar qualquer coisa): só vale o formato aaaa-mm
+    this.route.queryParamMap.subscribe(params => (this.mes = mesValido(params.get('mes'))));
   }
 
   carregar(id: number): void {

@@ -1,0 +1,29 @@
+@if (editando) {
+  <form class="humor-form" [formGroup]="formulario" (ngSubmit)="salvar()">
+    <label for="humor-do-dia" class="humor-rotulo">Humor do dia</label>
+    <input
+      id="humor-do-dia"
+      type="text"
+      formControlName="humor"
+      [maxlength]="limite"
+      placeholder="Como você está hoje? Ex.: sonolenta, mas feliz :sol:"
+    />
+    <small class="humor-contador">{{ campo.value.length }}/{{ limite }}</small>
+    @if (erro) {
+      <p class="humor-erro" role="alert">{{ erro }}</p>
+    }
+    <div class="humor-acoes">
+      <button type="submit" class="humor-botao" [disabled]="salvando">{{ salvando ? 'Salvando...' : 'Salvar humor' }}</button>
+      <button type="button" class="humor-texto" (click)="cancelar()">Cancelar</button>
+    </div>
+  </form>
+} @else {
+  @if (humor()) {
+    <p class="humor-atual"><span class="humor-rotulo">Humor do dia:</span> <app-texto-com-emojis [texto]="humor()" /></p>
+  } @else if (ehDona()) {
+    <p class="humor-atual humor-vazio">Sem humor do dia ainda.</p>
+  }
+  @if (ehDona()) {
+    <button type="button" class="humor-botao" (click)="editar()">{{ humor() ? 'Editar humor' : 'Definir humor' }}</button>
+  }
+}
