@@ -102,6 +102,21 @@ describe('ComentariosDaPostagemComponent', () => {
       expect(avisos).toEqual([2]);
     });
 
+    it('o botão "Comentar" realmente envia (submit do formulário), sem recarregar a página', () => {
+      abrir(of(pagina([])));
+      servico.comentar.and.returnValue(of(comentario(1, 'Pelo botão', true)));
+      component.texto.setValue('Pelo botão');
+      fixture.detectChanges();
+
+      const evento = new Event('submit', { cancelable: true });
+      el.querySelector('form')!.dispatchEvent(evento);
+      fixture.detectChanges();
+
+      expect(evento.defaultPrevented).toBeTrue();
+      expect(servico.comentar).toHaveBeenCalledWith(7, 'Pelo botão');
+      expect(el.querySelectorAll('.comentario').length).toBe(1);
+    });
+
     it('não envia vazio nem passando do limite', () => {
       abrir(of(pagina([])));
 
