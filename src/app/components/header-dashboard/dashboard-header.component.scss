@@ -233,7 +233,7 @@ header {
   }
 }
 
-.dark-mode .theme-toggle {
+:host-context(.dark-mode) .theme-toggle {
   --moon-opacity: 0;
   --moon-transform: scale(0.5);
   --sun-opacity: 1;
