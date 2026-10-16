@@ -2,11 +2,11 @@
   <path d="M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z" fill="#ffe35c" transform="translate(1.6 1.6)"/>
   <path d="M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
-  <path d="M16 27C19 21 25 21 28 27" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M16 27C19 21 25 21 28 27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
-  <path d="M36 27C39 21 45 21 48 27" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M36 27C39 21 45 21 48 27" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
-  <path d="M18 36L46 36C45 49 38 54 32 54C26 54 19 49 18 36Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M18 36L46 36C45 49 38 54 32 54C26 54 19 49 18 36Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
+  <path d="M16 27C19 21 25 21 28 27" fill="none" stroke="#1f1a2e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M16 27C19 21 25 21 28 27" fill="none" stroke="#1f1a2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
+  <path d="M36 27C39 21 45 21 48 27" fill="none" stroke="#1f1a2e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M36 27C39 21 45 21 48 27" fill="none" stroke="#1f1a2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
+  <path d="M18 36L46 36C45 49 38 54 32 54C26 54 19 49 18 36Z" fill="none" stroke="#1f1a2e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M18 36L46 36C45 49 38 54 32 54C26 54 19 49 18 36Z" fill="none" stroke="#1f1a2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
   <path d="M22 45C27 42 37 42 42 45C40 50 36 52 32 52C28 52 24 50 22 45Z" fill="#ff6b6b"/>
 </svg>

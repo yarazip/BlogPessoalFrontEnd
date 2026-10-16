@@ -2,7 +2,7 @@
   <path d="M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z" fill="#ffe35c" transform="translate(1.6 1.6)"/>
   <path d="M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
-  <path d="M20 38C26 48 38 48 44 38" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M20 38C26 48 38 48 44 38" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
-  <circle cx="23" cy="26" r="3.4" fill="currentColor"/><circle cx="41" cy="26" r="3.4" fill="currentColor"/>
+  <path d="M20 38C26 48 38 48 44 38" fill="none" stroke="#1f1a2e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 38C26 48 38 48 44 38" fill="none" stroke="#1f1a2e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" transform="translate(-1.1 0.9)"/>
+  <circle cx="23" cy="26" r="3.4" fill="#1f1a2e"/><circle cx="41" cy="26" r="3.4" fill="#1f1a2e"/>
 </svg>

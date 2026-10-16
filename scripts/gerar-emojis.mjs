@@ -2,6 +2,10 @@
 // rodar `npm run icons` para entrarem no sprite e acrescentar os nomes em src/app/shared/icon/icon-names.ts
 // (o teste do sprite avisa se esquecer).
 //
+// Duas cores de traço: o CONTORNO externo segue a cor do texto (`currentColor`: no CSS, `--zine-emoji-contorno`, que muda
+// com o tema) e os DETALHES internos (olhos, boca, linhas sobre o preenchimento) usam sempre a tinta escura, para não
+// sumirem em cima do marca-texto quando o contorno é claro ou amarelo.
+//
 // O estilo é o do resto do site: contorno de caneta em traço duplo (um grosso e um fino, deslocado, como se a linha
 // tivesse sido passada duas vezes) e, quando há cor, um "marca-texto" levemente fora do lugar, atrás do contorno.
 // Para mudar um desenho, edite aqui e rode:  node scripts/gerar-emojis.mjs && npm run icons
@@ -12,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 const pasta = join(dirname(fileURLToPath(import.meta.url)), 'icones-proprios');
 mkdirSync(pasta, { recursive: true });
 
+const TINTA = '#1f1a2e';
 const AMARELO = '#ffe35c';
 const LARANJA = '#ff7a2f';
 const ROSA = '#ff9ec4';
@@ -27,22 +32,20 @@ const AZUL = '#bfe0ff';
 const EMOJIS = {
   sorriso: {
     cor: [{ d: 'M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z', fill: AMARELO }],
-    contorno: ['M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z', 'M20 38C26 48 38 48 44 38'],
-    extra: '<circle cx="23" cy="26" r="3.4" fill="currentColor"/><circle cx="41" cy="26" r="3.4" fill="currentColor"/>'
+    contorno: ['M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z'],
+    detalhe: ['M20 38C26 48 38 48 44 38'],
+    extra: `<circle cx="23" cy="26" r="3.4" fill="${TINTA}"/><circle cx="41" cy="26" r="3.4" fill="${TINTA}"/>`
   },
   triste: {
     cor: [{ d: 'M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z', fill: AMARELO }],
-    contorno: ['M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z', 'M21 46C27 37 37 37 43 46'],
-    extra: '<circle cx="23" cy="26" r="3.4" fill="currentColor"/><circle cx="41" cy="26" r="3.4" fill="currentColor"/><path d="M45 33C47 36 47 39 45 40C43 39 43 36 45 33Z" fill="#7ec8ff" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>'
+    contorno: ['M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z'],
+    detalhe: ['M21 46C27 37 37 37 43 46'],
+    extra: `<circle cx="23" cy="26" r="3.4" fill="${TINTA}"/><circle cx="41" cy="26" r="3.4" fill="${TINTA}"/><path d="M45 33C47 36 47 39 45 40C43 39 43 36 45 33Z" fill="#7ec8ff" stroke="${TINTA}" stroke-width="1.6" stroke-linejoin="round"/>`
   },
   risada: {
     cor: [{ d: 'M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z', fill: AMARELO }],
-    contorno: [
-      'M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z',
-      'M16 27C19 21 25 21 28 27',
-      'M36 27C39 21 45 21 48 27',
-      'M18 36L46 36C45 49 38 54 32 54C26 54 19 49 18 36Z'
-    ],
+    contorno: ['M32 7C46 6 58 17 57 32C56 47 45 58 31 57C17 56 6 45 7 31C8 17 18 8 32 7Z'],
+    detalhe: ['M16 27C19 21 25 21 28 27', 'M36 27C39 21 45 21 48 27', 'M18 36L46 36C45 49 38 54 32 54C26 54 19 49 18 36Z'],
     extra: '<path d="M22 45C27 42 37 42 42 45C40 50 36 52 32 52C28 52 24 50 22 45Z" fill="#ff6b6b"/>'
   },
   amor: {
@@ -83,7 +86,7 @@ const EMOJIS = {
       'M23 34a10 10 0 1 0 0.1 0Z',
       'M18 17a10 10 0 1 0 0.1 0Z'
     ],
-    extra: `<circle cx="32" cy="32" r="8" fill="${AMARELO}" stroke="currentColor" stroke-width="3.2"/><path d="M32 40L31 58" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>`
+    extra: `<circle cx="32" cy="32" r="8" fill="${AMARELO}" stroke="${TINTA}" stroke-width="3.2"/><path d="M32 40L31 58" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>`
   },
   lua: {
     cor: [{ d: 'M42 6C28 8 18 19 18 33C18 47 29 58 43 58C49 58 54 56 58 52C52 54 46 52 41 47C34 40 33 29 38 20C40 14 41 10 42 6Z', fill: AMARELO }],
@@ -126,14 +129,15 @@ const EMOJIS = {
       { d: 'M58 14C48 11 38 12 32 18L32 54C38 48 48 47 58 50Z', fill: AMARELO }
     ],
     contorno: ['M6 14C16 11 26 12 32 18L32 54C26 48 16 47 6 50Z', 'M58 14C48 11 38 12 32 18L32 54C38 48 48 47 58 50Z'],
-    extra: '<path d="M12 22C17 21 22 21 26 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.7"/><path d="M12 30C17 29 22 29 26 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.7"/><path d="M38 24C42 21 47 21 52 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.7"/><path d="M38 32C42 29 47 29 52 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.7"/>'
+    extra: `<path d="M12 22C17 21 22 21 26 24" fill="none" stroke="${TINTA}" stroke-width="2" stroke-linecap="round" opacity="0.7"/><path d="M12 30C17 29 22 29 26 32" fill="none" stroke="${TINTA}" stroke-width="2" stroke-linecap="round" opacity="0.7"/><path d="M38 24C42 21 47 21 52 22" fill="none" stroke="${TINTA}" stroke-width="2" stroke-linecap="round" opacity="0.7"/><path d="M38 32C42 29 47 29 52 30" fill="none" stroke="${TINTA}" stroke-width="2" stroke-linecap="round" opacity="0.7"/>`
   },
   lapis: {
     cor: [
       { d: 'M44 8L56 20L24 52L10 54L12 40Z', fill: AMARELO },
       { d: 'M12 40L24 52L10 54Z', fill: ROSA }
     ],
-    contorno: ['M44 8L56 20L24 52L10 54L12 40Z', 'M38 14L50 26', 'M12 40L24 52'],
+    contorno: ['M44 8L56 20L24 52L10 54L12 40Z'],
+    detalhe: ['M38 14L50 26', 'M12 40L24 52'],
     extra: ''
   },
   nota: {
@@ -149,6 +153,8 @@ const EMOJIS = {
 };
 
 const tracoGrosso = 'fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"';
+const detalheGrosso = `fill="none" stroke="${TINTA}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"`;
+const detalheFino = `fill="none" stroke="${TINTA}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"`;
 const tracoFino = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"';
 
 for (const [nome, e] of Object.entries(EMOJIS)) {
@@ -160,6 +166,10 @@ for (const [nome, e] of Object.entries(EMOJIS)) {
   for (const d of e.contorno) {
     linhas.push(`  <path d="${d}" ${tracoGrosso}/>`);
     linhas.push(`  <path d="${d}" ${tracoFino} transform="translate(-1.1 0.9)"/>`);
+  }
+  for (const d of e.detalhe ?? []) {
+    linhas.push(`  <path d="${d}" ${detalheGrosso}/>`);
+    linhas.push(`  <path d="${d}" ${detalheFino} transform="translate(-1.1 0.9)"/>`);
   }
   if (e.extra) {
     linhas.push(`  ${e.extra}`);
