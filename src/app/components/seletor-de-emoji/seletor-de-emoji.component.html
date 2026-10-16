@@ -1,0 +1,29 @@
+<button
+  type="button"
+  class="emoji-botao"
+  aria-haspopup="true"
+  aria-controls="grade-de-emojis"
+  [attr.aria-expanded]="aberto"
+  (mousedown)="$event.preventDefault()"
+  (click)="alternar()"
+>
+  <app-icon name="emoji-sorriso" class="emoji-botao-icone" />
+  <span>Emoji</span>
+</button>
+
+@if (aberto) {
+  <div class="emoji-grade" id="grade-de-emojis" role="group" aria-label="Emojis da Rasura">
+    @for (e of emojis; track e.nome) {
+      <button
+        type="button"
+        class="emoji-opcao"
+        [attr.aria-label]="e.rotulo"
+        [title]="e.rotulo + ' (:' + e.nome + ':)'"
+        (mousedown)="$event.preventDefault()"
+        (click)="escolher.emit(e)"
+      >
+        <app-icon [name]="icone(e)" />
+      </button>
+    }
+  </div>
+}

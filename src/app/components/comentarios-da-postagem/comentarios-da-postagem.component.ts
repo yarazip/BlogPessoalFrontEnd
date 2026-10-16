@@ -7,6 +7,7 @@ import { ComentarioPostagemService } from '../../services/comentario-postagem.se
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { TextoComEmojisComponent } from '../texto-com-emojis/texto-com-emojis.component';
 import { ConfirmarExclusaoComponent } from '../confirmar-exclusao/confirmar-exclusao.component';
 
 /**
@@ -18,7 +19,7 @@ import { ConfirmarExclusaoComponent } from '../confirmar-exclusao/confirmar-excl
 @Component({
   selector: 'app-comentarios-da-postagem',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DateBrPipe, IconComponent, ConfirmarExclusaoComponent],
+  imports: [ReactiveFormsModule, RouterLink, DateBrPipe, IconComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
   templateUrl: './comentarios-da-postagem.component.html',
   styleUrls: ['./comentarios-da-postagem.component.scss']
 })

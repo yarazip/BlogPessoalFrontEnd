@@ -91,7 +91,7 @@
                 </span>
               </p>
               @if (ehRabisco(postagem)) {
-                <p class="texto">{{ postagem.texto }}</p>
+                <p class="texto"><app-texto-com-emojis [texto]="postagem.texto" /></p>
               } @else {
                 <p class="texto">
                   <a [routerLink]="['/postagens', postagem.id]">{{ postagem.titulo }}</a>

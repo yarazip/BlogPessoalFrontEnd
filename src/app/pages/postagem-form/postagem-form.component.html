@@ -89,7 +89,11 @@
 
           <div class="form-group">
             <label for="texto">{{ isComentario ? 'Rabisco' : 'Conteúdo' }} *</label>
+            <div class="barra-do-editor">
+              <app-seletor-de-emoji (escolher)="inserirEmoji($event)" />
+            </div>
             <textarea
+              #areaTexto
               id="texto"
               appAutoAjuste
               [style.font-family]="pilhaDe(fonte.value)"
