@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, input } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Reacoes, TipoReacao } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
 import { PostagemService } from '../../services/postagem.service';
@@ -26,7 +26,7 @@ export function aplicarReacao(atual: Reacoes, novo: TipoReacao | null): Reacoes 
 @Component({
   selector: 'app-reacoes',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, RouterLink],
   templateUrl: './reacoes.component.html',
   styleUrls: ['./reacoes.component.scss']
 })
@@ -39,6 +39,8 @@ export class ReacoesComponent implements OnInit {
   readonly curtidas = input(0);
   readonly descurtidas = input(0);
   readonly minhaReacao = input<TipoReacao | null | undefined>(null);
+  /** Quantos comentários a postagem tem. Quando informado, aparece o link "balão" que leva aos comentários. */
+  readonly comentarios = input<number | null>(null);
 
   estado: Reacoes = { curtidas: 0, descurtidas: 0, minhaReacao: null };
   enviando = false;

@@ -2,8 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { Observable, Subject, of, throwError } from 'rxjs';
+import { Pagina } from '../../models/Pagina';
+import { ComentarioPostagem } from '../../models/ComentarioPostagem';
 import { Postagem } from '../../models/Postagem';
 import { AuthService } from '../../services/auth.service';
+import { ComentarioPostagemService } from '../../services/comentario-postagem.service';
 import { FonteService } from '../../services/fonte.service';
 import { PostagemService } from '../../services/postagem.service';
 import { PostagemDetailComponent } from './postagem-detail.component';
@@ -14,6 +17,7 @@ describe('PostagemDetailComponent', () => {
   let service: jasmine.SpyObj<PostagemService>;
   let auth: jasmine.SpyObj<AuthService>;
   let fontes: jasmine.SpyObj<FonteService>;
+  let comentarios: jasmine.SpyObj<ComentarioPostagemService>;
   let router: Router;
   // a rota é um objeto simples que cada teste ajusta antes de criar o componente
   let rota: { snapshot: { paramMap: ParamMap } };
@@ -40,7 +44,11 @@ describe('PostagemDetailComponent', () => {
   beforeEach(() => {
     rota = { snapshot: { paramMap: convertToParamMap({}) } };
     service = jasmine.createSpyObj('PostagemService', ['getById', 'delete']);
-    auth = jasmine.createSpyObj('AuthService', ['getUsuario']);
+    auth = jasmine.createSpyObj('AuthService', ['getUsuario', 'isLoggedIn']);
+    auth.isLoggedIn.and.returnValue(false);
+    comentarios = jasmine.createSpyObj('ComentarioPostagemService', ['listar', 'comentar', 'excluir']);
+    const vazia: Pagina<ComentarioPostagem> = { conteudo: [], pagina: 0, tamanho: 20, totalElementos: 0, totalPaginas: 0, ultima: true };
+    comentarios.listar.and.returnValue(of(vazia));
     fontes = jasmine.createSpyObj('FonteService', ['carregar', 'carregarTodas']);
     auth.getUsuario.and.returnValue(null);
     TestBed.configureTestingModule({
@@ -49,12 +57,20 @@ describe('PostagemDetailComponent', () => {
         provideRouter([]),
         { provide: PostagemService, useValue: service },
         { provide: AuthService, useValue: auth },
+        { provide: ComentarioPostagemService, useValue: comentarios },
         { provide: FonteService, useValue: fontes },
         { provide: ActivatedRoute, useValue: rota }
       ]
     });
     router = TestBed.inject(Router);
     spyOn(router, 'navigate').and.resolveTo(true);
+  });
+
+  it('mostra os comentários da postagem embaixo do texto', () => {
+    abrir('7');
+
+    expect(el.querySelector('app-comentarios-da-postagem #comentarios')).not.toBeNull();
+    expect(comentarios.listar).toHaveBeenCalledWith(7, 0);
   });
 
   it('mostra o blog completo: título, autor com link para o perfil, data, tema e texto', () => {
@@ -156,9 +172,9 @@ describe('PostagemDetailComponent', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/postagens', 7, 'editar']);
     });
 
-    const modal = () => el.querySelector<HTMLDialogElement>('app-confirmar-exclusao dialog')!;
-    const confirmar = () => el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .zine-botao.perigo')!;
-    const cancelar = () => el.querySelector<HTMLButtonElement>('app-confirmar-exclusao .modal-rodape .zine-botao:not(.perigo)')!;
+    const modal = () => el.querySelector<HTMLDialogElement>('.detalhe > app-confirmar-exclusao dialog')!;
+    const confirmar = () => el.querySelector<HTMLButtonElement>('.detalhe > app-confirmar-exclusao .zine-botao.perigo')!;
+    const cancelar = () => el.querySelector<HTMLButtonElement>('.detalhe > app-confirmar-exclusao .modal-rodape .zine-botao:not(.perigo)')!;
     const clicarExcluir = () => {
       el.querySelectorAll<HTMLButtonElement>('.detalhe-acoes button')[1].click();
       fixture.detectChanges();

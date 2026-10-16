@@ -49,6 +49,10 @@
         </button>
       </div>
     }
+
+    @if (postagem.id !== undefined) {
+      <app-comentarios-da-postagem [postagemId]="postagem.id" />
+    }
   }
 
   <app-confirmar-exclusao
