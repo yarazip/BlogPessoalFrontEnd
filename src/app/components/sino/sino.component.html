@@ -41,10 +41,10 @@
                 } @else {
                   comentou na sua postagem
                 }
-                <span class="sino-postagem">“{{ n.postagemResumo }}”</span>
+                <span class="sino-postagem">“<app-texto-com-emojis [texto]="n.postagemResumo" />”</span>
               </span>
               @if (n.tipo === 'COMENTARIO' && n.comentarioResumo) {
-                <span class="sino-comentario">{{ n.comentarioResumo }}</span>
+                <span class="sino-comentario"><app-texto-com-emojis [texto]="n.comentarioResumo" /></span>
               }
               <span class="sino-data">{{ n.data | dateBr: 'dd/MM · HH:mm' }}</span>
             </a>

@@ -62,7 +62,7 @@
             <a class="comentario-autor" [routerLink]="['/perfil', comentario.usuario?.id]">{{ comentario.usuario?.nome }}</a>
             <span class="comentario-data">· {{ comentario.data | dateBr: 'dd/MM/yyyy' }}</span>
           </p>
-          <p class="comentario-texto texto-postagem">{{ comentario.texto }}</p>
+          <p class="comentario-texto texto-postagem"><app-texto-com-emojis [texto]="comentario.texto" /></p>
         </div>
         @if (comentario.podeExcluir) {
           <button

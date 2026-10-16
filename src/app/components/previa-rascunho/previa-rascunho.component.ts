@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { FontePostagem, pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
+import { TextoComEmojisComponent } from '../texto-com-emojis/texto-com-emojis.component';
 import { previaDoTexto } from '../../shared/previa';
 
 /**
@@ -9,6 +10,7 @@ import { previaDoTexto } from '../../shared/previa';
 @Component({
   selector: 'app-previa-rascunho',
   standalone: true,
+  imports: [TextoComEmojisComponent],
   templateUrl: './previa-rascunho.component.html',
   styleUrls: ['./previa-rascunho.component.scss']
 })

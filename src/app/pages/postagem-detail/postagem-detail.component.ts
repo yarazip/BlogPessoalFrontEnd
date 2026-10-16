@@ -1,6 +1,7 @@
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ConfirmarExclusaoComponent } from '../../components/confirmar-exclusao/confirmar-exclusao.component';
 import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-postagem/comentarios-da-postagem.component';
+import { TextoComEmojisComponent } from '../../components/texto-com-emojis/texto-com-emojis.component';
 import { ReacoesComponent } from '../../components/reacoes/reacoes.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -16,7 +17,7 @@ import { Postagem } from '../../models/Postagem';
 @Component({
   selector: 'app-postagem-detail',
   standalone: true,
-  imports: [DateBrPipe, IconComponent, RouterLink, ReacoesComponent, ComentariosDaPostagemComponent, ConfirmarExclusaoComponent],
+  imports: [DateBrPipe, IconComponent, RouterLink, ReacoesComponent, ComentariosDaPostagemComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
 })

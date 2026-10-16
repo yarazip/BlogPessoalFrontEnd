@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Notificacao } from '../../models/Notificacao';
+import { TextoComEmojisComponent } from '../texto-com-emojis/texto-com-emojis.component';
 import { NotificacaoService } from '../../services/notificacao.service';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
@@ -19,7 +20,7 @@ export const INTERVALO_DO_SINO_EM_MS = 60_000;
 @Component({
   selector: 'app-sino',
   standalone: true,
-  imports: [RouterLink, IconComponent, DateBrPipe],
+  imports: [RouterLink, IconComponent, DateBrPipe, TextoComEmojisComponent],
   templateUrl: './sino.component.html',
   styleUrls: ['./sino.component.scss']
 })

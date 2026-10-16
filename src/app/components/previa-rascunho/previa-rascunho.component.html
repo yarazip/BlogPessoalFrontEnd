@@ -10,7 +10,7 @@
       @if (titulo().trim()) {
         <h4 class="previa-titulo" [style.font-family]="pilha()" [style.font-weight]="pesoDoTitulo()">{{ titulo() }}</h4>
       }
-      <p class="previa-texto" [class.resumido]="noFeed().resumido" [style.font-family]="pilha()">{{ noFeed().texto }}</p>
+      <p class="previa-texto" [class.resumido]="noFeed().resumido" [style.font-family]="pilha()"><app-texto-com-emojis [texto]="noFeed().texto" /></p>
       @if (noFeed().resumido) {
         <span class="previa-ler-mais">Ler mais</span>
       }

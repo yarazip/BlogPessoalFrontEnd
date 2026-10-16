@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { Postagem } from '../../models/Postagem';
 import { PostagemService } from '../../services/postagem.service';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
+import { TextoComEmojisComponent } from '../../components/texto-com-emojis/texto-com-emojis.component';
 import { LogoComponent } from '../../shared/logo/logo.component';
 
 /** Quantas postagens reais aparecem na vitrine da página inicial. */
@@ -16,7 +17,7 @@ const POSTAGENS_NA_VITRINE = 3;
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, LogoComponent, DateBrPipe],
+  imports: [RouterLink, LogoComponent, DateBrPipe, TextoComEmojisComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

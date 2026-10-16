@@ -805,4 +805,83 @@ describe('PostagemFormComponent', () => {
 
     expect(postagens.create).not.toHaveBeenCalled();
   });
+
+  describe('emojis da Rasura', () => {
+    const campo = () => el().querySelector<HTMLTextAreaElement>('#texto')!;
+    const escolher = (rotulo: string) => {
+      el().querySelector<HTMLButtonElement>('.emoji-botao')!.click();
+      fixture.detectChanges();
+      el().querySelector<HTMLButtonElement>(`.emoji-opcao[aria-label="${rotulo}"]`)!.click();
+      fixture.detectChanges();
+    };
+
+    it('o editor tem o botão de emoji, tanto no rascunho quanto no rabisco', () => {
+      criar();
+      expect(el().querySelector('app-seletor-de-emoji .emoji-botao')).not.toBeNull();
+
+      TestBed.resetTestingModule();
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));
+      criar('8');
+      expect(el().querySelector('app-seletor-de-emoji .emoji-botao')).not.toBeNull();
+    });
+
+    it('insere o código do emoji onde está o cursor e deixa o cursor logo depois', () => {
+      const c = criar();
+      escrever(c, { texto: 'Olá mundo' });
+      fixture.detectChanges();
+      campo().setSelectionRange(4, 4);
+
+      escolher('Sol');
+
+      expect(c.texto.value).toBe('Olá :sol:mundo');
+      expect(campo().value).toBe('Olá :sol:mundo');
+      expect(campo().selectionStart).toBe(9);
+      expect(c.texto.dirty).toBeTrue();
+    });
+
+    it('troca o trecho selecionado pelo emoji', () => {
+      const c = criar();
+      escrever(c, { texto: 'Olá mundo' });
+      fixture.detectChanges();
+      campo().setSelectionRange(4, 9);
+
+      escolher('Lua');
+
+      expect(c.texto.value).toBe('Olá :lua:');
+    });
+
+    it('sem cursor definido, vai para o fim do texto', () => {
+      const c = criar();
+      escrever(c, { texto: 'Fim' });
+      fixture.detectChanges();
+      campo().setSelectionRange(3, 3);
+
+      escolher('Estrela');
+
+      expect(c.texto.value).toBe('Fim:estrela:');
+    });
+
+    it('não insere se o código passar do limite de caracteres', () => {
+      const c = criar();
+      const quase = 'x'.repeat(c.limiteTexto - 2);
+      escrever(c, { texto: quase });
+      fixture.detectChanges();
+      campo().setSelectionRange(quase.length, quase.length);
+
+      escolher('Sol');
+
+      expect(c.texto.value).toBe(quase);
+    });
+
+    it('o código no texto aparece como desenho na prévia do mural', () => {
+      const c = criar();
+      escrever(c, { texto: 'Bom dia :sol: a todos' });
+      fixture.detectChanges();
+
+      el().querySelector<HTMLButtonElement>('#aba-previa')!.click();
+      fixture.detectChanges();
+
+      expect(el().querySelector('.previa-texto .emoji')!.getAttribute('aria-label')).toBe('Sol');
+    });
+  });
 });

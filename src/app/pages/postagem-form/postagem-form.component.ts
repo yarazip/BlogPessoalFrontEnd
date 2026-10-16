@@ -1,10 +1,11 @@
-import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, OnInit, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { PreviaRascunhoComponent } from '../../components/previa-rascunho/previa-rascunho.component';
+import { SeletorDeEmojiComponent } from '../../components/seletor-de-emoji/seletor-de-emoji.component';
 import { SeletorDeFonteComponent } from '../../components/seletor-de-fonte/seletor-de-fonte.component';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
@@ -12,6 +13,7 @@ import { PostagemService } from '../../services/postagem.service';
 import { RascunhoLocalService } from '../../services/rascunho-local.service';
 import { TemaService } from '../../services/tema.service';
 import { AutoAjusteDirective } from '../../shared/auto-ajuste.directive';
+import { Emoji, codigoDe, inserirNoTexto } from '../../shared/emojis';
 import { contarPalavras, minutosDeLeitura } from '../../shared/leitura';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
@@ -33,7 +35,8 @@ export type AbaDoFormulario = 'escrever' | 'previa';
     DateBrPipe,
     ModalComponent,
     PreviaRascunhoComponent,
-    SeletorDeFonteComponent
+    SeletorDeFonteComponent,
+    SeletorDeEmojiComponent
   ],
   templateUrl: './postagem-form.component.html',
   styleUrls: ['./postagem-form.component.scss']
@@ -47,6 +50,9 @@ export class PostagemFormComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly rascunhoLocal = inject(RascunhoLocalService);
   private readonly destroyRef = inject(DestroyRef);
+
+  /** O campo do texto, para inserir o emoji onde está o cursor. */
+  private readonly areaTexto = viewChild<ElementRef<HTMLTextAreaElement>>('areaTexto');
 
   private readonly fonteService = inject(FonteService);
 
@@ -165,6 +171,29 @@ export class PostagemFormComponent implements OnInit {
     evento.preventDefault();
     this.aba = this.aba === 'escrever' ? 'previa' : 'escrever';
     document.getElementById(this.aba === 'escrever' ? 'aba-escrever' : 'aba-previa')?.focus();
+  }
+
+  /**
+   * Coloca o código do emoji (`:sol:`) onde está o cursor do texto, trocando a seleção se houver. Se o código não couber
+   * no limite de caracteres, nada muda. O cursor fica logo depois do emoji, para seguir escrevendo.
+   */
+  inserirEmoji(emoji: Emoji): void {
+    const campo = this.areaTexto()?.nativeElement;
+    const atual = this.texto.value ?? '';
+    const inicio = campo?.selectionStart ?? atual.length;
+    const fim = campo?.selectionEnd ?? atual.length;
+
+    const resultado = inserirNoTexto(atual, inicio, fim, codigoDe(emoji), this.limiteTexto);
+    if (!resultado) {
+      return;
+    }
+
+    this.texto.setValue(resultado.texto);
+    this.texto.markAsDirty();
+    if (campo) {
+      campo.focus();
+      campo.setSelectionRange(resultado.cursor, resultado.cursor);
+    }
   }
 
   onSubmit(): void {

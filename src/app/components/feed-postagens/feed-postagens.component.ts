@@ -4,6 +4,7 @@ import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { SentinelaDirective } from '../../shared/sentinela/sentinela.directive';
 import { ConfirmarExclusaoComponent } from '../confirmar-exclusao/confirmar-exclusao.component';
 import { MenuPostagemComponent } from '../menu-postagem/menu-postagem.component';
+import { TextoComEmojisComponent } from '../texto-com-emojis/texto-com-emojis.component';
 import { ReacoesComponent } from '../reacoes/reacoes.component';
 import { AuthService } from '../../services/auth.service';
 import { FonteService } from '../../services/fonte.service';
@@ -18,7 +19,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-feed-postagens',
   standalone: true,
-  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent, ConfirmarExclusaoComponent],
+  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
   templateUrl: './feed-postagens.component.html',
   styleUrls: ['./feed-postagens.component.scss']
 })
