@@ -338,7 +338,36 @@ textarea#texto {
   }
 }
 
-/* barra de ferramentas do texto (por enquanto só o botão de emoji), logo acima do campo */
+/* barra de ferramentas no topo da parte de escrever, como a de um editor de documentos: fica à vista ao rolar um texto longo */
 .barra-do-editor {
-  margin-bottom: 8px;
+  position: sticky;
+  top: var(--header-height, 80px);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin-bottom: 1.25rem;
+  padding: 8px 10px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 8px;
+  background: var(--secondary-color);
+  box-shadow: 3px 3px 0 var(--zine-sombra);
+}
+
+.barra-divisor {
+  align-self: stretch;
+  width: 2px;
+  background: var(--header-border);
+}
+
+.aviso-do-tema {
+  margin: -0.75rem 0 1.25rem;
+}
+
+/* em tela estreita os botões quebram de linha e os risquinhos ficariam soltos */
+@media (max-width: 480px) {
+  .barra-divisor {
+    display: none;
+  }
 }

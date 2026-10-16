@@ -7,22 +7,23 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 12px;
+  min-height: 36px;
+  padding: 4px 12px;
   border: 2px solid var(--zine-contorno);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--card-bg);
   color: var(--text-color);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 3px 3px 0 var(--zine-sombra);
+  box-shadow: 2px 2px 0 var(--zine-sombra);
   transition: transform 0.1s, box-shadow 0.1s;
 
   &:hover,
   &:focus-visible {
     transform: translate(1px, 1px);
-    box-shadow: 2px 2px 0 var(--zine-sombra);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
   }
 
   @media (max-width: 480px) {

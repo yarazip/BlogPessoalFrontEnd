@@ -884,4 +884,73 @@ describe('PostagemFormComponent', () => {
       expect(el().querySelector('.previa-texto .emoji')!.getAttribute('aria-label')).toBe('Sol');
     });
   });
+
+  describe('barra de ferramentas no topo', () => {
+    const barra = () => el().querySelector<HTMLElement>('#painel-escrever > .barra-do-editor')!;
+
+    it('o rascunho tem tema, fonte e emoji numa barra no topo da parte de escrever, antes do título', () => {
+      criar();
+
+      expect(barra()).not.toBeNull();
+      expect(barra().querySelector('app-seletor-de-tema #tema')).not.toBeNull();
+      expect(barra().querySelector('app-seletor-de-fonte .fonte-botao')).not.toBeNull();
+      expect(barra().querySelector('app-seletor-de-emoji .emoji-botao')).not.toBeNull();
+      expect(barra().compareDocumentPosition(el().querySelector('#titulo')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    it('tema e fonte não aparecem mais embaixo do texto (só na barra)', () => {
+      criar();
+
+      expect(el().querySelectorAll('app-seletor-de-tema').length).toBe(1);
+      expect(el().querySelectorAll('app-seletor-de-fonte').length).toBe(1);
+      expect(el().querySelector('select')).toBeNull();
+    });
+
+    it('a fonte aparece na versão compacta da barra', () => {
+      criar();
+
+      expect(barra().querySelector('app-seletor-de-fonte')!.classList).toContain('compacto');
+    });
+
+    it('o rabisco só tem o emoji na barra (não tem tema nem fonte)', () => {
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));
+      criar('8');
+
+      expect(barra().querySelector('app-seletor-de-emoji')).not.toBeNull();
+      expect(barra().querySelector('app-seletor-de-tema')).toBeNull();
+      expect(barra().querySelector('app-seletor-de-fonte')).toBeNull();
+    });
+
+    it('falta de tema: depois de mexer, o botão fica vermelho e um aviso explica onde escolher', () => {
+      const c = criar();
+      expect(el().querySelector('.aviso-do-tema')).toBeNull();
+
+      c.temaId.markAsTouched();
+      fixture.detectChanges();
+
+      expect(barra().querySelector('#tema')!.classList).toContain('invalido');
+      expect(el().querySelector('.aviso-do-tema')!.textContent).toContain('Escolha um tema');
+    });
+
+    it('com tema escolhido, não há aviso', () => {
+      const c = criar();
+      c.temaId.setValue(2);
+      c.temaId.markAsTouched();
+      fixture.detectChanges();
+
+      expect(el().querySelector('.aviso-do-tema')).toBeNull();
+      expect(barra().querySelector('.tema-atual')!.textContent).toBe('#Java');
+    });
+
+    it('um tema criado na barra entra na lista, sem recarregar, e some o aviso de "nenhum tema"', () => {
+      temas.getAll.and.returnValue(of([]));
+      const c = criar();
+      expect(c.semTemas).toBeTrue();
+
+      c.temaCriado({ id: 7, descricao: 'Viagens' });
+
+      expect(c.temas).toEqual([{ id: 7, descricao: 'Viagens' }]);
+      expect(c.semTemas).toBeFalse();
+    });
+  });
 });

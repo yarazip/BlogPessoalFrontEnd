@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { PreviaRascunhoComponent } from '../../components/previa-rascunho/previa-rascunho.component';
+import { SeletorDeTemaComponent } from '../../components/seletor-de-tema/seletor-de-tema.component';
 import { SeletorDeEmojiComponent } from '../../components/seletor-de-emoji/seletor-de-emoji.component';
 import { SeletorDeFonteComponent } from '../../components/seletor-de-fonte/seletor-de-fonte.component';
 import { AuthService } from '../../services/auth.service';
@@ -36,7 +37,8 @@ export type AbaDoFormulario = 'escrever' | 'previa';
     ModalComponent,
     PreviaRascunhoComponent,
     SeletorDeFonteComponent,
-    SeletorDeEmojiComponent
+    SeletorDeEmojiComponent,
+    SeletorDeTemaComponent
   ],
   templateUrl: './postagem-form.component.html',
   styleUrls: ['./postagem-form.component.scss']
@@ -171,6 +173,12 @@ export class PostagemFormComponent implements OnInit {
     evento.preventDefault();
     this.aba = this.aba === 'escrever' ? 'previa' : 'escrever';
     document.getElementById(this.aba === 'escrever' ? 'aba-escrever' : 'aba-previa')?.focus();
+  }
+
+  /** Um tema novo, criado na própria barra de ferramentas: entra na lista sem recarregar a página. */
+  temaCriado(tema: Tema): void {
+    this.temas = [...this.temas, tema];
+    this.semTemas = false;
   }
 
   /**

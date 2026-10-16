@@ -1,0 +1,174 @@
+:host {
+  position: relative;
+  display: inline-block;
+}
+
+/* o botão da barra de ferramentas: "Tema  #Escrita  ▾" */
+.tema-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 4px 12px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+
+  /* o formulário reclamou da falta de tema */
+  &.invalido {
+    border-color: #dc3545;
+    box-shadow: 2px 2px 0 #dc3545;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 44px;
+  }
+}
+
+.tema-rotulo {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tema-atual {
+  max-width: 160px;
+  overflow: hidden;
+  color: var(--primary-color);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &.vazio {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+}
+
+.tema-seta {
+  color: var(--text-muted);
+}
+
+.tema-painel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  width: min(300px, calc(100vw - 48px));
+  padding: 10px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--card-bg);
+  box-shadow: 6px 6px 0 var(--zine-sombra);
+}
+
+.tema-busca {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 6px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font: inherit;
+
+  &:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--zine-roxo);
+  }
+}
+
+.tema-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 180px;
+  margin: 10px 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+/* cada tema é uma "pílula" */
+.tema-opcao {
+  padding: 3px 12px;
+  border: 1.5px solid var(--zine-contorno);
+  border-radius: 999px;
+  background: none;
+  color: var(--primary-color);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--zine-marca-leve);
+    outline: none;
+  }
+
+  &.escolhido {
+    background: var(--zine-marca);
+    color: var(--zine-tinta-marca);
+    box-shadow: 2px 2px 0 var(--zine-sombra);
+  }
+
+  @media (max-width: 480px) {
+    min-height: 40px;
+  }
+}
+
+.tema-vazio,
+.tema-erro {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+}
+
+.tema-vazio {
+  color: var(--text-muted);
+}
+
+.tema-erro {
+  color: #d93025;
+}
+
+.tema-criar {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 2px dashed var(--zine-contorno);
+  border-radius: 6px;
+  background: none;
+  color: var(--text-color);
+  font: inherit;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    border-style: solid;
+    background: var(--zine-marca-leve);
+    outline: none;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
