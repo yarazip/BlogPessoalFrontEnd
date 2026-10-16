@@ -1,16 +1,28 @@
+/* o livro de visitas é uma folha própria, embaixo do post, com a mesma borda grossa e sombra dura */
 .comentarios {
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 2px dashed var(--zine-contorno);
+  padding: 18px 24px 22px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 2px;
+  background: var(--card-bg);
+  box-shadow: 6px 6px 0 var(--zine-sombra);
   /* a página rola até aqui pelo link "N comentários" do mural: deixa o cabeçalho fixo de fora */
   scroll-margin-top: calc(var(--header-height, 70px) + 16px);
 }
 
 .comentarios-titulo {
-  margin: 0 0 14px;
+  margin: 0;
   font-family: 'Mansalva', cursive;
   font-size: 1.6rem;
   font-weight: 400;
+}
+
+.comentarios-enfeite {
+  margin: 2px 0 14px;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  white-space: nowrap;
 }
 
 .comentarios-total {
@@ -182,4 +194,14 @@ textarea {
 .comentarios-mais {
   display: block;
   margin: 16px auto 0;
+}
+
+/* o rótulo do campo existe para leitores de tela; o placeholder já diz o que escrever */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }

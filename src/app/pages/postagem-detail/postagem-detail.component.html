@@ -1,5 +1,5 @@
-<article class="detalhe">
-  <a class="detalhe-voltar" routerLink="/explorar">Voltar ao mural</a>
+<div class="leitura">
+  <a class="detalhe-voltar" routerLink="/explorar">← Voltar ao mural</a>
 
   @if (isLoading) {
     <p class="detalhe-aviso">Carregando...</p>
@@ -10,48 +10,88 @@
   }
 
   @if (!isLoading && postagem) {
-    <header class="detalhe-autor">
-      <a class="detalhe-foto" [routerLink]="['/perfil', postagem.usuario?.id]" [attr.aria-label]="'Perfil de ' + postagem.usuario?.nome">
-        <img [src]="postagem.usuario?.foto || fotoPadrao" alt="Foto de {{ postagem.usuario?.nome }}" />
-      </a>
-      <div>
-        <a class="detalhe-nome" [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a>
-        <span class="detalhe-data">{{ postagem.data | dateBr }}@if (minutos) { · {{ minutos }} min de leitura }</span>
-      </div>
-    </header>
+    <div class="leitura-principal">
+      <article class="detalhe">
+        <header class="detalhe-cabecalho">
+          <div class="calendario" aria-hidden="true">
+            <span class="calendario-mes">{{ mesDe(postagem.data) }}</span>
+            <span class="calendario-dia">{{ diaDe(postagem.data) }}</span>
+            <span class="calendario-ano">{{ anoDe(postagem.data) }}</span>
+          </div>
+          <div class="detalhe-titulos">
+            @if (postagem.titulo) {
+              <h1 class="detalhe-titulo" [style.font-family]="pilhaDe(postagem.fonte)" [style.font-weight]="pesoDoTituloDe(postagem.fonte)">{{ postagem.titulo }}</h1>
+            }
+            <p class="detalhe-assinatura">
+              postado por <a class="detalhe-nome" [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a>
+              às <time class="detalhe-hora" [attr.datetime]="postagem.data">{{ horaDe(postagem.data) }}</time>
+              @if (postagem.tema) {
+                em <span class="detalhe-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
+              }
+            </p>
+          </div>
+        </header>
 
-    @if (postagem.titulo) {
-      <h1 class="detalhe-titulo" [style.font-family]="pilhaDe(postagem.fonte)" [style.font-weight]="pesoDoTituloDe(postagem.fonte)">{{ postagem.titulo }}</h1>
-    }
+        <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'" [style.font-family]="pilhaDe(postagem.fonte)"><app-texto-com-emojis [texto]="postagem.texto" /></div>
 
-    <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'" [style.font-family]="pilhaDe(postagem.fonte)"><app-texto-com-emojis [texto]="postagem.texto" /></div>
+        <div class="detalhe-rodape">
+          <span>postado por {{ postagem.usuario?.nome }}</span>
+          <a class="detalhe-recados" [routerLink]="[]" fragment="comentarios">{{ textoDosRecados }}</a>
+          @if (minutos) {
+            <span>{{ minutos }} min de leitura</span>
+          }
+          <button type="button" class="detalhe-copiar" (click)="copiarLink()">
+            {{ linkCopiado ? '✓ link copiado!' : '✂ copiar link' }}
+          </button>
+        </div>
 
-    @if (postagem.tema) {
-      <span class="detalhe-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>
-    }
+        @if (postagem.id !== undefined) {
+          <app-reacoes
+            [postagemId]="postagem.id"
+            [curtidas]="postagem.curtidas ?? 0"
+            [descurtidas]="postagem.descurtidas ?? 0"
+            [minhaReacao]="postagem.minhaReacao"
+          />
+        }
 
-    @if (postagem.id !== undefined) {
-      <app-reacoes
-        [postagemId]="postagem.id"
-        [curtidas]="postagem.curtidas ?? 0"
-        [descurtidas]="postagem.descurtidas ?? 0"
-        [minhaReacao]="postagem.minhaReacao"
-      />
-    }
+        @if (ehAutor) {
+          <div class="detalhe-acoes">
+            <button type="button" (click)="editar(postagem.id!)">
+              <app-icon name="edit" /> Editar
+            </button>
+            <button type="button" (click)="excluir(postagem.id!)">
+              <app-icon name="trash" /> Excluir
+            </button>
+          </div>
+        }
 
-    @if (ehAutor) {
-      <div class="detalhe-acoes">
-        <button type="button" (click)="editar(postagem.id!)">
-          <app-icon name="edit" /> Editar
-        </button>
-        <button type="button" (click)="excluir(postagem.id!)">
-          <app-icon name="trash" /> Excluir
-        </button>
-      </div>
-    }
+        @if (anterior || proxima) {
+          <nav class="detalhe-navegacao" aria-label="Outras postagens da autora">
+            @if (anterior) {
+              <a class="navegar anterior" [routerLink]="['/postagens', anterior.id]">
+                <small>← postagem anterior</small>
+                {{ rotuloDe(anterior) }}
+              </a>
+            } @else {
+              <span></span>
+            }
+            @if (proxima) {
+              <a class="navegar proxima" [routerLink]="['/postagens', proxima.id]">
+                <small>próxima postagem →</small>
+                {{ rotuloDe(proxima) }}
+              </a>
+            }
+          </nav>
+        }
+      </article>
 
-    @if (postagem.id !== undefined) {
-      <app-comentarios-da-postagem [postagemId]="postagem.id" />
+      @if (postagem.id !== undefined) {
+        <app-comentarios-da-postagem [postagemId]="postagem.id" (totalMudou)="totalRecados = $event" />
+      }
+    </div>
+
+    @if (postagem.usuario; as autor) {
+      <app-barra-lateral-leitura [autor]="autor" [perfil]="perfil" [postagensDaAutora]="postagensDaAutora" [atualId]="postagem.id" />
     }
   }
 
@@ -61,4 +101,4 @@
     (confirmar)="confirmarExclusao()"
     (cancelar)="cancelarExclusao()"
   />
-</article>
+</div>

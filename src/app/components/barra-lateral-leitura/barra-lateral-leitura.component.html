@@ -1,0 +1,58 @@
+<aside class="lateral" aria-label="Sobre a autora e mais textos dela">
+  <section class="caixa" aria-labelledby="lateral-autora">
+    <h2 class="caixa-titulo" id="lateral-autora">~ sobre a autora ~</h2>
+    <div class="caixa-corpo autora">
+      <a class="autora-foto" [routerLink]="['/perfil', autor().id]" [attr.aria-label]="'Perfil de ' + autor().nome">
+        <img [src]="perfil()?.foto || autor().foto || fotoPadrao" alt="" />
+      </a>
+      <a class="autora-nome" [routerLink]="['/perfil', autor().id]">{{ perfil()?.nome || autor().nome }}</a>
+      @if (perfil()?.bio) {
+        <p class="autora-bio">{{ perfil()!.bio }}</p>
+      }
+      @if (totalDePostagens() !== null) {
+        <p class="autora-numeros">
+          <strong>{{ totalDePostagens() }}</strong> {{ totalDePostagens() === 1 ? 'postagem' : 'postagens' }}
+        </p>
+      }
+      <a class="autora-botao" [routerLink]="['/perfil', autor().id]">ver o perfil</a>
+    </div>
+  </section>
+
+  @if (temDestaques()) {
+    <section class="caixa" aria-labelledby="lateral-momento">
+      <h2 class="caixa-titulo" id="lateral-momento">~ no momento ~</h2>
+      <div class="caixa-corpo">
+        <app-no-momento [perfil]="perfil()!" />
+      </div>
+    </section>
+  }
+
+  @if (maisDaAutora().length > 0) {
+    <section class="caixa" aria-labelledby="lateral-mais">
+      <h2 class="caixa-titulo" id="lateral-mais">~ mais da autora ~</h2>
+      <div class="caixa-corpo">
+        <ul class="lista">
+          @for (p of maisDaAutora(); track p.id) {
+            <li>
+              <a [routerLink]="['/postagens', p.id]">{{ p.titulo }}</a>
+              <small>{{ p.data | dateBr: 'dd/MM/yyyy' }} · {{ minutosDe(p) }} min</small>
+            </li>
+          }
+        </ul>
+      </div>
+    </section>
+  }
+
+  @if (temas().length > 0) {
+    <section class="caixa" aria-labelledby="lateral-temas">
+      <h2 class="caixa-titulo" id="lateral-temas">~ temas ~</h2>
+      <div class="caixa-corpo">
+        <ul class="temas">
+          @for (t of temas(); track t.nome) {
+            <li class="tema">#{{ t.nome }} <span class="tema-quantidade">({{ t.quantidade }})</span></li>
+          }
+        </ul>
+      </div>
+    </section>
+  }
+</aside>

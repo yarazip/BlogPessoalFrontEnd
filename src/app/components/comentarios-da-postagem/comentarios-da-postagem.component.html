@@ -1,19 +1,20 @@
 <section class="comentarios" id="comentarios" aria-labelledby="comentarios-titulo">
   <h2 class="comentarios-titulo" id="comentarios-titulo">
-    Comentários <span class="comentarios-total">({{ total }})</span>
+    ~ Livro de visitas ~ <span class="comentarios-total">({{ total }} {{ total === 1 ? 'recado' : 'recados' }})</span>
   </h2>
+  <p class="comentarios-enfeite" aria-hidden="true">* * * * * * * * * * * * * * * * * * * * * * * * * * * *</p>
 
   @if (logado) {
     <!-- sem [formGroup] não existe o evento ngSubmit: o envio é tratado aqui, e o preventDefault evita o envio nativo (que recarregaria a página) -->
     <form class="comentarios-form" (submit)="$event.preventDefault(); enviar()">
       <img class="comentarios-foto" [src]="fotoDeQuemEscreve" alt="" />
       <div class="comentarios-campo">
-        <label for="novo-comentario" class="visually-hidden">Escreva um comentário</label>
+        <label for="novo-comentario" class="visually-hidden">Escreva um recado</label>
         <textarea
           id="novo-comentario"
           [formControl]="texto"
           rows="2"
-          placeholder="Escreva um comentário..."
+          placeholder="Deixe um recado..."
           [attr.maxlength]="limite"
         ></textarea>
 
@@ -24,7 +25,7 @@
         <div class="comentarios-rodape">
           <span class="comentarios-contador" [class.perto-do-limite]="restantes <= 20" aria-live="polite">{{ restantes }}</span>
           <button type="submit" class="zine-botao primario" [disabled]="!podeEnviar">
-            {{ enviando ? 'Enviando...' : 'Comentar' }}
+            {{ enviando ? 'Assinando...' : 'Assinar' }}
           </button>
         </div>
       </div>
@@ -32,7 +33,7 @@
   } @else {
     <p class="comentarios-convite">
       <a routerLink="/login" [queryParams]="{ returnUrl: '/postagens/' + postagemId() }">Entre</a> ou
-      <a routerLink="/register">crie sua conta</a> para comentar.
+      <a routerLink="/register">crie sua conta</a> para assinar o livro de visitas.
     </p>
   }
 
@@ -41,14 +42,14 @@
   }
 
   @if (carregando) {
-    <p class="comentarios-aviso">Carregando comentários...</p>
+    <p class="comentarios-aviso">Carregando os recados...</p>
   } @else if (erroLista) {
     <div class="comentarios-aviso" role="alert">
       <p>{{ erroLista }}</p>
       <button type="button" class="zine-botao" (click)="carregar()">Tentar de novo</button>
     </div>
   } @else if (comentarios.length === 0) {
-    <p class="comentarios-aviso">Ainda não há comentários. Seja a primeira pessoa!</p>
+    <p class="comentarios-aviso">Ainda não há recados. Seja a primeira pessoa a assinar!</p>
   }
 
   <ul class="comentarios-lista">
@@ -68,7 +69,7 @@
           <button
             type="button"
             class="comentario-apagar"
-            aria-label="Apagar comentário"
+            aria-label="Apagar recado"
             (click)="pedirExclusao(comentario)"
           >
             <app-icon name="trash" />
@@ -80,14 +81,14 @@
 
   @if (haMais && !erroLista) {
     <button type="button" class="zine-botao comentarios-mais" [disabled]="carregandoMais" (click)="carregar()">
-      {{ carregandoMais ? 'Carregando...' : 'Ver mais comentários' }}
+      {{ carregandoMais ? 'Carregando...' : 'Ver mais recados' }}
     </button>
   }
 
   <app-confirmar-exclusao
     [aberto]="paraExcluir !== null"
     [excluindo]="excluindo"
-    titulo="Apagar este comentário?"
+    titulo="Apagar este recado?"
     texto="Esta ação não pode ser desfeita."
     (confirmar)="confirmarExclusao()"
     (cancelar)="cancelarExclusao()"
