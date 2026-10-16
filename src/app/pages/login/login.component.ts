@@ -5,11 +5,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LogoComponent } from '../../shared/logo/logo.component';
 import { AuthService } from '../../services/auth.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { MostrarSenhaComponent } from '../../shared/mostrar-senha/mostrar-senha.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LogoComponent],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent, MostrarSenhaComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

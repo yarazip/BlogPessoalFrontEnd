@@ -1,0 +1,39 @@
+/* Fica sobre o canto direito do campo (o .campo-senha é o ponto de referência; ver styles.scss). */
+:host {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+
+.olho {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 1.35rem;
+  cursor: pointer;
+  transition: color 0.15s, transform 0.1s;
+
+  &:hover {
+    color: var(--zine-roxo);
+  }
+
+  &:active {
+    transform: translate(1px, 1px);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--zine-contorno);
+    box-shadow: 2px 2px 0 var(--zine-roxo);
+  }
+}

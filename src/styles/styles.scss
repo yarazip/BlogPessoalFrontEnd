@@ -664,3 +664,16 @@ body.modal-aberto {
     min-height: 44px;
   }
 }
+
+/* Campo de senha com o botão de olho (mostrar/ocultar) por cima do canto direito; ver app-mostrar-senha. */
+.campo-senha {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    padding-right: 48px;
+  }
+}

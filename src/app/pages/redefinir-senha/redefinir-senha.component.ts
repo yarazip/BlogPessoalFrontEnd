@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Va
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { MostrarSenhaComponent } from '../../shared/mostrar-senha/mostrar-senha.component';
 
 /** Marca "mismatch" no grupo quando a confirmação não confere com a senha. */
 function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
@@ -16,7 +17,7 @@ function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-redefinir-senha',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, MostrarSenhaComponent],
   templateUrl: './redefinir-senha.component.html',
   styleUrls: ['../esqueci-senha/esqueci-senha.component.scss']
 })

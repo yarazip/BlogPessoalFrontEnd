@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { LogoComponent } from '../../shared/logo/logo.component';
 import { AuthService } from '../../services/auth.service';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { MostrarSenhaComponent } from '../../shared/mostrar-senha/mostrar-senha.component';
 
 /** Marca "mismatch" no grupo quando a confirmação não confere com a senha. */
 function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
@@ -16,7 +17,7 @@ function senhasIguais(grupo: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LogoComponent],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent, MostrarSenhaComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })

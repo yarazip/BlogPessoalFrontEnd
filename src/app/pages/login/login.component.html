@@ -32,14 +32,14 @@
 
         <div class="form-group">
           <label for="password">Senha</label>
-          <input
+          <div class="campo-senha"><input #campoSenha1
             type="password"
             id="password"
             autocomplete="current-password"
             formControlName="senha"
             placeholder="Sua senha"
             required
-            />
+            /><app-mostrar-senha [campo]="campoSenha1" /></div>
             @if (submitted && f['senha'].errors) {
               <div class="error-message">
                 @if (f['senha'].errors['required']) {

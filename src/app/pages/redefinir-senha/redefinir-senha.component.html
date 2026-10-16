@@ -11,7 +11,7 @@
       <form class="recuperacao-form" [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="senha">Nova senha</label>
-          <input type="password" id="senha" autocomplete="new-password" formControlName="senha" placeholder="Sua nova senha" />
+          <div class="campo-senha"><input #campoSenha4 type="password" id="senha" autocomplete="new-password" formControlName="senha" placeholder="Sua nova senha" /><app-mostrar-senha [campo]="campoSenha4" /></div>
           @if (submitted && f['senha'].errors) {
             <div class="error-message">
               @if (f['senha'].errors['required']) {
@@ -25,13 +25,13 @@
 
         <div class="form-group">
           <label for="confirmacao">Repita a nova senha</label>
-          <input
+          <div class="campo-senha"><input #campoSenha5
             type="password"
             id="confirmacao"
             autocomplete="new-password"
             formControlName="confirmacao"
             placeholder="Digite a senha novamente"
-          />
+          /><app-mostrar-senha [campo]="campoSenha5" /></div>
           @if (submitted && form.hasError('mismatch') && !f['senha'].errors) {
             <div class="error-message"><small>As senhas não coincidem.</small></div>
           }

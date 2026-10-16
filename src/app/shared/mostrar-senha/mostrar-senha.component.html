@@ -1,0 +1,10 @@
+<button
+  type="button"
+  class="olho"
+  [attr.aria-label]="visivel() ? 'Ocultar senha' : 'Mostrar senha'"
+  [attr.aria-pressed]="visivel()"
+  (mousedown)="$event.preventDefault()"
+  (click)="alternar()"
+>
+  <app-icon [name]="visivel() ? 'olho-riscado' : 'olho'" />
+</button>
