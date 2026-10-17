@@ -68,7 +68,7 @@
       <div class="caixa-corpo">
         <p class="contador" [attr.aria-label]="visitas() + ' visitas'">
           @for (d of digitos(); track $index) {
-            <span class="digito" aria-hidden="true">{{ d }}</span>
+            <span class="digito" [class.apagado]="d.apagado" aria-hidden="true">{{ d.valor }}</span>
           }
         </p>
         <p class="contador-legenda">

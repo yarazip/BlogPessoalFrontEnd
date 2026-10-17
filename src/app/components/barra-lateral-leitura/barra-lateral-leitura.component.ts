@@ -52,8 +52,18 @@ export class BarraLateralLeituraComponent {
   /** Total de postagens da autora: o do perfil, ou, se ele não carregou, o que veio na lista. */
   readonly totalDePostagens = computed(() => this.perfil()?.totalPostagens ?? null);
 
-  /** Os dígitos do contador, com zeros à esquerda até 6 casas (como os contadores de visita de antigamente). */
-  readonly digitos = computed(() => String(Math.max(0, this.visitas() ?? 0)).padStart(6, '0').split(''));
+  /**
+   * Os dígitos do contador, com zeros à esquerda até 6 casas (como os contadores de visita de antigamente). Os zeros
+   * de preenchimento vêm marcados como `apagado`, para aparecerem esmaecidos: só o número de verdade tem a tinta cheia.
+   */
+  readonly digitos = computed(() => {
+    const numero = String(Math.max(0, this.visitas() ?? 0));
+    const preenchimento = Math.max(0, 6 - numero.length);
+    return numero
+      .padStart(6, '0')
+      .split('')
+      .map((valor, i) => ({ valor, apagado: i < preenchimento }));
+  });
 
   readonly chaveDoMes = chaveDoMes;
   readonly nomeDoMes = nomeDoMes;
