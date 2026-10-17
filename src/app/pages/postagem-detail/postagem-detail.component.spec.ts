@@ -327,11 +327,33 @@ describe('PostagemDetailComponent', () => {
     expect(el.querySelector('.detalhe-texto')!.classList).toContain('detalhe-comentario');
   });
 
-  it('postagem inexistente mostra o aviso e o caminho de volta ao feed', () => {
+  it('postagem inexistente mostra o aviso e o caminho de volta', () => {
+    auth.isLoggedIn.and.returnValue(true);
     abrir('999', throwError(() => new HttpErrorResponse({ status: 404 })));
 
     expect(el.querySelector('[role="alert"]')).not.toBeNull();
     expect(el.querySelector('.detalhe-voltar')!.getAttribute('href')).toBe('/explorar');
+  });
+
+  describe('voltar: quem tem conta volta ao mural, visitante volta ao início', () => {
+    it('logado: "Voltar ao mural", que leva ao mural', () => {
+      auth.isLoggedIn.and.returnValue(true);
+      abrir('7');
+
+      const voltar = el.querySelector<HTMLAnchorElement>('.detalhe-voltar')!;
+      expect(voltar.getAttribute('href')).toBe('/explorar');
+      expect(voltar.textContent).toContain('Voltar ao mural');
+    });
+
+    it('visitante: "Voltar ao início", que NUNCA leva ao mural completo (a prévia da home é o limite dele)', () => {
+      auth.isLoggedIn.and.returnValue(false);
+      abrir('7');
+
+      const voltar = el.querySelector<HTMLAnchorElement>('.detalhe-voltar')!;
+      expect(voltar.getAttribute('href')).toBe('/');
+      expect(voltar.textContent).toContain('Voltar ao início');
+      expect(el.querySelector('a[href="/explorar"]')).toBeNull();
+    });
   });
 
   it('id inválido volta para o feed (que é público), não para uma área que exige login', () => {

@@ -79,6 +79,11 @@ export class PostagemDetailComponent implements OnInit {
     return p && p.tipo !== 'COMENTARIO' ? (p.minutosLeitura ?? minutosDeLeitura(p.texto)) : null;
   }
 
+  /** Quem está logado volta ao mural; visitante não tem mural (só a prévia da home) e volta ao início. */
+  get logado(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   /** Só o autor vê as ações de editar e excluir (a API também exige isso). */
   get ehAutor(): boolean {
     const usuario = this.authService.getUsuario();

@@ -46,7 +46,9 @@
           <li><a routerLink="/login">Entrar</a></li>
           <li><a routerLink="/register">Criar conta</a></li>
         }
-        <li><a routerLink="/explorar">Últimas postagens</a></li>
+        @if (logado) {
+          <li><a routerLink="/explorar">Últimas postagens</a></li>
+        }
       </ul>
     </section>
   </aside>

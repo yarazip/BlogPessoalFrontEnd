@@ -5,7 +5,7 @@
 @if (mensagemErro) {
   <div class="perfil-aviso" role="alert">
     <p>{{ mensagemErro }}</p>
-    <a routerLink="/explorar">Voltar ao mural</a>
+    <a [routerLink]="logado ? '/explorar' : '/'">{{ logado ? 'Voltar ao mural' : 'Voltar ao início' }}</a>
   </div>
 }
 

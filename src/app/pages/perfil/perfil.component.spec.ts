@@ -198,12 +198,19 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       expect(topo.compareDocumentPosition(feed) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
-    it('perfil inexistente (404) mostra aviso e volta ao feed', () => {
+    it('perfil inexistente (404) mostra aviso; o visitante volta ao início e quem tem conta, ao mural', () => {
       abrir('999', throwError(() => new HttpErrorResponse({ status: 404 })));
 
       expect(el.querySelector('[role="alert"]')!.textContent).toContain('Perfil não encontrado.');
-      expect(el.querySelector('[role="alert"] a')!.getAttribute('href')).toBe('/explorar');
+      expect(el.querySelector('[role="alert"] a')!.getAttribute('href')).toBe('/');
       expect(postagens.getPagina).not.toHaveBeenCalled();
+    });
+
+    it('perfil inexistente, logado: o link volta ao mural', () => {
+      logadoComo(5);
+      abrir('999', throwError(() => new HttpErrorResponse({ status: 404 })));
+
+      expect(el.querySelector('[role="alert"] a')!.getAttribute('href')).toBe('/explorar');
     });
 
     it('id que não é número não chega a chamar a API', () => {

@@ -1,5 +1,5 @@
 <div class="leitura">
-  <a class="detalhe-voltar" routerLink="/explorar">← Voltar ao mural</a>
+  <a class="detalhe-voltar" [routerLink]="logado ? '/explorar' : '/'">{{ logado ? '← Voltar ao mural' : '← Voltar ao início' }}</a>
 
   @if (isLoading) {
     <p class="detalhe-aviso">Carregando...</p>
