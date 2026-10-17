@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../selo-verificado/selo-verificado.component';
 import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ArquivoMes } from '../../models/ArquivoMes';
@@ -21,7 +22,7 @@ import { TextoComEmojisComponent } from '../texto-com-emojis/texto-com-emojis.co
 @Component({
   selector: 'app-barra-lateral-leitura',
   standalone: true,
-  imports: [RouterLink, DateBrPipe, NoMomentoComponent, TextoComEmojisComponent],
+  imports: [SeloVerificadoComponent, RouterLink, DateBrPipe, NoMomentoComponent, TextoComEmojisComponent],
   templateUrl: './barra-lateral-leitura.component.html',
   styleUrls: ['./barra-lateral-leitura.component.scss']
 })

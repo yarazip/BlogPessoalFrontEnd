@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../selo-verificado/selo-verificado.component';
 import { Component, OnInit, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -19,7 +20,7 @@ import { ConfirmarExclusaoComponent } from '../confirmar-exclusao/confirmar-excl
 @Component({
   selector: 'app-comentarios-da-postagem',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DateBrPipe, IconComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
+  imports: [SeloVerificadoComponent, ReactiveFormsModule, RouterLink, DateBrPipe, IconComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
   templateUrl: './comentarios-da-postagem.component.html',
   styleUrls: ['./comentarios-da-postagem.component.scss']
 })

@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../../components/selo-verificado/selo-verificado.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Postagem } from '../../models/Postagem';
@@ -17,7 +18,7 @@ const POSTAGENS_NA_VITRINE = 3;
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, LogoComponent, DateBrPipe, TextoComEmojisComponent],
+  imports: [SeloVerificadoComponent, RouterLink, LogoComponent, DateBrPipe, TextoComEmojisComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })

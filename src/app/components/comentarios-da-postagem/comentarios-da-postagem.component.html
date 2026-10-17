@@ -60,7 +60,7 @@
         </a>
         <div class="comentario-corpo">
           <p class="comentario-cabecalho">
-            <a class="comentario-autor" [routerLink]="['/perfil', comentario.usuario?.id]">{{ comentario.usuario?.nome }}</a>
+            <a class="comentario-autor" [routerLink]="['/perfil', comentario.usuario?.id]">{{ comentario.usuario?.nome }}@if (comentario.usuario?.verificado) { <app-selo-verificado /> }</a>
             <span class="comentario-data">· {{ comentario.data | dateBr: 'dd/MM/yyyy' }}</span>
           </p>
           <p class="comentario-texto texto-postagem"><app-texto-com-emojis [texto]="comentario.texto" /></p>

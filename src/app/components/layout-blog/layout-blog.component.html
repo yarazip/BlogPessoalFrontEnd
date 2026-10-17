@@ -11,7 +11,7 @@
           <a class="cartao-foto" [routerLink]="['/perfil', perfil.id]" [attr.aria-label]="'Perfil de ' + perfil.nome">
             <img [src]="perfil.foto || fotoPadrao" alt="Foto de {{ perfil.nome }}" />
           </a>
-          <a class="cartao-nome" [routerLink]="['/perfil', perfil.id]">{{ perfil.nome }}</a>
+          <a class="cartao-nome" [routerLink]="['/perfil', perfil.id]">{{ perfil.nome }}@if (perfil.verificado) { <app-selo-verificado /> }</a>
           @if (perfil.bio) {
             <p class="cartao-bio">{{ perfil.bio }}</p>
           } @else if (ehDona) {

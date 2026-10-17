@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../selo-verificado/selo-verificado.component';
 import { Component, OnInit, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
@@ -19,7 +20,7 @@ const POSTAGENS_POR_PAGINA = 10;
 @Component({
   selector: 'app-feed-postagens',
   standalone: true,
-  imports: [DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
+  imports: [SeloVerificadoComponent, DateBrPipe, SentinelaDirective, RouterLink, ReacoesComponent, MenuPostagemComponent, ConfirmarExclusaoComponent, TextoComEmojisComponent],
   templateUrl: './feed-postagens.component.html',
   styleUrls: ['./feed-postagens.component.scss']
 })

@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../selo-verificado/selo-verificado.component';
 import { Component, effect, inject, input, untracked } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Perfil } from '../../models/Perfil';
@@ -17,7 +18,7 @@ import { NoMomentoComponent } from '../no-momento/no-momento.component';
 @Component({
   selector: 'app-layout-blog',
   standalone: true,
-  imports: [RouterLink, NoMomentoComponent],
+  imports: [SeloVerificadoComponent, RouterLink, NoMomentoComponent],
   templateUrl: './layout-blog.component.html',
   styleUrls: ['./layout-blog.component.scss']
 })

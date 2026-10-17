@@ -83,6 +83,14 @@ describe('PostagemDetailComponent', () => {
     expect(comentarios.listar).toHaveBeenCalledWith(7, 0);
   });
 
+  it('autora com conta da administração aparece com o selo de verificado ao lado do nome', () => {
+    abrir('7', of(blog({ usuario: { id: 3, nome: 'Bia', verificado: true } })));
+    expect(el.querySelector('.detalhe-nome app-selo-verificado')).not.toBeNull();
+
+    abrir('7');
+    expect(el.querySelector('.detalhe-nome app-selo-verificado')).toBeNull();
+  });
+
   it('mostra o blog completo: título, autor com link para o perfil, data, tema e texto', () => {
     abrir('7');
 

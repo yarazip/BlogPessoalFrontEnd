@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../../components/selo-verificado/selo-verificado.component';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -23,6 +24,7 @@ import { mensagemDeErro } from '../../shared/mensagem-de-erro';
   selector: 'app-perfil',
   standalone: true,
   imports: [
+    SeloVerificadoComponent,
     LayoutBlogComponent,
     NoMomentoComponent,
     FeedPostagensComponent,

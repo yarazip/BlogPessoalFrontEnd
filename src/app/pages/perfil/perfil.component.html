@@ -23,7 +23,7 @@
       </div>
 
       <div class="perfil-dados">
-        <h2 class="perfil-nome">{{ perfil.nome }}</h2>
+        <h2 class="perfil-nome">{{ perfil.nome }}@if (perfil.verificado) { <app-selo-verificado /> }</h2>
         @if (emailDaSessao) {
           <p class="perfil-email">{{ emailDaSessao }} <small>(só você vê)</small></p>
         }

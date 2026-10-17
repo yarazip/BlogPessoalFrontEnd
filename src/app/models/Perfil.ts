@@ -12,6 +12,8 @@ export interface Perfil {
   musicaPrevia?: string | null;
   livroCapa?: string | null;
   totalPostagens: number;
+  /** Conta da administração do site: mostra o selo de verificado ao lado do nome. */
+  verificado?: boolean;
   /** Humor do dia: uma frase curta que a pessoa mostra no perfil (opcional). */
   humor?: string | null;
 }
