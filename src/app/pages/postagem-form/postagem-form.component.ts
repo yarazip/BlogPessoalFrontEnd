@@ -151,6 +151,11 @@ export class PostagemFormComponent implements OnInit {
     return descricao ? descricao.replace(/^['"]+|['"]+$/g, '') : null;
   }
 
+  /** A coluna de post-its só existe no rascunho (blog) e depois que a postagem carregou. */
+  get mostrarPostits(): boolean {
+    return !this.isComentario && !this.carregandoPostagem && !this.falhaAoCarregar;
+  }
+
   get nomeDoAutor(): string {
     return this.authService.getUsuario()?.nome ?? 'Você';
   }
