@@ -10,6 +10,8 @@
   }
 
   @if (!isLoading && postagem) {
+    <!-- a chave é o id: ao trocar de postagem (anterior/próxima), tudo abaixo é recriado do zero (curtidas, livro de visitas, barra lateral) -->
+    @for (chave of [postagem.id]; track chave) {
     <div class="leitura-principal">
       <article class="detalhe">
         <header class="detalhe-cabecalho">
@@ -92,6 +94,7 @@
 
     @if (postagem.usuario; as autor) {
       <app-barra-lateral-leitura [autor]="autor" [perfil]="perfil" [postagensDaAutora]="postagensDaAutora" [atualId]="postagem.id" [visitas]="visitas" [arquivo]="arquivo" />
+    }
     }
   }
 
