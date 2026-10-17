@@ -1,0 +1,63 @@
+<button
+  type="button"
+  id="tema"
+  class="tema-botao"
+  [class.invalido]="invalido()"
+  aria-haspopup="dialog"
+  aria-controls="painel-de-tema"
+  [attr.aria-expanded]="aberto"
+  [attr.aria-invalid]="invalido()"
+  (mousedown)="$event.preventDefault()"
+  (click)="alternar()"
+>
+  <span class="tema-rotulo">Tema</span>
+  <span class="tema-atual" [class.vazio]="!nomeAtual">{{ nomeAtual ? '#' + nomeAtual : 'escolher' }}</span>
+  <span class="tema-seta" aria-hidden="true">▾</span>
+</button>
+
+@if (aberto) {
+  <div class="tema-painel" id="painel-de-tema" role="dialog" aria-label="Escolher o tema">
+    <input
+      #campoDeBusca
+      type="text"
+      class="tema-busca"
+      placeholder="Procurar ou criar um tema"
+      aria-label="Procurar ou criar um tema"
+      [value]="busca()"
+      [attr.maxlength]="limiteDoNome"
+      (input)="digitar($event)"
+      (keydown.enter)="confirmar($event)"
+    />
+
+    <ul class="tema-lista" role="listbox" aria-label="Temas">
+      @for (t of filtrados(); track t.id) {
+        <li role="presentation">
+          <button
+            type="button"
+            class="tema-opcao"
+            role="option"
+            [class.escolhido]="t.id === controle().value"
+            [attr.aria-selected]="t.id === controle().value"
+            (click)="escolher(t)"
+          >
+            #{{ nomeDoTema(t.descricao) }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    @if (filtrados().length === 0 && !podeCriar()) {
+      <p class="tema-vazio">Nenhum tema ainda. Escreva um nome para criar o primeiro.</p>
+    }
+
+    @if (podeCriar()) {
+      <button type="button" class="tema-criar" [disabled]="criando" (click)="criar()">
+        {{ criando ? 'Criando...' : '+ Criar o tema “' + termo() + '”' }}
+      </button>
+    }
+
+    @if (erro) {
+      <p class="tema-erro" role="alert">{{ erro }}</p>
+    }
+  </div>
+}

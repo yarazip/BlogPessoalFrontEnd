@@ -382,3 +382,25 @@ header {
 :host-context(.dark-mode) .nav-links a::after {
   background-color: var(--zine-fita-logo);
 }
+
+/* o "+" que começa um rascunho novo de qualquer página (antes só dava pelo perfil) */
+.novo-rascunho {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 50%;
+  background: var(--zine-laranja);
+  color: #fff;
+  font-size: 1.15rem;
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:hover,
+  &:focus-visible {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
+  }
+}

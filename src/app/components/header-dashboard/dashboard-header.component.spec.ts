@@ -30,6 +30,13 @@ describe('DashboardHeaderComponent', () => {
     expect(itens).toEqual(['/explorar', '/perfil/24', '/dashboard']);
   });
 
+  it('tem o "+" que começa um rascunho novo de qualquer página', () => {
+    const novo = el.querySelector<HTMLAnchorElement>('.header-right .novo-rascunho')!;
+
+    expect(novo.getAttribute('href')).toBe('/postagens/nova');
+    expect(novo.getAttribute('aria-label')).toBe('Novo rascunho');
+  });
+
   it('o sino de notificações fica no cabeçalho de quem está logado', () => {
     expect(el.querySelector('.header-right app-sino .sino-botao')).not.toBeNull();
   });

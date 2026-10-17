@@ -2,6 +2,41 @@
   display: block;
 }
 
+/* na barra de ferramentas do editor: um botão pequeno, ao lado dos outros */
+:host(.compacto) {
+  display: inline-block;
+
+  .seletor-rotulo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .fonte-botao {
+    width: auto;
+    min-height: 36px;
+    padding: 3px 12px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 var(--zine-sombra);
+    font-size: 0.9rem;
+  }
+
+  .fonte-amostra {
+    font-size: 1.3rem;
+  }
+
+  .fonte-atual {
+    flex: none;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .seletor {
   display: flex;
   flex-direction: column;

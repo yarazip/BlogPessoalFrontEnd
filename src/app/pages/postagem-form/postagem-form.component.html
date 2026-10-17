@@ -59,6 +59,24 @@
 
       <form [formGroup]="postagemForm" (ngSubmit)="onSubmit()">
         <div id="painel-escrever" role="tabpanel" aria-labelledby="aba-escrever" [hidden]="aba !== 'escrever'">
+          <!-- Barra de ferramentas, como a de cima de um editor de documentos: tema, fonte e emoji ficam sempre à mão -->
+          <div class="barra-do-editor" role="toolbar" aria-label="Ferramentas do texto">
+            @if (!isComentario) {
+              <app-seletor-de-tema
+                [controle]="temaId"
+                [temas]="temas"
+                [invalido]="temaId.invalid && (temaId.dirty || temaId.touched)"
+                (criado)="temaCriado($event)"
+              />
+              <span class="barra-divisor" aria-hidden="true"></span>
+              <app-seletor-de-fonte [controle]="fonte" [compacto]="true" />
+              <span class="barra-divisor" aria-hidden="true"></span>
+            }
+            <app-seletor-de-emoji (escolher)="inserirEmoji($event)" />
+          </div>
+          @if (!isComentario && temaId.invalid && (temaId.dirty || temaId.touched)) {
+            <div class="invalid-feedback aviso-do-tema">Escolha um tema na barra de ferramentas (ou crie um novo).</div>
+          }
           <!-- Campo Título (só no blog) -->
           @if (!isComentario) {
             <div class="form-group">
@@ -89,9 +107,6 @@
 
           <div class="form-group">
             <label for="texto">{{ isComentario ? 'Rabisco' : 'Conteúdo' }} *</label>
-            <div class="barra-do-editor">
-              <app-seletor-de-emoji (escolher)="inserirEmoji($event)" />
-            </div>
             <textarea
               #areaTexto
               id="texto"
@@ -124,35 +139,6 @@
             </div>
           </div>
 
-          @if (!isComentario) {
-            <div class="form-group">
-              <label for="tema">Tema *</label>
-              <select
-                id="tema"
-                formControlName="temaId"
-                [class.is-invalid]="temaId.invalid && (temaId.dirty || temaId.touched)"
-              >
-                <option [ngValue]="null" disabled>{{ semTemas ? 'Nenhum tema cadastrado' : 'Selecione um tema' }}</option>
-                @for (tema of temas; track tema.id) {
-                  <option [ngValue]="tema.id">
-                    {{ tema.descricao }}
-                  </option>
-                }
-              </select>
-              @if (semTemas) {
-                <div class="invalid-feedback">Ainda não há temas cadastrados, então não é possível publicar.</div>
-              }
-              @if (temaId.invalid && (temaId.dirty || temaId.touched)) {
-                <div class="invalid-feedback">
-                  <span>Selecione um tema</span>
-                </div>
-              }
-            </div>
-
-            <div class="form-group">
-              <app-seletor-de-fonte [controle]="fonte" />
-            </div>
-          }
         </div>
 
         @if (!isComentario && aba === 'previa') {

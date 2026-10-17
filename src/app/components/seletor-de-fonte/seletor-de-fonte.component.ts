@@ -13,10 +13,13 @@ import { ModalComponent } from '../modal/modal.component';
   standalone: true,
   imports: [ModalComponent],
   templateUrl: './seletor-de-fonte.component.html',
-  styleUrls: ['./seletor-de-fonte.component.scss']
+  styleUrls: ['./seletor-de-fonte.component.scss'],
+  host: { '[class.compacto]': 'compacto()' }
 })
 export class SeletorDeFonteComponent {
   readonly controle = input.required<FormControl<FontePostagem | null>>();
+  /** Versão para a barra de ferramentas: o botão fica do tamanho do conteúdo e o rótulo "Fonte" só para leitores de tela. */
+  readonly compacto = input(false);
 
   readonly fontes = FONTES;
   readonly exemplo = 'Era uma vez um rascunho torto.';
