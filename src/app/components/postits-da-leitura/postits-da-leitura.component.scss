@@ -10,8 +10,8 @@
   padding: 0;
   list-style: none;
 
-  /* em tela estreita ficam lado a lado, quebrando de linha */
-  @media (max-width: 760px) {
+  /* sem a coluna ao lado da folha (tela estreita), ficam lado a lado, quebrando de linha */
+  @media (max-width: 1100px) {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 18px 14px;
@@ -30,7 +30,7 @@
   transform: rotate(var(--inclinacao, 0deg));
   overflow-wrap: anywhere;
 
-  @media (max-width: 760px) {
+  @media (max-width: 1100px) {
     width: calc(50% - 7px);
   }
 
