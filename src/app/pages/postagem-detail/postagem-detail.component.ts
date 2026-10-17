@@ -3,6 +3,7 @@ import { ConfirmarExclusaoComponent } from '../../components/confirmar-exclusao/
 import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-postagem/comentarios-da-postagem.component';
 import { TextoComEmojisComponent } from '../../components/texto-com-emojis/texto-com-emojis.component';
 import { BarraLateralLeituraComponent } from '../../components/barra-lateral-leitura/barra-lateral-leitura.component';
+import { PostitsDaLeituraComponent } from '../../components/postits-da-leitura/postits-da-leitura.component';
 import { ReacoesComponent } from '../../components/reacoes/reacoes.component';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -35,7 +36,8 @@ const MESES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'O
     ComentariosDaPostagemComponent,
     ConfirmarExclusaoComponent,
     TextoComEmojisComponent,
-    BarraLateralLeituraComponent
+    BarraLateralLeituraComponent,
+    PostitsDaLeituraComponent
   ],
   templateUrl: './postagem-detail.component.html',
   styleUrls: ['./postagem-detail.component.scss']
@@ -82,6 +84,11 @@ export class PostagemDetailComponent implements OnInit {
   get minutos(): number | null {
     const p = this.postagem;
     return p && p.tipo !== 'COMENTARIO' ? (p.minutosLeitura ?? minutosDeLeitura(p.texto)) : null;
+  }
+
+  /** O rascunho tem post-its para mostrar ao lado do texto. */
+  get temPostits(): boolean {
+    return (this.postagem?.postits?.length ?? 0) > 0;
   }
 
   /** Quem está logado volta ao mural; visitante não tem mural (só a prévia da home) e volta ao início. */

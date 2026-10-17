@@ -101,4 +101,50 @@ describe('RascunhoLocalService', () => {
       expect(() => service.limpar('x')).not.toThrow();
     });
   });
+
+  describe('post-its guardados', () => {
+    const base = { titulo: 'T', texto: 'texto', temaId: null, fonte: null, salvoEm: '2026-10-14T10:00:00Z' };
+    const guardar = (extra: Record<string, unknown>) => localStorage.setItem('chave', JSON.stringify({ ...base, ...extra }));
+
+    afterEach(() => localStorage.clear());
+
+    it('guarda e devolve os post-its e o lado', () => {
+      const servico = TestBed.inject(RascunhoLocalService);
+
+      servico.salvar('chave', { titulo: 'T', texto: 'texto', temaId: null, fonte: null, postits: [{ tipo: 'NOTA', texto: 'oi', cor: 'ROSA' }], ladoDosPostits: 'ESQUERDA' });
+
+      expect(servico.carregar('chave')).toEqual(jasmine.objectContaining({
+        postits: [{ tipo: 'NOTA', texto: 'oi', fotoUrl: null, cor: 'ROSA' }],
+        ladoDosPostits: 'ESQUERDA'
+      }));
+    });
+
+    it('sem post-its guardados, o resultado é o de antes (sem as chaves novas)', () => {
+      guardar({});
+      const lido = TestBed.inject(RascunhoLocalService).carregar('chave')!;
+
+      expect('postits' in lido).toBeFalse();
+      expect('ladoDosPostits' in lido).toBeFalse();
+    });
+
+    it('recusa tudo se algum post-it está fora do formato (o navegador pode ter sido alterado)', () => {
+      const servico = TestBed.inject(RascunhoLocalService);
+      const ruins: Record<string, unknown>[] = [
+        { postits: 'não é lista' },
+        { postits: [{ tipo: 'VIDEO', texto: 'x', cor: 'ROSA' }] },
+        { postits: [{ tipo: 'NOTA', texto: 'x', cor: 'AZUL' }] },
+        { postits: [{ tipo: 'FOTO', fotoUrl: 'javascript:alert(1)', cor: 'ROSA' }] },
+        { postits: [{ tipo: 'FOTO', fotoUrl: 'http://res.cloudinary.com/x.jpg', cor: 'ROSA' }] },
+        { postits: [{ tipo: 'NOTA', texto: 5, cor: 'ROSA' }] },
+        { postits: [null] },
+        { postits: Array.from({ length: 4 }, () => ({ tipo: 'NOTA', texto: 'x', cor: 'ROSA' })) },
+        { ladoDosPostits: 'CIMA' }
+      ];
+
+      for (const ruim of ruins) {
+        guardar(ruim);
+        expect(servico.carregar('chave')).withContext(JSON.stringify(ruim)).toBeNull();
+      }
+    });
+  });
 });

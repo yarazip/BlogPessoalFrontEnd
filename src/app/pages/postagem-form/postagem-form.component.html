@@ -139,6 +139,10 @@
             </div>
           </div>
 
+
+          @if (!isComentario) {
+            <app-editor-de-postits [postits]="postits" [lado]="ladoDosPostits" (postitsChange)="mudarPostits($event)" (ladoChange)="mudarLado($event)" />
+          }
         </div>
 
         @if (!isComentario && aba === 'previa') {

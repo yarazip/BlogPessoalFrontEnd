@@ -1,4 +1,5 @@
 import { FontePostagem } from './Fonte';
+import { LadoDosPostits, Postit } from './Postit';
 import { Tema } from './Tema';
 import { Usuario } from './Usuario';
 
@@ -40,6 +41,9 @@ export interface Postagem {
   comentarios?: number;
   /** Quantas visitas a postagem teve (uma por pessoa por dia); ausente em respostas antigas. */
   visitas?: number;
+  /** Post-its (0 a 3) ao lado do texto; só vêm ao abrir a postagem (nas listas vêm vazios). */
+  postits?: Postit[];
+  ladoDosPostits?: LadoDosPostits | null;
 }
 
 /** Dados enviados para criar ou atualizar uma postagem. */
@@ -50,6 +54,9 @@ export interface PostagemRequest {
   idTema?: number;
   /** Só no rascunho; nulo volta para a fonte padrão do site. */
   fonte?: FontePostagem | null;
+  /** Só no rascunho. Ausente = não mexer nos que já existem; lista vazia = tirar todos. */
+  postits?: Postit[];
+  ladoDosPostits?: LadoDosPostits;
 }
 
 /** Limites do blog validados pela API (mantenha em sincronia com PostagemRequestDTO.LIMITES). */

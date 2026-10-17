@@ -1,0 +1,17 @@
+@if (postits().length > 0) {
+  <ul class="postits" aria-label="Post-its da autora">
+    @for (p of postits(); track $index) {
+      <li class="postit" [class.foto]="p.tipo === 'FOTO'" [style.--papel]="papelDaCor(p.cor)" [style.--inclinacao]="inclinacao($index)">
+        <span class="postit-fita" aria-hidden="true"></span>
+        @if (p.tipo === 'FOTO') {
+          <img class="postit-imagem" [src]="p.fotoUrl" [alt]="p.texto || 'Foto do post-it'" loading="lazy" />
+          @if (p.texto) {
+            <p class="postit-legenda"><app-texto-com-emojis [texto]="p.texto" /></p>
+          }
+        } @else {
+          <p class="postit-texto"><app-texto-com-emojis [texto]="p.texto" /></p>
+        }
+      </li>
+    }
+  </ul>
+}

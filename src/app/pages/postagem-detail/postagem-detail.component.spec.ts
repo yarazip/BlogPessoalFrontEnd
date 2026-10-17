@@ -279,6 +279,35 @@ describe('PostagemDetailComponent', () => {
     });
   });
 
+  describe('post-its', () => {
+    const comPostits = (lado: 'ESQUERDA' | 'DIREITA' | null) =>
+      blog({ ladoDosPostits: lado, postits: [{ tipo: 'NOTA', texto: 'Lembrar do café', cor: 'AMARELO' }, { tipo: 'FOTO', fotoUrl: 'https://res.cloudinary.com/x/a.jpg', cor: 'ROSA' }] });
+
+    it('mostra os post-its ao lado do texto, do lado que a autora escolheu', () => {
+      abrir('7', of(comPostits('ESQUERDA')));
+
+      const corpo = el.querySelector('.detalhe-corpo')!;
+      expect(corpo.classList).toContain('com-postits');
+      expect(corpo.classList).toContain('postits-esquerda');
+      expect(corpo.querySelectorAll('app-postits-da-leitura .postit').length).toBe(2);
+      expect(corpo.querySelector('.detalhe-texto')).not.toBeNull();
+    });
+
+    it('do lado direito (o padrão), não leva a classe do lado esquerdo', () => {
+      abrir('7', of(comPostits('DIREITA')));
+
+      expect(el.querySelector('.detalhe-corpo')!.classList).toContain('com-postits');
+      expect(el.querySelector('.detalhe-corpo')!.classList).not.toContain('postits-esquerda');
+    });
+
+    it('sem post-its, o texto ocupa a largura toda e nada de post-its é desenhado', () => {
+      abrir('7');
+
+      expect(el.querySelector('.detalhe-corpo')!.classList).not.toContain('com-postits');
+      expect(el.querySelector('app-postits-da-leitura')).toBeNull();
+    });
+  });
+
   describe('navegar entre postagens (anterior, próxima e "mais da autora")', () => {
     const outra = (id: number, titulo: string): Postagem => blog({ id, titulo, texto: 'Texto de ' + titulo });
 

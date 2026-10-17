@@ -46,6 +46,13 @@ export class PostagemService {
     return this.http.post<{ visitas: number }>(`${this.apiUrl}/${id}/visita`, null);
   }
 
+  /** Envia a foto de um post-it e devolve o endereço, que a autora cola no post-it ao salvar o rascunho. */
+  enviarFotoDePostit(arquivo: File): Observable<{ url: string }> {
+    const dados = new FormData();
+    dados.append('foto', arquivo);
+    return this.http.post<{ url: string }>(`${this.apiUrl}/postits/foto`, dados);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
