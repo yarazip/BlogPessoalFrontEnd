@@ -1,13 +1,17 @@
 @if (editando) {
   <form class="humor-form" [formGroup]="formulario" (ngSubmit)="salvar()">
-    <label for="humor-do-dia" class="humor-rotulo">Humor do dia</label>
-    <input
-      id="humor-do-dia"
-      type="text"
-      formControlName="humor"
-      [maxlength]="limite"
-      placeholder="Como você está hoje? Ex.: sonolenta, mas feliz :sol:"
-    />
+    <label for="humor-do-dia" class="visually-hidden">Seu humor do dia</label>
+    <div class="humor-linha">
+      <app-seletor-de-emoji (escolher)="escolherEmoji($event)" />
+      <input
+        id="humor-do-dia"
+        type="text"
+        formControlName="humor"
+        [maxlength]="limite"
+        placeholder="Como você está hoje?"
+      />
+    </div>
+    <small class="humor-dica">Escolha um emoji da Rasura: ele fica na frente do seu humor.</small>
     <small class="humor-contador">{{ campo.value.length }}/{{ limite }}</small>
     @if (erro) {
       <p class="humor-erro" role="alert">{{ erro }}</p>
@@ -19,7 +23,7 @@
   </form>
 } @else {
   @if (humor()) {
-    <p class="humor-atual"><span class="humor-rotulo">Humor do dia:</span> <app-texto-com-emojis [texto]="humor()" /></p>
+    <p class="humor-atual"><app-texto-com-emojis [texto]="humor()" /></p>
   } @else if (ehDona()) {
     <p class="humor-atual humor-vazio">Sem humor do dia ainda.</p>
   }

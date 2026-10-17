@@ -2,16 +2,42 @@
   display: block;
 }
 
+/* o humor é só o texto com o emoji: uma pílula com o contorno do site, sem rótulo */
 .humor-atual {
+  display: inline-block;
   margin: 6px 0;
+  padding: 2px 14px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 999px;
+  background: var(--card-bg);
   color: var(--text-color);
+  box-shadow: 2px 2px 0 var(--zine-sombra);
   overflow-wrap: anywhere;
 }
 
-.humor-rotulo {
+.humor-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  input {
+    flex: 1;
+    min-width: 160px;
+  }
+}
+
+.humor-dica {
   color: var(--text-muted);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .humor-vazio {

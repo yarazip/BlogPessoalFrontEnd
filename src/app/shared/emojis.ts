@@ -100,3 +100,15 @@ export function inserirNoTexto(
   const novo = texto.slice(0, de) + trecho + texto.slice(ate);
   return novo.length > limite ? null : { texto: novo, cursor: de + trecho.length };
 }
+
+/**
+ * Põe o emoji na frente do texto, no lugar do emoji que já estava lá (se o texto já começava com o código de algum emoji da
+ * Rasura). É como o "humor do dia" ganha o emoji ao lado. Devolve nulo se o resultado passaria do limite de caracteres.
+ */
+export function comEmojiNaFrente(texto: string, emoji: Emoji, limite: number): string | null {
+  const primeiro = partirEmTrechos(texto)[0];
+  // se o texto começa com um emoji conhecido (e espaços depois dele), ele sai para dar lugar ao novo
+  const resto = primeiro?.tipo === 'emoji' && texto.startsWith(codigoDe(primeiro.emoji)) ? texto.slice(codigoDe(primeiro.emoji).length) : texto;
+  const novo = `${codigoDe(emoji)} ${resto.trimStart()}`.trimEnd();
+  return novo.length > limite ? null : novo;
+}
