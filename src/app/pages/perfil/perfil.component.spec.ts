@@ -73,9 +73,25 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
     it('mostra o humor da pessoa para quem visita, sem botão de editar', () => {
       abrir('5', of(perfil({ humor: 'sonolenta :sol:' })));
 
-      expect(el.querySelector('app-humor-do-dia .humor-atual')!.textContent).toContain('Humor do dia:');
+      // sem rótulo: só o humor, com o emoji da Rasura
+      expect(el.querySelector('app-humor-do-dia .humor-atual')!.textContent).not.toContain('Humor do dia');
+      expect(el.querySelector('app-humor-do-dia .humor-atual')!.textContent).toContain('sonolenta');
       expect(el.querySelector('app-humor-do-dia .emoji')).not.toBeNull();
       expect(el.querySelector('app-humor-do-dia .humor-botao')).toBeNull();
+    });
+
+    it('a dona escolhe um emoji da Rasura e ele vai para a frente do humor (trocando o anterior)', () => {
+      logadoComo(5);
+      abrir('5', of(perfil({ humor: ':lua: animada' })));
+      el.querySelector<HTMLButtonElement>('app-humor-do-dia .humor-botao')!.click();
+      fixture.detectChanges();
+
+      el.querySelector<HTMLButtonElement>('app-humor-do-dia .emoji-botao')!.click();
+      fixture.detectChanges();
+      el.querySelector<HTMLButtonElement>('app-humor-do-dia .emoji-opcao[aria-label="Sol"]')!.click();
+      fixture.detectChanges();
+
+      expect(el.querySelector<HTMLInputElement>('#humor-do-dia')!.value).toBe(':sol: animada');
     });
 
     it('sem humor e sem ser a dona, não mostra nada', () => {
@@ -198,12 +214,19 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       expect(topo.compareDocumentPosition(feed) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
-    it('perfil inexistente (404) mostra aviso e volta ao feed', () => {
+    it('perfil inexistente (404) mostra aviso; o visitante volta ao início e quem tem conta, ao mural', () => {
       abrir('999', throwError(() => new HttpErrorResponse({ status: 404 })));
 
       expect(el.querySelector('[role="alert"]')!.textContent).toContain('Perfil não encontrado.');
-      expect(el.querySelector('[role="alert"] a')!.getAttribute('href')).toBe('/explorar');
+      expect(el.querySelector('[role="alert"] a')!.getAttribute('href')).toBe('/');
       expect(postagens.getPagina).not.toHaveBeenCalled();
+    });
+
+    it('perfil inexistente, logado: o link volta ao mural', () => {
+      logadoComo(5);
+      abrir('999', throwError(() => new HttpErrorResponse({ status: 404 })));
+
+      expect(el.querySelector('[role="alert"] a')!.getAttribute('href')).toBe('/explorar');
     });
 
     it('id que não é número não chega a chamar a API', () => {

@@ -62,6 +62,11 @@ export class PerfilComponent implements OnInit {
   enviandoFoto = false;
   erroFoto: string | null = null;
 
+  /** Visitante não tem mural para voltar: o link de erro leva ao início. */
+  get logado(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   /** O perfil aberto é o de quem está logado: aparecem as ações de edição. */
   get ehOProprioPerfil(): boolean {
     return this.perfil !== null && this.authService.isLoggedIn() && this.authService.getUsuario()?.id === this.perfil.id;

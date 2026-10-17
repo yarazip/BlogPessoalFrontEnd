@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-postagem/comentarios-da-postagem.component';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap, provideRouter } from '@angular/router';
-import { Observable, Subject, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, of, throwError } from 'rxjs';
 import { Pagina } from '../../models/Pagina';
 import { ComentarioPostagem } from '../../models/ComentarioPostagem';
 import { Postagem } from '../../models/Postagem';
@@ -23,8 +23,8 @@ describe('PostagemDetailComponent', () => {
   let comentarios: jasmine.SpyObj<ComentarioPostagemService>;
   let perfis: jasmine.SpyObj<PerfilService>;
   let router: Router;
-  // a rota é um objeto simples que cada teste ajusta antes de criar o componente
-  let rota: { snapshot: { paramMap: ParamMap } };
+  // a rota é um objeto simples; o id da postagem é um fluxo, como na rota de verdade (pode mudar sem recriar a tela)
+  let params: BehaviorSubject<ParamMap>;
 
   const blog = (extra: Partial<Postagem> = {}): Postagem => ({
     id: 7,
@@ -39,14 +39,14 @@ describe('PostagemDetailComponent', () => {
 
   const abrir = (id: string, resposta: Observable<Postagem> = of(blog())) => {
     service.getById.and.returnValue(resposta);
-    rota.snapshot = { paramMap: convertToParamMap({ id }) };
+    params.next(convertToParamMap({ id }));
     fixture = TestBed.createComponent(PostagemDetailComponent);
     fixture.detectChanges();
     el = fixture.nativeElement;
   };
 
   beforeEach(() => {
-    rota = { snapshot: { paramMap: convertToParamMap({}) } };
+    params = new BehaviorSubject<ParamMap>(convertToParamMap({}));
     service = jasmine.createSpyObj('PostagemService', ['getById', 'delete', 'getPagina', 'registrarVisita']);
     service.registrarVisita.and.returnValue(of({ visitas: 1234 }));
     service.getPagina.and.returnValue(of({ conteudo: [], pagina: 0, tamanho: 50, totalElementos: 0, totalPaginas: 0, ultima: true }));
@@ -69,7 +69,7 @@ describe('PostagemDetailComponent', () => {
         { provide: ComentarioPostagemService, useValue: comentarios },
         { provide: PerfilService, useValue: perfis },
         { provide: FonteService, useValue: fontes },
-        { provide: ActivatedRoute, useValue: rota }
+        { provide: ActivatedRoute, useValue: { paramMap: params } }
       ]
     });
     router = TestBed.inject(Router);
@@ -308,6 +308,80 @@ describe('PostagemDetailComponent', () => {
     });
   });
 
+  describe('navegar entre postagens (anterior, próxima e "mais da autora")', () => {
+    const outra = (id: number, titulo: string): Postagem => blog({ id, titulo, texto: 'Texto de ' + titulo });
+
+    it('mudar o id do endereço abre a outra postagem na mesma tela', () => {
+      abrir('7');
+      expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('Meu blog');
+      service.getById.and.returnValue(of(outra(5, 'A anterior')));
+
+      params.next(convertToParamMap({ id: '5' }));
+      fixture.detectChanges();
+
+      expect(service.getById).toHaveBeenCalledWith(5);
+      expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('A anterior');
+      expect(el.querySelector('.detalhe-texto')!.textContent).toBe('Texto de A anterior');
+    });
+
+    it('o que era da postagem anterior some: curtidas, livro de visitas, contador e vizinhas são pedidos de novo', () => {
+      abrir('7');
+      comentarios.listar.calls.reset();
+      service.registrarVisita.calls.reset();
+      perfis.getPerfil.calls.reset();
+      service.getById.and.returnValue(of(outra(5, 'A anterior')));
+
+      params.next(convertToParamMap({ id: '5' }));
+      fixture.detectChanges();
+
+      expect(comentarios.listar).toHaveBeenCalledWith(5, 0);
+      expect(service.registrarVisita).toHaveBeenCalledWith(5);
+      expect(perfis.getPerfil).toHaveBeenCalledTimes(1);
+      expect(service.getPagina).toHaveBeenCalled();
+    });
+
+    it('enquanto a outra carrega, mostra "Carregando..." em vez da postagem antiga', () => {
+      abrir('7');
+      const resposta = new Subject<Postagem>();
+      service.getById.and.returnValue(resposta);
+
+      params.next(convertToParamMap({ id: '5' }));
+      fixture.detectChanges();
+
+      expect(el.querySelector('.detalhe-titulo')).toBeNull();
+      expect(el.querySelector('.detalhe-aviso')!.textContent).toContain('Carregando');
+    });
+
+    it('uma resposta atrasada da postagem anterior não sobrescreve a que está na tela', () => {
+      const lenta = new Subject<Postagem>();
+      service.getById.and.returnValue(lenta);
+      rotaInicial('7');
+      service.getById.and.returnValue(of(outra(5, 'A que está na tela')));
+      params.next(convertToParamMap({ id: '5' }));
+      fixture.detectChanges();
+
+      lenta.next(outra(7, 'Resposta velha'));
+      fixture.detectChanges();
+
+      expect(el.querySelector('.detalhe-titulo')!.textContent).toBe('A que está na tela');
+    });
+
+    it('id inválido no endereço volta ao mural, mesmo depois de abrir outra postagem', () => {
+      abrir('7');
+
+      params.next(convertToParamMap({ id: 'abc' }));
+
+      expect(router.navigate).toHaveBeenCalledWith(['/explorar']);
+    });
+
+    function rotaInicial(id: string): void {
+      params.next(convertToParamMap({ id }));
+      fixture = TestBed.createComponent(PostagemDetailComponent);
+      fixture.detectChanges();
+      el = fixture.nativeElement;
+    }
+  });
+
   it('o rascunho aparece na fonte escolhida pela autora e a fonte é pedida ao serviço', () => {
     abrir('7', of(blog({ fonte: 'FRAUNCES' })));
 
@@ -356,11 +430,33 @@ describe('PostagemDetailComponent', () => {
     expect(el.querySelector('.detalhe-texto')!.classList).toContain('detalhe-comentario');
   });
 
-  it('postagem inexistente mostra o aviso e o caminho de volta ao feed', () => {
+  it('postagem inexistente mostra o aviso e o caminho de volta', () => {
+    auth.isLoggedIn.and.returnValue(true);
     abrir('999', throwError(() => new HttpErrorResponse({ status: 404 })));
 
     expect(el.querySelector('[role="alert"]')).not.toBeNull();
     expect(el.querySelector('.detalhe-voltar')!.getAttribute('href')).toBe('/explorar');
+  });
+
+  describe('voltar: quem tem conta volta ao mural, visitante volta ao início', () => {
+    it('logado: "Voltar ao mural", que leva ao mural', () => {
+      auth.isLoggedIn.and.returnValue(true);
+      abrir('7');
+
+      const voltar = el.querySelector<HTMLAnchorElement>('.detalhe-voltar')!;
+      expect(voltar.getAttribute('href')).toBe('/explorar');
+      expect(voltar.textContent).toContain('Voltar ao mural');
+    });
+
+    it('visitante: "Voltar ao início", que NUNCA leva ao mural completo (a prévia da home é o limite dele)', () => {
+      auth.isLoggedIn.and.returnValue(false);
+      abrir('7');
+
+      const voltar = el.querySelector<HTMLAnchorElement>('.detalhe-voltar')!;
+      expect(voltar.getAttribute('href')).toBe('/');
+      expect(voltar.textContent).toContain('Voltar ao início');
+      expect(el.querySelector('a[href="/explorar"]')).toBeNull();
+    });
   });
 
   it('id inválido volta para o feed (que é público), não para uma área que exige login', () => {

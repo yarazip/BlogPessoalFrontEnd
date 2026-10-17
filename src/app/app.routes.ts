@@ -44,6 +44,8 @@ export const routes: Routes = [
   {
     path: 'explorar',
     loadComponent: () => import('./pages/explorar/explorar.component').then(m => m.ExplorarComponent),
+    // o mural completo é para quem tem conta; a home mostra só uma prévia e convida a criar a conta
+    canActivate: [authGuard],
     title: 'Rasura - Mural'
   },
 
