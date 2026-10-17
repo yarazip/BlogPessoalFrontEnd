@@ -1,4 +1,10 @@
-<div class="postagem-container">
+<!-- no rascunho, os post-its ficam numa coluna à esquerda, fora do bloco do texto (em tela estreita, descem para baixo dele) -->
+<div class="postagem-container" [class.com-postits]="mostrarPostits">
+  @if (mostrarPostits) {
+    <aside class="coluna-postits" [hidden]="aba !== 'escrever'">
+      <app-editor-de-postits [postits]="postits" [lado]="ladoDosPostits" (postitsChange)="mudarPostits($event)" (ladoChange)="mudarLado($event)" />
+    </aside>
+  }
   <div class="card">
     <h2>{{ !isEdit ? 'Novo rascunho' : carregandoPostagem || falhaAoCarregar ? 'Editar postagem' : isComentario ? 'Editar rabisco' : 'Editar rascunho' }}</h2>
 
@@ -138,11 +144,6 @@
               <small class="contador-texto">{{ (texto.value ?? '').length }}/{{ limiteTexto }}</small>
             </div>
           </div>
-
-
-          @if (!isComentario) {
-            <app-editor-de-postits [postits]="postits" [lado]="ladoDosPostits" (postitsChange)="mudarPostits($event)" (ladoChange)="mudarLado($event)" />
-          }
         </div>
 
         @if (!isComentario && aba === 'previa') {

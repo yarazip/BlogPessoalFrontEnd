@@ -961,6 +961,9 @@ describe('PostagemFormComponent', () => {
     it('o editor de post-its aparece no rascunho e não no rabisco', () => {
       criar();
       expect(el().querySelector('app-editor-de-postits')).not.toBeNull();
+      // fora do bloco do texto, numa coluna própria (à esquerda pelo CSS)
+      expect(el().querySelector('.card app-editor-de-postits')).toBeNull();
+      expect(el().querySelector('.postagem-container.com-postits > .coluna-postits app-editor-de-postits')).not.toBeNull();
 
       TestBed.resetTestingModule();
       postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));

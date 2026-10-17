@@ -5,6 +5,28 @@
   max-width: 800px;
   margin: 2rem auto;
   padding: 0 1rem;
+
+  /* no rascunho: a coluna dos post-its à esquerda, fora do card, e o card do texto com a mesma largura de sempre */
+  &.com-postits {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 800px);
+    justify-content: center;
+    align-items: start;
+    gap: 24px;
+    max-width: calc(800px + 260px + 24px + 2rem);
+  }
+}
+
+/* em tela estreita não cabe a coluna: os post-its descem para baixo do texto */
+@media (max-width: 1000px) {
+  .postagem-container.com-postits {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 800px;
+
+    .coluna-postits {
+      order: 1;
+    }
+  }
 }
 
 .card {
