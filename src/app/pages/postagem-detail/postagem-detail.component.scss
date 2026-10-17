@@ -145,35 +145,59 @@
   font-weight: 700;
 }
 
-/* ---------- corpo: o texto e, de um lado, os post-its ---------- */
-.detalhe-corpo {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
+/* ---------- post-its: fora da folha, numa coluna ao lado dela (do lado que a autora escolheu) ---------- */
+.leitura.com-postits {
+  max-width: calc(1040px + 190px + 26px);
+}
 
-  &.com-postits {
+.leitura-principal.com-postits {
+  grid-template-columns: 190px minmax(0, 1fr);
+  align-items: start;
+
+  .detalhe,
+  app-comentarios-da-postagem {
+    grid-column: 2;
+  }
+
+  .leitura-postits {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    padding-top: 14px; /* espaço para a fita do primeiro post-it */
+  }
+
+  &.postits-direita {
     grid-template-columns: minmax(0, 1fr) 190px;
-    align-items: start;
-  }
 
-  /* do lado esquerdo: a coluna dos post-its vem primeiro */
-  &.com-postits.postits-esquerda {
-    grid-template-columns: 190px minmax(0, 1fr);
+    .detalhe,
+    app-comentarios-da-postagem {
+      grid-column: 1;
+    }
 
-    .detalhe-postits {
-      order: -1;
+    .leitura-postits {
+      grid-column: 2;
     }
   }
 
-  /* em tela estreita não há lado: o texto vem primeiro e os post-its logo depois dele */
-  @media (max-width: 760px) {
-    &.com-postits,
-    &.com-postits.postits-esquerda {
+  /* sem largura para a coluna: os post-its descem para logo depois da folha, antes do livro de visitas */
+  @media (max-width: 1100px) {
+    &,
+    &.postits-direita {
       grid-template-columns: minmax(0, 1fr);
-    }
 
-    &.com-postits.postits-esquerda .detalhe-postits {
-      order: 0;
+      .detalhe,
+      app-comentarios-da-postagem,
+      .leitura-postits {
+        grid-column: 1;
+        grid-row: auto;
+      }
+
+      .leitura-postits {
+        order: 1;
+      }
+
+      app-comentarios-da-postagem {
+        order: 2;
+      }
     }
   }
 }

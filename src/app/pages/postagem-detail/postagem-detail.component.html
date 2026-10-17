@@ -1,4 +1,4 @@
-<div class="leitura">
+<div class="leitura" [class.com-postits]="temPostits">
   <a class="detalhe-voltar" [routerLink]="logado ? '/explorar' : '/'">{{ logado ? '← Voltar ao mural' : '← Voltar ao início' }}</a>
 
   @if (isLoading) {
@@ -12,7 +12,11 @@
   @if (!isLoading && postagem) {
     <!-- a chave é o id: ao trocar de postagem (anterior/próxima), tudo abaixo é recriado do zero (curtidas, livro de visitas, barra lateral) -->
     @for (chave of [postagem.id]; track chave) {
-    <div class="leitura-principal">
+    <!-- os post-its que a autora colou ficam fora da folha, numa coluna do lado que ela escolheu -->
+    <div class="leitura-principal" [class.com-postits]="temPostits" [class.postits-direita]="postagem.ladoDosPostits !== 'ESQUERDA'">
+      @if (temPostits) {
+        <app-postits-da-leitura class="leitura-postits" [postits]="postagem.postits!" />
+      }
       <article class="detalhe">
         <header class="detalhe-cabecalho">
           <div class="calendario" aria-hidden="true">
@@ -34,13 +38,7 @@
           </div>
         </header>
 
-        <!-- o texto e, de um dos lados, os post-its que a autora colou (do lado que ela escolheu) -->
-        <div class="detalhe-corpo" [class.com-postits]="temPostits" [class.postits-esquerda]="postagem.ladoDosPostits === 'ESQUERDA'">
-          <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'" [style.font-family]="pilhaDe(postagem.fonte)"><app-texto-com-emojis [texto]="postagem.texto" /></div>
-          @if (temPostits) {
-            <app-postits-da-leitura class="detalhe-postits" [postits]="postagem.postits!" />
-          }
-        </div>
+        <div class="detalhe-texto texto-postagem" [class.detalhe-comentario]="postagem.tipo === 'COMENTARIO'" [style.font-family]="pilhaDe(postagem.fonte)"><app-texto-com-emojis [texto]="postagem.texto" /></div>
 
         <div class="detalhe-rodape">
           <span>postado por {{ postagem.usuario?.nome }}</span>

@@ -2,11 +2,9 @@
   display: block;
 }
 
+/* sem moldura: os post-its ficam soltos na coluna ao lado do rascunho, como colados na mesa */
 .postits-editor {
   margin-bottom: 1.5rem;
-  padding: 14px 16px;
-  border: 2px dashed var(--zine-contorno);
-  border-radius: 6px;
 }
 
 .postits-titulo {

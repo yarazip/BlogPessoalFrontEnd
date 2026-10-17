@@ -283,27 +283,26 @@ describe('PostagemDetailComponent', () => {
     const comPostits = (lado: 'ESQUERDA' | 'DIREITA' | null) =>
       blog({ ladoDosPostits: lado, postits: [{ tipo: 'NOTA', texto: 'Lembrar do café', cor: 'AMARELO' }, { tipo: 'FOTO', fotoUrl: 'https://res.cloudinary.com/x/a.jpg', cor: 'ROSA' }] });
 
-    it('mostra os post-its ao lado do texto, do lado que a autora escolheu', () => {
+    it('mostra os post-its fora da folha do texto, numa coluna do lado esquerdo', () => {
       abrir('7', of(comPostits('ESQUERDA')));
 
-      const corpo = el.querySelector('.detalhe-corpo')!;
-      expect(corpo.classList).toContain('com-postits');
-      expect(corpo.classList).toContain('postits-esquerda');
-      expect(corpo.querySelectorAll('app-postits-da-leitura .postit').length).toBe(2);
-      expect(corpo.querySelector('.detalhe-texto')).not.toBeNull();
+      const principal = el.querySelector('.leitura-principal')!;
+      expect(principal.classList).toContain('com-postits');
+      expect(principal.classList).not.toContain('postits-direita');
+      expect(principal.querySelectorAll(':scope > app-postits-da-leitura .postit').length).toBe(2);
+      expect(el.querySelector('.detalhe app-postits-da-leitura')).toBeNull();
     });
 
-    it('do lado direito (o padrão), não leva a classe do lado esquerdo', () => {
+    it('do lado direito (o padrão e o de quem não escolheu), a coluna leva a classe do lado direito', () => {
       abrir('7', of(comPostits('DIREITA')));
-
-      expect(el.querySelector('.detalhe-corpo')!.classList).toContain('com-postits');
-      expect(el.querySelector('.detalhe-corpo')!.classList).not.toContain('postits-esquerda');
+      expect(el.querySelector('.leitura-principal')!.classList).toContain('postits-direita');
     });
 
     it('sem post-its, o texto ocupa a largura toda e nada de post-its é desenhado', () => {
       abrir('7');
 
-      expect(el.querySelector('.detalhe-corpo')!.classList).not.toContain('com-postits');
+      expect(el.querySelector('.leitura')!.classList).not.toContain('com-postits');
+      expect(el.querySelector('.leitura-principal')!.classList).not.toContain('com-postits');
       expect(el.querySelector('app-postits-da-leitura')).toBeNull();
     });
   });
