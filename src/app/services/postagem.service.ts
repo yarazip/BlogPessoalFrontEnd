@@ -41,6 +41,11 @@ export class PostagemService {
     return this.http.put<Reacoes>(`${this.apiUrl}/${id}/reacao`, { tipo });
   }
 
+  /** Conta uma visita à postagem (a API conta no máximo uma por pessoa por dia) e devolve o total. Não exige login. */
+  registrarVisita(id: number): Observable<{ visitas: number }> {
+    return this.http.post<{ visitas: number }>(`${this.apiUrl}/${id}/visita`, null);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

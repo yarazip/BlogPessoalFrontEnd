@@ -112,4 +112,65 @@ describe('BarraLateralLeituraComponent', () => {
     expect(raiz.querySelector('.lista b')).toBeNull();
     expect(raiz.querySelector('.lista a')!.textContent).toBe('<b>negrito</b>');
   });
+
+  describe('etapa 2', () => {
+    const montarComExtras = (extras: { perfil?: Perfil | null; visitas?: number | null; arquivo?: { ano: number; mes: number; total: number }[] }) => {
+      fixture = TestBed.createComponent(BarraLateralLeituraComponent);
+      fixture.componentRef.setInput('autor', autor);
+      fixture.componentRef.setInput('perfil', extras.perfil ?? null);
+      fixture.componentRef.setInput('visitas', extras.visitas ?? null);
+      fixture.componentRef.setInput('arquivo', extras.arquivo ?? []);
+      fixture.detectChanges();
+      el = fixture.nativeElement;
+    };
+
+    it('o contador mostra o total em dígitos, com zeros à esquerda até seis casas', () => {
+      montarComExtras({ visitas: 1234 });
+
+      expect(Array.from(el.querySelectorAll('.digito')).map(d => d.textContent).join('')).toBe('001234');
+      expect(el.querySelector('.contador')!.getAttribute('aria-label')).toBe('1234 visitas');
+      expect(el.querySelector('.contador-legenda')!.textContent).toContain('visitas a esta postagem');
+    });
+
+    it('com uma visita, o singular; com zero, o contador aparece zerado', () => {
+      montarComExtras({ visitas: 1 });
+      expect(el.querySelector('.contador-legenda')!.textContent).toContain('visita a esta postagem');
+
+      montarComExtras({ visitas: 0 });
+      expect(Array.from(el.querySelectorAll('.digito')).map(d => d.textContent).join('')).toBe('000000');
+    });
+
+    it('passando de seis dígitos, mostra todos (não corta)', () => {
+      montarComExtras({ visitas: 1234567 });
+
+      expect(Array.from(el.querySelectorAll('.digito')).map(d => d.textContent).join('')).toBe('1234567');
+    });
+
+    it('sem o total (ainda não se sabe), a caixa de visitas não aparece', () => {
+      montarComExtras({ visitas: null });
+
+      expect(titulos()).not.toContain('~ visitas ~');
+    });
+
+    it('o arquivo só aparece quando há meses, com o link do mês no perfil da autora', () => {
+      montarComExtras({});
+      expect(titulos()).not.toContain('~ arquivo ~');
+
+      montarComExtras({ arquivo: [{ ano: 2026, mes: 3, total: 2 }] });
+      const link = el.querySelector<HTMLAnchorElement>('.arquivo a')!;
+      expect(link.textContent).toBe('março 2026');
+      expect(link.getAttribute('href')).toBe('/perfil/3?mes=2026-03');
+      expect(el.querySelector('.arquivo-total')!.textContent).toBe('2');
+    });
+
+    it('o humor do dia só aparece quando a autora tem um, e aceita os emojis da Rasura', () => {
+      montarComExtras({ perfil: perfil() });
+      expect(titulos()).not.toContain('~ humor do dia ~');
+
+      montarComExtras({ perfil: perfil({ humor: 'animada :sol:' }) });
+      expect(titulos()).toContain('~ humor do dia ~');
+      expect(el.querySelector('.humor')!.textContent).toContain('animada');
+      expect(el.querySelector('.humor .emoji')).not.toBeNull();
+    });
+  });
 });

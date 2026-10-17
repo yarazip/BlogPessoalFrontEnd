@@ -17,6 +17,7 @@ import { minutosDeLeitura } from '../../shared/leitura';
 import { POSTAGENS_DA_AUTORA, ehRascunho, rotuloDe, vizinhasDe } from '../../shared/leitura-lateral';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { pesoDoTituloDe, pilhaDe } from '../../models/Fonte';
+import { ArquivoMes } from '../../models/ArquivoMes';
 import { Perfil } from '../../models/Perfil';
 import { Postagem } from '../../models/Postagem';
 
@@ -60,6 +61,7 @@ export class PostagemDetailComponent implements OnInit {
 
   /** Barra lateral e navegação: vêm do perfil e das postagens recentes da autora (se falharem, a leitura segue sem eles). */
   perfil: Perfil | null = null;
+  arquivo: ArquivoMes[] = [];
   postagensDaAutora: Postagem[] = [];
   anterior?: Postagem;
   proxima?: Postagem;
@@ -67,6 +69,9 @@ export class PostagemDetailComponent implements OnInit {
   /** Quantos recados (comentários) a postagem tem; o livro de visitas avisa quando muda. */
   totalRecados = 0;
   linkCopiado = false;
+
+  /** O contador de visitas (nulo até a API responder; se falhar, a caixa não aparece). */
+  visitas: number | null = null;
 
   /** Minutos de leitura do rascunho (o rabisco, curto, não mostra). Aqui o texto vem inteiro, então dá para calcular. */
   get minutos(): number | null {
@@ -94,6 +99,7 @@ export class PostagemDetailComponent implements OnInit {
         this.totalRecados = postagem.comentarios ?? 0;
         this.isLoading = false;
         this.carregarLateral(postagem);
+        this.contarVisita(postagem);
       },
       error: erro => {
         this.mensagemErro = mensagemDeErro(erro, 'Postagem não encontrada.');
@@ -144,6 +150,22 @@ export class PostagemDetailComponent implements OnInit {
   }
 
   /**
+   * Conta esta visita (a API conta no máximo uma por pessoa por dia e ignora a própria autora) e mostra o total. Se
+   * falhar, a leitura segue sem o contador.
+   */
+  private contarVisita(postagem: Postagem): void {
+    if (postagem.id === undefined) {
+      return;
+    }
+    this.postagemService.registrarVisita(postagem.id).subscribe({
+      next: resposta => (this.visitas = resposta.visitas),
+      error: () => {
+        this.visitas = postagem.visitas ?? null;
+      }
+    });
+  }
+
+  /**
    * Busca o perfil e as postagens recentes da autora de uma vez. Qualquer falha vira "sem isso": a leitura não depende
    * da barra lateral nem dos botões de anterior e próxima.
    */
@@ -154,14 +176,16 @@ export class PostagemDetailComponent implements OnInit {
     }
     forkJoin({
       perfil: this.perfilService.getPerfil(autorId).pipe(catchError(() => of(null))),
+      arquivo: this.perfilService.getArquivo(autorId).pipe(catchError(() => of([] as ArquivoMes[]))),
       lista: this.postagemService
         .getPagina({ autor: autorId, size: POSTAGENS_DA_AUTORA })
         .pipe(
           map(pagina => pagina.conteudo),
           catchError(() => of([] as Postagem[]))
         )
-    }).subscribe(({ perfil, lista }) => {
+    }).subscribe(({ perfil, arquivo, lista }) => {
       this.perfil = perfil;
+      this.arquivo = arquivo;
       this.postagensDaAutora = lista;
       const vizinhas = vizinhasDe(lista, postagem.id!, ehRascunho(postagem));
       this.anterior = vizinhas.anterior;

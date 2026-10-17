@@ -38,6 +38,8 @@
           <p class="perfil-erro" role="alert">{{ erroFoto }}</p>
         }
 
+        <app-humor-do-dia [perfilId]="perfil.id" [humor]="perfil.humor" [ehDona]="ehOProprioPerfil" (atualizado)="aoAtualizarHumor($event)" />
+
         @if (editandoBio) {
           <form class="bio-form" [formGroup]="bioForm" (ngSubmit)="salvarBio()">
             <label for="bio" class="visually-hidden">Sobre você</label>
@@ -84,10 +86,20 @@
       }
     </header>
 
-    <app-feed-postagens #feed [autor]="perfil.id" [mensagemVazia]="mensagemDeListaVazia" (removida)="aoRemover()">
-      @if (ehOProprioPerfil) {
-        <app-compositor-comentario (publicado)="aoPublicar(); feed.adicionarNoTopo($event)" />
-      }
-    </app-feed-postagens>
+    @if (mes) {
+      <p class="filtro-do-mes" role="status">
+        Mostrando só as postagens de <strong>{{ nomeDoMes }}</strong>.
+        <a [routerLink]="['/perfil', perfil.id]">ver todas</a>
+      </p>
+    }
+
+    <!-- o feed não reage a mudar o mês: o @for recria o feed quando o mês muda (a chave é o próprio mês) -->
+    @for (filtro of [mes ?? '']; track filtro) {
+      <app-feed-postagens #feed [autor]="perfil.id" [mes]="mes ?? undefined" [mensagemVazia]="mensagemDeListaVazia" (removida)="aoRemover()">
+        @if (ehOProprioPerfil && !mes) {
+          <app-compositor-comentario (publicado)="aoPublicar(); feed.adicionarNoTopo($event)" />
+        }
+      </app-feed-postagens>
+    }
   </app-layout-blog>
 }

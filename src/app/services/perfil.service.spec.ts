@@ -46,4 +46,22 @@ describe('PerfilService', () => {
     expect(req.request.body).toEqual(destaques);
     req.flush({ id: 5, nome: 'Bia', musicaAtual: 'Clube da Esquina', totalPostagens: 0 });
   });
+
+  it('atualiza o humor do dia com PUT e o texto no corpo', () => {
+    service.atualizarHumor(5, 'animada').subscribe();
+
+    const req = http.expectOne(`${environment.apiUrl}/usuarios/5/humor`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ humor: 'animada' });
+    req.flush({});
+  });
+
+  it('lê o arquivo por mês da pessoa', () => {
+    let recebido: unknown;
+    service.getArquivo(5).subscribe(arquivo => (recebido = arquivo));
+
+    http.expectOne(`${environment.apiUrl}/usuarios/5/arquivo`).flush([{ ano: 2026, mes: 10, total: 4 }]);
+
+    expect(recebido).toEqual([{ ano: 2026, mes: 10, total: 4 }]);
+  });
 });

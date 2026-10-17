@@ -18,6 +18,13 @@
     </div>
   </section>
 
+  @if (perfil()?.humor) {
+    <section class="caixa" aria-labelledby="lateral-humor">
+      <h2 class="caixa-titulo" id="lateral-humor">~ humor do dia ~</h2>
+      <div class="caixa-corpo humor"><app-texto-com-emojis [texto]="perfil()!.humor" /></div>
+    </section>
+  }
+
   @if (temDestaques()) {
     <section class="caixa" aria-labelledby="lateral-momento">
       <h2 class="caixa-titulo" id="lateral-momento">~ no momento ~</h2>
@@ -50,6 +57,37 @@
         <ul class="temas">
           @for (t of temas(); track t.nome) {
             <li class="tema">#{{ t.nome }} <span class="tema-quantidade">({{ t.quantidade }})</span></li>
+          }
+        </ul>
+      </div>
+    </section>
+  }
+  @if (visitas() !== null) {
+    <section class="caixa" aria-labelledby="lateral-visitas">
+      <h2 class="caixa-titulo" id="lateral-visitas">~ visitas ~</h2>
+      <div class="caixa-corpo">
+        <p class="contador" [attr.aria-label]="visitas() + ' visitas'">
+          @for (d of digitos(); track $index) {
+            <span class="digito" aria-hidden="true">{{ d }}</span>
+          }
+        </p>
+        <p class="contador-legenda">
+          {{ visitas() === 1 ? 'visita' : 'visitas' }} a esta postagem
+        </p>
+      </div>
+    </section>
+  }
+
+  @if (arquivo().length > 0) {
+    <section class="caixa" aria-labelledby="lateral-arquivo">
+      <h2 class="caixa-titulo" id="lateral-arquivo">~ arquivo ~</h2>
+      <div class="caixa-corpo">
+        <ul class="lista arquivo">
+          @for (m of arquivo(); track m.ano + '-' + m.mes) {
+            <li>
+              <a [routerLink]="['/perfil', autor().id]" [queryParams]="{ mes: chaveDoMes(m.ano, m.mes) }">{{ nomeDoMes(m.ano, m.mes) }}</a>
+              <span class="arquivo-total">{{ m.total }}</span>
+            </li>
           }
         </ul>
       </div>

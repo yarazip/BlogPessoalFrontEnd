@@ -1,0 +1,89 @@
+:host {
+  display: block;
+}
+
+.humor-atual {
+  margin: 6px 0;
+  color: var(--text-color);
+  overflow-wrap: anywhere;
+}
+
+.humor-rotulo {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.humor-vazio {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.humor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+
+  input {
+    padding: 8px 10px;
+    border: 2px solid var(--zine-contorno);
+    border-radius: 6px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    font: inherit;
+
+    &:focus {
+      outline: none;
+      box-shadow: 3px 3px 0 var(--zine-roxo);
+    }
+  }
+}
+
+.humor-contador {
+  align-self: flex-end;
+  color: var(--text-muted);
+}
+
+.humor-erro {
+  margin: 0;
+  color: #d93025;
+  font-size: 0.9rem;
+}
+
+.humor-acoes {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.humor-botao {
+  padding: 4px 12px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 44px;
+  }
+}
+
+.humor-texto {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

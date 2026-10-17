@@ -91,7 +91,7 @@
     </div>
 
     @if (postagem.usuario; as autor) {
-      <app-barra-lateral-leitura [autor]="autor" [perfil]="perfil" [postagensDaAutora]="postagensDaAutora" [atualId]="postagem.id" />
+      <app-barra-lateral-leitura [autor]="autor" [perfil]="perfil" [postagensDaAutora]="postagensDaAutora" [atualId]="postagem.id" [visitas]="visitas" [arquivo]="arquivo" />
     }
   }
 

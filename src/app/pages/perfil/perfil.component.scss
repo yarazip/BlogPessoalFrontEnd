@@ -225,3 +225,19 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* aviso de que a lista está filtrada por um mês do arquivo */
+.filtro-do-mes {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 2px dashed var(--zine-contorno);
+  background: var(--zine-marca-leve);
+  color: var(--text-color);
+  font-size: 0.9rem;
+
+  a {
+    margin-left: 6px;
+    color: var(--text-color);
+    font-weight: 700;
+  }
+}

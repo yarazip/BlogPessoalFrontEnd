@@ -12,10 +12,15 @@ export interface Perfil {
   musicaPrevia?: string | null;
   livroCapa?: string | null;
   totalPostagens: number;
+  /** Humor do dia: uma frase curta que a pessoa mostra no perfil (opcional). */
+  humor?: string | null;
 }
 
 /** Limite de cada destaque (música e livro), validado pela API (DestaquesRequestDTO). */
 export const LIMITE_DESTAQUE = 100;
+
+/** Limite do humor do dia, validado pela API (HumorRequestDTO). */
+export const LIMITE_HUMOR = 60;
 
 /** Limite validado pela API (mantenha em sincronia com BioRequestDTO). */
 export const LIMITE_BIO = 255;

@@ -16,6 +16,7 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
   let postagens: jasmine.SpyObj<PostagemService>;
   let auth: jasmine.SpyObj<AuthService>;
   let params: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
+  let consulta: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
 
   const perfil = (sobre: Partial<Perfil> = {}): Perfil => ({
     id: 5,
@@ -48,13 +49,14 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
   };
 
   beforeEach(() => {
-    perfis = jasmine.createSpyObj('PerfilService', ['getPerfil', 'atualizarBio']);
+    perfis = jasmine.createSpyObj('PerfilService', ['getPerfil', 'atualizarBio', 'atualizarHumor']);
     postagens = jasmine.createSpyObj('PostagemService', ['getPagina', 'create', 'delete']);
     postagens.getPagina.and.returnValue(of(pagina()));
     auth = jasmine.createSpyObj('AuthService', ['isLoggedIn', 'getUsuario', 'atualizarFoto', 'updateUsuario']);
     auth.isLoggedIn.and.returnValue(false);
     auth.getUsuario.and.returnValue(null);
     params = new BehaviorSubject(convertToParamMap({}));
+    consulta = new BehaviorSubject(convertToParamMap({}));
     TestBed.configureTestingModule({
       imports: [PerfilComponent],
       providers: [
@@ -62,8 +64,87 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
         { provide: PerfilService, useValue: perfis },
         { provide: PostagemService, useValue: postagens },
         { provide: AuthService, useValue: auth },
-        { provide: ActivatedRoute, useValue: { paramMap: params } }
+        { provide: ActivatedRoute, useValue: { paramMap: params, queryParamMap: consulta } }
       ]
+    });
+  });
+
+  describe('humor do dia', () => {
+    it('mostra o humor da pessoa para quem visita, sem botão de editar', () => {
+      abrir('5', of(perfil({ humor: 'sonolenta :sol:' })));
+
+      expect(el.querySelector('app-humor-do-dia .humor-atual')!.textContent).toContain('Humor do dia:');
+      expect(el.querySelector('app-humor-do-dia .emoji')).not.toBeNull();
+      expect(el.querySelector('app-humor-do-dia .humor-botao')).toBeNull();
+    });
+
+    it('sem humor e sem ser a dona, não mostra nada', () => {
+      abrir('5');
+
+      expect(el.querySelector('app-humor-do-dia .humor-atual')).toBeNull();
+    });
+
+    it('a dona define o humor e a tela atualiza sem recarregar', () => {
+      logadoComo(5);
+      perfis.atualizarHumor.and.returnValue(of(perfil({ humor: 'animada' })));
+      abrir('5');
+
+      el.querySelector<HTMLButtonElement>('app-humor-do-dia .humor-botao')!.click();
+      fixture.detectChanges();
+      const campo = el.querySelector<HTMLInputElement>('#humor-do-dia')!;
+      campo.value = 'animada';
+      campo.dispatchEvent(new Event('input'));
+      el.querySelector<HTMLButtonElement>('app-humor-do-dia button[type="submit"]')!.click();
+      fixture.detectChanges();
+
+      expect(perfis.atualizarHumor).toHaveBeenCalledWith(5, 'animada');
+      expect(el.querySelector('app-humor-do-dia .humor-atual')!.textContent).toContain('animada');
+    });
+  });
+
+  describe('arquivo (filtro por mês)', () => {
+    it('sem ?mes=, mostra todas as postagens e a caixa de rabisco da dona', () => {
+      logadoComo(5);
+      abrir('5');
+
+      expect(el.querySelector('.filtro-do-mes')).toBeNull();
+      expect(postagens.getPagina.calls.mostRecent().args[0]?.mes).toBeUndefined();
+      expect(el.querySelector('app-compositor-comentario')).not.toBeNull();
+    });
+
+    it('com ?mes=2026-10, só pede e mostra aquele mês, avisa e oferece ver todas', () => {
+      consulta.next(convertToParamMap({ mes: '2026-10' }));
+      abrir('5');
+
+      expect(postagens.getPagina).toHaveBeenCalledWith(jasmine.objectContaining({ autor: 5, mes: '2026-10' }));
+      expect(el.querySelector('.filtro-do-mes')!.textContent).toContain('outubro 2026');
+      expect(el.querySelector('.filtro-do-mes a')!.getAttribute('href')).toBe('/perfil/5');
+    });
+
+    it('filtrando por mês, a caixa de rabisco não aparece (publicar ali sumiria da lista filtrada)', () => {
+      logadoComo(5);
+      consulta.next(convertToParamMap({ mes: '2026-10' }));
+      abrir('5');
+
+      expect(el.querySelector('app-compositor-comentario')).toBeNull();
+    });
+
+    it('mês mal escrito na barra de endereço é ignorado', () => {
+      consulta.next(convertToParamMap({ mes: "2026-13'; drop" }));
+      abrir('5');
+
+      expect(el.querySelector('.filtro-do-mes')).toBeNull();
+      expect(postagens.getPagina.calls.mostRecent().args[0]?.mes).toBeUndefined();
+    });
+
+    it('trocar o mês na mesma página recarrega a lista do mês novo', () => {
+      abrir('5');
+      postagens.getPagina.calls.reset();
+
+      consulta.next(convertToParamMap({ mes: '2026-08' }));
+      fixture.detectChanges();
+
+      expect(postagens.getPagina).toHaveBeenCalledWith(jasmine.objectContaining({ mes: '2026-08' }));
     });
   });
 
