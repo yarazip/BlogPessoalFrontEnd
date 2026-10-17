@@ -10,16 +10,20 @@
   width: 40px;
   height: 40px;
   padding: 0;
-  border: none;
+  /* o mesmo botão de papel dos vizinhos no cabeçalho (tema e sair): contorno grosso e sombra dura */
+  border: 2px solid var(--zine-contorno);
   border-radius: 50%;
-  background: var(--secondary-color);
-  color: var(--text-color);
-  font-size: 1.4rem;
+  background: var(--zine-folha);
+  color: var(--zine-tinta);
+  box-shadow: 3px 3px 0 var(--zine-sombra);
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.1s, box-shadow 0.1s;
 
-  &:hover {
-    transform: scale(1.1);
+  &:hover,
+  &[aria-expanded='true'] {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--zine-sombra);
   }
 
   &:focus-visible {

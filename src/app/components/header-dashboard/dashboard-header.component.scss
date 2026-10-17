@@ -404,3 +404,76 @@ header {
     box-shadow: 1px 1px 0 var(--zine-sombra);
   }
 }
+
+/* ---------- celular: o tema entra no menu e o "+" vira um botão flutuante no canto inferior direito ---------- */
+
+/* o item de tema do menu só existe no celular (no desktop é o botão redondo de .header-right) */
+.nav-acoes {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    gap: 12px;
+  }
+
+  // o sino, o sair e o menu juntos, à direita
+  .header-right {
+    order: 1;
+    margin-left: auto;
+    gap: 0.75rem;
+
+    .theme-toggle {
+      display: none;
+    }
+  }
+
+  .main-nav {
+    order: 2;
+  }
+
+  .novo-rascunho {
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 1001;
+    width: 56px;
+    height: 56px;
+    font-size: 1.5rem;
+    box-shadow: 3px 3px 0 var(--zine-sombra);
+
+    // no próprio editor de rascunho novo o botão não leva a lugar nenhum e cobriria o "Publicar"
+    &.no-editor {
+      display: none;
+    }
+  }
+
+  .nav-acoes {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 2px dashed var(--zine-contorno);
+  }
+
+  .acao-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 14px 0;
+    border: none;
+    background: none;
+    color: var(--zine-tinta);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+}

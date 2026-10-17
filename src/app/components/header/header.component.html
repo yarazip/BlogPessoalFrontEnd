@@ -11,7 +11,10 @@
         <a routerLink="/" fragment="sobre" (click)="closeMobileMenu()">Sobre</a>
         <a routerLink="/" fragment="recursos" (click)="closeMobileMenu()">Recursos</a>
 
-        <!-- Só aparece no menu do celular; no desktop os botões ficam em .header-buttons -->
+        <!-- Só aparecem no menu do celular; no desktop o tema fica em .header-right e os botões em .header-buttons -->
+        <button type="button" class="tema-no-menu" (click)="toggleTheme()">
+          <app-icon [name]="isDarkMode ? 'sun' : 'moon'" /> {{ isDarkMode ? 'Modo claro' : 'Modo escuro' }}
+        </button>
         <div class="nav-acoes">
           <a routerLink="/login" class="login-btn" (click)="closeMobileMenu()">Entrar</a>
           <a routerLink="/register" class="get-started-btn" (click)="closeMobileMenu()">Começar</a>

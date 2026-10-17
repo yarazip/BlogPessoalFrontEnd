@@ -21,6 +21,13 @@
           (click)="closeMobileMenu()"
           >Novidades</a
         >
+
+        <!-- Só no menu do celular: lá o tema sai da barra e entra aqui (no desktop ele é o botão redondo de .header-right) -->
+        <div class="nav-acoes">
+          <button type="button" class="acao-menu" (click)="toggleTheme()">
+            <app-icon [name]="escuro() ? 'sun' : 'moon'" /> {{ escuro() ? 'Modo claro' : 'Modo escuro' }}
+          </button>
+        </div>
       </div>
 
       <button
@@ -36,7 +43,8 @@
     </nav>
 
     <div class="header-right">
-      <a routerLink="/postagens/nova" class="novo-rascunho" aria-label="Novo rascunho" title="Novo rascunho">
+      <!-- no celular vira o botão flutuante do canto inferior direito (e some no próprio editor de rascunho novo) -->
+      <a routerLink="/postagens/nova" routerLinkActive="no-editor" class="novo-rascunho" aria-label="Novo rascunho" title="Novo rascunho">
         <app-icon name="plus" />
       </a>
       <app-sino />
