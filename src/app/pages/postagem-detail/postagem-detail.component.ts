@@ -4,7 +4,8 @@ import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-
 import { TextoComEmojisComponent } from '../../components/texto-com-emojis/texto-com-emojis.component';
 import { BarraLateralLeituraComponent } from '../../components/barra-lateral-leitura/barra-lateral-leitura.component';
 import { ReacoesComponent } from '../../components/reacoes/reacoes.component';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -44,6 +45,7 @@ export class PostagemDetailComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly fontes = inject(FonteService);
   private readonly perfilService = inject(PerfilService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly dateBr = new DateBrPipe();
 
   /** Para o template: a fonte escolhida pela autora (nulo = a padrão do site, sem estilo). */
@@ -70,6 +72,9 @@ export class PostagemDetailComponent implements OnInit {
   totalRecados = 0;
   linkCopiado = false;
 
+  /** A postagem que a tela está mostrando agora: respostas atrasadas de uma postagem anterior são ignoradas. */
+  private idAtual = 0;
+
   /** O contador de visitas (nulo até a API responder; se falhar, a caixa não aparece). */
   visitas: number | null = null;
 
@@ -90,15 +95,29 @@ export class PostagemDetailComponent implements OnInit {
     return !!usuario && !!this.postagem?.usuario && usuario.id === this.postagem.usuario.id;
   }
 
+  /**
+   * Abre a postagem do endereço e abre outra sempre que o id do endereço muda. Os botões "postagem anterior", "próxima" e
+   * os links de "mais da autora" levam a /postagens/{outro id}: é a MESMA rota, então o Angular reaproveita esta tela em vez
+   * de criar outra, e ler o id só uma vez (do snapshot) deixava a página parada na postagem antiga.
+   */
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => this.abrir(Number(params.get('id'))));
+  }
+
+  private abrir(id: number): void {
     if (!Number.isInteger(id) || id <= 0) {
       this.router.navigate(['/explorar']);
       return;
     }
 
+    this.idAtual = id;
+    this.recomecar();
+
     this.postagemService.getById(id).subscribe({
       next: postagem => {
+        if (id !== this.idAtual) {
+          return; // o endereço já mudou de novo: esta resposta é de uma postagem que não está mais na tela
+        }
         this.fontes.carregar(postagem.fonte);
         this.postagem = postagem;
         this.totalRecados = postagem.comentarios ?? 0;
@@ -107,10 +126,30 @@ export class PostagemDetailComponent implements OnInit {
         this.contarVisita(postagem);
       },
       error: erro => {
+        if (id !== this.idAtual) {
+          return;
+        }
         this.mensagemErro = mensagemDeErro(erro, 'Postagem não encontrada.');
         this.isLoading = false;
       }
     });
+  }
+
+  /** Limpa o que era da postagem anterior antes de carregar a nova (a leitura, o livro de visitas e as curtidas nascem de novo). */
+  private recomecar(): void {
+    this.postagem = undefined;
+    this.isLoading = true;
+    this.mensagemErro = null;
+    this.perfil = null;
+    this.arquivo = [];
+    this.postagensDaAutora = [];
+    this.anterior = undefined;
+    this.proxima = undefined;
+    this.totalRecados = 0;
+    this.linkCopiado = false;
+    this.visitas = null;
+    this.idParaExcluir = null;
+    this.excluindo = false;
   }
 
   /** "3 recados no livro de visitas" (ou "nenhum recado ainda"). */
@@ -163,9 +202,15 @@ export class PostagemDetailComponent implements OnInit {
       return;
     }
     this.postagemService.registrarVisita(postagem.id).subscribe({
-      next: resposta => (this.visitas = resposta.visitas),
+      next: resposta => {
+        if (postagem.id === this.idAtual) {
+          this.visitas = resposta.visitas;
+        }
+      },
       error: () => {
-        this.visitas = postagem.visitas ?? null;
+        if (postagem.id === this.idAtual) {
+          this.visitas = postagem.visitas ?? null;
+        }
       }
     });
   }
@@ -189,6 +234,9 @@ export class PostagemDetailComponent implements OnInit {
           catchError(() => of([] as Postagem[]))
         )
     }).subscribe(({ perfil, arquivo, lista }) => {
+      if (postagem.id !== this.idAtual) {
+        return;
+      }
       this.perfil = perfil;
       this.arquivo = arquivo;
       this.postagensDaAutora = lista;
