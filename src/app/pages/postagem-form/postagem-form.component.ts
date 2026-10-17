@@ -2,9 +2,11 @@ import { Component, DestroyRef, ElementRef, HostListener, OnInit, inject, viewCh
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { PreviaRascunhoComponent } from '../../components/previa-rascunho/previa-rascunho.component';
+import { EditorDePostitsComponent } from '../../components/editor-de-postits/editor-de-postits.component';
 import { SeletorDeTemaComponent } from '../../components/seletor-de-tema/seletor-de-tema.component';
 import { SeletorDeEmojiComponent } from '../../components/seletor-de-emoji/seletor-de-emoji.component';
 import { SeletorDeFonteComponent } from '../../components/seletor-de-fonte/seletor-de-fonte.component';
@@ -20,6 +22,7 @@ import { mensagemDeErro } from '../../shared/mensagem-de-erro';
 import { DateBrPipe } from '../../shared/pipes/date-br.pipe';
 import { FontePostagem, pilhaDe } from '../../models/Fonte';
 import { LIMITE_COMENTARIO, LIMITES_POSTAGEM, PostagemRequest } from '../../models/Postagem';
+import { LadoDosPostits, Postit, postitCompleto } from '../../models/Postit';
 import { Tema } from '../../models/Tema';
 
 /** Espera depois da última tecla antes de guardar o rascunho no navegador (evita gravar a cada letra). */
@@ -38,7 +41,8 @@ export type AbaDoFormulario = 'escrever' | 'previa';
     PreviaRascunhoComponent,
     SeletorDeFonteComponent,
     SeletorDeEmojiComponent,
-    SeletorDeTemaComponent
+    SeletorDeTemaComponent,
+    EditorDePostitsComponent
   ],
   templateUrl: './postagem-form.component.html',
   styleUrls: ['./postagem-form.component.scss']
@@ -85,6 +89,12 @@ export class PostagemFormComponent implements OnInit {
   falhaAoCarregar = false;
   temas: Tema[] = [];
   semTemas = false;
+
+  /** Os post-its do rascunho (0 a 3) e o lado da tela em que aparecem. Ficam fora do FormGroup de propósito. */
+  postits: Postit[] = [];
+  ladoDosPostits: LadoDosPostits = 'DIREITA';
+  /** Avisa o salvamento automático quando os post-its mudam (o FormGroup não sabe deles). */
+  private readonly postitsAlterados = new Subject<void>();
   errorMessage: string | null = null;
 
   /** Aba aberta no rascunho: escrever ou ver a prévia de como vai aparecer. */
@@ -97,7 +107,14 @@ export class PostagemFormComponent implements OnInit {
 
   private chaveLocal = '';
   /** Valores com que o formulário começou (vazio, ou a postagem como está publicada): o que difere disso é "alteração". */
-  private valoresBase: { titulo: string; texto: string; temaId: number | null; fonte: FontePostagem | null } | null = null;
+  private valoresBase: {
+    titulo: string;
+    texto: string;
+    temaId: number | null;
+    fonte: FontePostagem | null;
+    postits?: Postit[];
+    ladoDosPostits?: LadoDosPostits;
+  } | null = null;
   private baseline = '';
   private publicado = false;
   private respostaDaSaida: ((sair: boolean) => void) | null = null;
@@ -175,6 +192,28 @@ export class PostagemFormComponent implements OnInit {
     document.getElementById(this.aba === 'escrever' ? 'aba-escrever' : 'aba-previa')?.focus();
   }
 
+  mudarPostits(postits: Postit[]): void {
+    this.postits = postits;
+    this.postitsAlterados.next();
+  }
+
+  mudarLado(lado: LadoDosPostits): void {
+    this.ladoDosPostits = lado;
+    this.postitsAlterados.next();
+  }
+
+  /** Os post-its (ou o lado) são diferentes dos do ponto de partida (vazio, ou a postagem como está publicada)? */
+  private postitsMudaram(): boolean {
+    const antes = JSON.stringify(this.valoresBase?.postits ?? []);
+    const agora = JSON.stringify(this.postits.map(p => this.normalizado(p)));
+    return antes !== agora || (this.valoresBase?.ladoDosPostits ?? 'DIREITA') !== this.ladoDosPostits;
+  }
+
+  /** Todo post-it tem o que precisa (recado com texto, foto com endereço)? */
+  get postitsProntos(): boolean {
+    return this.postits.every(postitCompleto);
+  }
+
   /** Um tema novo, criado na própria barra de ferramentas: entra na lista sem recarregar a página. */
   temaCriado(tema: Tema): void {
     this.temas = [...this.temas, tema];
@@ -210,11 +249,27 @@ export class PostagemFormComponent implements OnInit {
       return;
     }
 
+    if (!this.isComentario && !this.postitsProntos) {
+      this.errorMessage = 'Preencha os post-its (o recado ou a foto) ou remova os que ficaram vazios.';
+      return;
+    }
+
     const { titulo, texto, temaId, fonte } = this.postagemForm.getRawValue();
     // a criação por aqui é sempre de blog (comentários nascem na caixa do feed); a edição mantém o tipo
     const dados: PostagemRequest = this.isComentario
       ? { tipo: 'COMENTARIO', texto: texto! }
-      : { tipo: 'BLOG', titulo: titulo!, texto: texto!, idTema: temaId!, fonte };
+      : {
+          tipo: 'BLOG',
+          titulo: titulo!,
+          texto: texto!,
+          idTema: temaId!,
+          fonte,
+          // só manda os post-its quando há algum ou quando mudaram (lista vazia tira os que existiam); quem não usa
+          // post-its envia o mesmo de antes
+          ...(this.postits.length > 0 || this.postitsMudaram()
+            ? { postits: this.postits.map(p => this.paraEnvio(p)), ladoDosPostits: this.ladoDosPostits }
+            : {})
+        };
 
     this.isLoading = true;
     this.errorMessage = null;
@@ -247,7 +302,7 @@ export class PostagemFormComponent implements OnInit {
       this.rascunhoLocal.limpar(this.chaveLocal);
     }
     if (this.valoresBase) {
-      this.postagemForm.patchValue(this.valoresBase);
+      this.aplicarValores(this.valoresBase);
       this.postagemForm.markAsPristine();
     }
     this.recuperadoEm = null;
@@ -296,14 +351,14 @@ export class PostagemFormComponent implements OnInit {
     if (salvo) {
       const { salvoEm, ...dados } = salvo;
       if (JSON.stringify(dados) !== this.baseline) {
-        this.postagemForm.patchValue(dados);
+        this.aplicarValores(dados);
         this.recuperadoEm = salvoEm;
       } else {
         this.rascunhoLocal.limpar(this.chaveLocal); // igual ao ponto de partida: não há o que recuperar
       }
     }
 
-    this.postagemForm.valueChanges
+    merge(this.postagemForm.valueChanges, this.postitsAlterados)
       .pipe(debounceTime(ESPERA_DO_SALVAMENTO_EM_MS), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.gravarAgora());
     // sair da tela antes da pausa não perde as últimas letras
@@ -324,7 +379,41 @@ export class PostagemFormComponent implements OnInit {
 
   private valores() {
     const { titulo, texto, temaId, fonte } = this.postagemForm.getRawValue();
-    return { titulo: titulo ?? '', texto: texto ?? '', temaId, fonte };
+    return {
+      titulo: titulo ?? '',
+      texto: texto ?? '',
+      temaId,
+      fonte,
+      // só entram quando há post-its (ou o lado não é o padrão): quem não usa guarda e compara o mesmo de antes
+      ...(this.postits.length > 0 && { postits: this.postits.map(p => this.normalizado(p)) }),
+      ...(this.ladoDosPostits !== 'DIREITA' && { ladoDosPostits: this.ladoDosPostits })
+    };
+  }
+
+  /** Põe os valores (do navegador ou da postagem) no formulário e nos post-its. */
+  private aplicarValores(dados: {
+    titulo: string;
+    texto: string;
+    temaId: number | null;
+    fonte: FontePostagem | null;
+    postits?: Postit[];
+    ladoDosPostits?: LadoDosPostits;
+  }): void {
+    const { titulo, texto, temaId, fonte } = dados;
+    this.postagemForm.patchValue({ titulo, texto, temaId, fonte });
+    this.postits = (dados.postits ?? []).map(p => this.normalizado(p));
+    this.ladoDosPostits = dados.ladoDosPostits ?? 'DIREITA';
+  }
+
+  /** Sempre com as mesmas chaves, na mesma ordem: assim comparar dois post-its iguais dá igual. */
+  private normalizado(p: Postit): Postit {
+    return { tipo: p.tipo, texto: p.texto ?? null, fotoUrl: p.fotoUrl ?? null, cor: p.cor };
+  }
+
+  /** O formato que a API espera: sem os campos vazios (recado não leva foto; legenda em branco some). */
+  private paraEnvio(p: Postit): Postit {
+    const texto = p.texto?.trim() || undefined;
+    return p.tipo === 'NOTA' ? { tipo: 'NOTA', texto, cor: p.cor } : { tipo: 'FOTO', fotoUrl: p.fotoUrl, texto, cor: p.cor };
   }
 
   /** O conteúdo do formulário numa forma fixa, para comparar com o ponto de partida. */
@@ -371,6 +460,8 @@ export class PostagemFormComponent implements OnInit {
           temaId: postagem.tema?.id ?? null,
           fonte: postagem.fonte ?? null
         });
+        this.postits = (postagem.postits ?? []).map(p => this.normalizado(p));
+        this.ladoDosPostits = postagem.ladoDosPostits ?? 'DIREITA';
         this.isLoading = false;
         this.carregandoPostagem = false;
         if (!this.isComentario) {

@@ -953,4 +953,162 @@ describe('PostagemFormComponent', () => {
       expect(c.semTemas).toBeFalse();
     });
   });
+
+  describe('post-its', () => {
+    const FOTO = 'https://res.cloudinary.com/dlvrrvflc/image/upload/v1/abc.jpg';
+    const guardado = (chave = CHAVE_NOVO) => JSON.parse(localStorage.getItem(chave) ?? 'null');
+
+    it('o editor de post-its aparece no rascunho e não no rabisco', () => {
+      criar();
+      expect(el().querySelector('app-editor-de-postits')).not.toBeNull();
+
+      TestBed.resetTestingModule();
+      postagens.getById.and.returnValue(of({ id: 8, tipo: 'COMENTARIO', titulo: null, texto: 'Rabisco', tema: null }));
+      criar('8');
+      expect(el().querySelector('app-editor-de-postits')).toBeNull();
+    });
+
+    it('quem não usa post-its envia a postagem como sempre (sem os campos novos)', () => {
+      postagens.create.and.returnValue(of({ id: 1 } as Postagem));
+      const c = criar();
+      escrever(c);
+
+      c.onSubmit();
+
+      const enviado = postagens.create.calls.mostRecent().args[0];
+      expect('postits' in enviado).toBeFalse();
+      expect('ladoDosPostits' in enviado).toBeFalse();
+    });
+
+    it('envia os post-its em ordem, sem campos vazios, e o lado escolhido', () => {
+      postagens.create.and.returnValue(of({ id: 1 } as Postagem));
+      const c = criar();
+      escrever(c);
+      c.mudarPostits([
+        { tipo: 'NOTA', texto: '  Lembrar do café  ', fotoUrl: null, cor: 'AMARELO' },
+        { tipo: 'FOTO', texto: '   ', fotoUrl: FOTO, cor: 'ROSA' }
+      ]);
+      c.mudarLado('ESQUERDA');
+
+      c.onSubmit();
+
+      expect(postagens.create).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          postits: [
+            { tipo: 'NOTA', texto: 'Lembrar do café', cor: 'AMARELO' },
+            { tipo: 'FOTO', fotoUrl: FOTO, texto: undefined, cor: 'ROSA' }
+          ],
+          ladoDosPostits: 'ESQUERDA'
+        })
+      );
+    });
+
+    it('post-it vazio impede publicar e explica o que falta', () => {
+      const c = criar();
+      escrever(c);
+      c.mudarPostits([{ tipo: 'NOTA', texto: '', fotoUrl: null, cor: 'AMARELO' }]);
+      expect(c.postitsProntos).toBeFalse();
+
+      c.onSubmit();
+      fixture.detectChanges();
+
+      expect(postagens.create).not.toHaveBeenCalled();
+      expect(el().querySelector('.alert-danger')!.textContent).toContain('Preencha os post-its');
+    });
+
+    describe('editando', () => {
+      const publicada = (extra: Partial<Postagem> = {}): Postagem => ({
+        id: 5,
+        tipo: 'BLOG',
+        titulo: 'Antigo título',
+        texto: 'Texto antigo válido',
+        tema: { id: 2, descricao: 'Java' },
+        postits: [{ tipo: 'NOTA', texto: 'Já colado', cor: 'ROXO' }],
+        ladoDosPostits: 'ESQUERDA',
+        ...extra
+      });
+
+      it('carrega os post-its e o lado da postagem publicada', () => {
+        postagens.getById.and.returnValue(of(publicada()));
+        const c = criar('5');
+
+        expect(c.postits).toEqual([{ tipo: 'NOTA', texto: 'Já colado', fotoUrl: null, cor: 'ROXO' }]);
+        expect(c.ladoDosPostits).toBe('ESQUERDA');
+      });
+
+      it('sem mexer nos post-its, reenvia os mesmos (a API não recebe lista "vazia" por engano)', () => {
+        postagens.getById.and.returnValue(of(publicada()));
+        postagens.update.and.returnValue(of(publicada()));
+        const c = criar('5');
+
+        c.onSubmit();
+
+        expect(postagens.update).toHaveBeenCalledWith(5, jasmine.objectContaining({ postits: [{ tipo: 'NOTA', texto: 'Já colado', cor: 'ROXO' }], ladoDosPostits: 'ESQUERDA' }));
+      });
+
+      it('remover todos os post-its manda a lista vazia (é assim que a API tira os que existiam)', () => {
+        postagens.getById.and.returnValue(of(publicada()));
+        postagens.update.and.returnValue(of(publicada({ postits: [] })));
+        const c = criar('5');
+
+        c.mudarPostits([]);
+        c.onSubmit();
+
+        expect(postagens.update).toHaveBeenCalledWith(5, jasmine.objectContaining({ postits: [] }));
+      });
+
+      it('uma postagem antiga, sem post-its, edita sem mandar os campos novos', () => {
+        postagens.getById.and.returnValue(of(publicada({ postits: undefined, ladoDosPostits: undefined })));
+        postagens.update.and.returnValue(of(publicada()));
+        const c = criar('5');
+
+        c.onSubmit();
+
+        expect('postits' in postagens.update.calls.mostRecent().args[1]).toBeFalse();
+      });
+    });
+
+    describe('guardado no navegador', () => {
+      it('os post-its entram no salvamento automático, mesmo se só eles mudarem', fakeAsync(() => {
+        const c = criar();
+
+        c.mudarPostits([{ tipo: 'NOTA', texto: 'Guarde-me', fotoUrl: null, cor: 'VERDE' }]);
+        c.mudarLado('ESQUERDA');
+        tick(500);
+
+        expect(guardado()).toEqual(jasmine.objectContaining({
+          postits: [{ tipo: 'NOTA', texto: 'Guarde-me', fotoUrl: null, cor: 'VERDE' }],
+          ladoDosPostits: 'ESQUERDA'
+        }));
+      }));
+
+      it('ao reabrir, recupera os post-its guardados', () => {
+        localStorage.setItem(CHAVE_NOVO, JSON.stringify({
+          titulo: 'T', texto: 'texto guardado', temaId: null, fonte: null,
+          postits: [{ tipo: 'FOTO', texto: 'Legenda', fotoUrl: FOTO, cor: 'ROSA' }], ladoDosPostits: 'ESQUERDA',
+          salvoEm: '2026-10-14T10:00:00Z'
+        }));
+
+        const c = criar();
+
+        expect(c.postits).toEqual([{ tipo: 'FOTO', texto: 'Legenda', fotoUrl: FOTO, cor: 'ROSA' }]);
+        expect(c.ladoDosPostits).toBe('ESQUERDA');
+        expect(c.recuperadoEm).not.toBeNull();
+      });
+
+      it('descartar o recuperado também tira os post-its recuperados', () => {
+        localStorage.setItem(CHAVE_NOVO, JSON.stringify({
+          titulo: 'T', texto: 'texto guardado', temaId: null, fonte: null,
+          postits: [{ tipo: 'NOTA', texto: 'x', fotoUrl: null, cor: 'AMARELO' }], salvoEm: '2026-10-14T10:00:00Z'
+        }));
+        const c = criar();
+        expect(c.postits.length).toBe(1);
+
+        c.descartarRecuperado();
+
+        expect(c.postits).toEqual([]);
+        expect(c.ladoDosPostits).toBe('DIREITA');
+      });
+    });
+  });
 });

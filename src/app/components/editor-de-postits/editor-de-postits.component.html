@@ -1,0 +1,93 @@
+<section class="postits-editor" aria-labelledby="postits-titulo">
+  <h3 class="postits-titulo" id="postits-titulo">
+    ~ post-its ~ <span class="postits-quantos">({{ postits().length }} de {{ maximo }})</span>
+  </h3>
+  <p class="postits-ajuda">Cole até {{ maximo }} recados ou fotos ao lado do texto, como num caderno.</p>
+
+  @if (postits().length > 0) {
+    <fieldset class="postits-lado">
+      <legend>De que lado da tela?</legend>
+      <label><input type="radio" name="lado-dos-postits" value="ESQUERDA" [checked]="lado() === 'ESQUERDA'" (change)="escolherLado('ESQUERDA')" /> Esquerdo</label>
+      <label><input type="radio" name="lado-dos-postits" value="DIREITA" [checked]="lado() === 'DIREITA'" (change)="escolherLado('DIREITA')" /> Direito</label>
+    </fieldset>
+  }
+
+  <ul class="postits-lista">
+    @for (p of postits(); track $index; let i = $index) {
+      <li class="postit-editor" [style.--papel]="papelDaCor(p.cor)">
+        <div class="postit-topo">
+          <span class="postit-tipo">{{ p.tipo === 'NOTA' ? 'Recado' : 'Foto' }} {{ i + 1 }}</span>
+          <div class="postit-acoes">
+            <button type="button" class="mini" aria-label="Subir" [disabled]="i === 0" (click)="mover(i, -1)">↑</button>
+            <button type="button" class="mini" aria-label="Descer" [disabled]="i === postits().length - 1" (click)="mover(i, 1)">↓</button>
+            <button type="button" class="mini perigo" aria-label="Remover post-it" (click)="remover(i)">✕</button>
+          </div>
+        </div>
+
+        <div class="cores" role="radiogroup" [attr.aria-label]="'Cor do post-it ' + (i + 1)">
+          @for (c of cores; track c.id) {
+            <button
+              type="button"
+              class="cor"
+              role="radio"
+              [style.background]="c.papel"
+              [class.escolhida]="p.cor === c.id"
+              [attr.aria-checked]="p.cor === c.id"
+              [attr.aria-label]="c.nome"
+              (click)="mudarCor(i, c.id)"
+            ></button>
+          }
+        </div>
+
+        @if (p.tipo === 'NOTA') {
+          <label class="visually-hidden" [for]="'postit-texto-' + i">Recado do post-it {{ i + 1 }}</label>
+          <textarea
+            [id]="'postit-texto-' + i"
+            rows="3"
+            [value]="p.texto ?? ''"
+            [attr.maxlength]="limiteRecado"
+            placeholder="Escreva o recado..."
+            (input)="digitar(i, $event)"
+          ></textarea>
+          <small class="contador">{{ (p.texto ?? '').length }}/{{ limiteRecado }}</small>
+        } @else {
+          @if (p.fotoUrl) {
+            <img class="postit-previa" [src]="p.fotoUrl" alt="Foto do post-it {{ i + 1 }}" />
+          } @else {
+            <p class="postit-sem-foto">Nenhuma foto escolhida ainda.</p>
+          }
+          <label class="trocar-foto">
+            <input type="file" hidden [accept]="tiposDeFoto" [disabled]="enviando !== null" (change)="escolherFoto(i, $event)" />
+            <span class="botao-foto">{{ enviando === i ? 'Enviando...' : p.fotoUrl ? 'Trocar foto' : 'Escolher foto' }}</span>
+          </label>
+          <label class="visually-hidden" [for]="'postit-legenda-' + i">Legenda da foto {{ i + 1 }}</label>
+          <input
+            [id]="'postit-legenda-' + i"
+            type="text"
+            class="legenda"
+            [value]="p.texto ?? ''"
+            [attr.maxlength]="limiteLegenda"
+            placeholder="Legenda (opcional)"
+            (input)="digitar(i, $event)"
+          />
+        }
+
+        @if (!postitCompleto(p)) {
+          <small class="aviso">{{ p.tipo === 'NOTA' ? 'Escreva o recado ou remova este post-it.' : 'Escolha a foto ou remova este post-it.' }}</small>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (erro) {
+    <p class="postits-erro" role="alert">{{ erro }}</p>
+  }
+
+  <div class="postits-adicionar">
+    <button type="button" class="adicionar" [disabled]="!cabeMais" (click)="adicionar('NOTA')">+ Recado</button>
+    <button type="button" class="adicionar" [disabled]="!cabeMais" (click)="adicionar('FOTO')">+ Foto</button>
+    @if (!cabeMais) {
+      <small class="cheio">Já são {{ maximo }} post-its.</small>
+    }
+  </div>
+</section>

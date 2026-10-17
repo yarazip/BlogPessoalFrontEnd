@@ -25,6 +25,19 @@ describe('Serviços de dados', () => {
       expect(http.expectOne(`${api}/postagens/4`).request.method).toBe('GET');
     });
 
+    it('envia a foto de um post-it como formulário (campo "foto") e devolve o endereço', () => {
+      let url = '';
+      service.enviarFotoDePostit(new File(['x'], 'foto.png', { type: 'image/png' })).subscribe(r => (url = r.url));
+
+      const req = http.expectOne(`${api}/postagens/postits/foto`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body instanceof FormData).toBeTrue();
+      expect((req.request.body as FormData).get('foto')).toBeInstanceOf(File);
+      req.flush({ url: 'https://res.cloudinary.com/x/foto.png' });
+
+      expect(url).toBe('https://res.cloudinary.com/x/foto.png');
+    });
+
     it('pede uma página em /postagens/pagina com os parâmetros informados', () => {
       service.getPagina({ page: 2, size: 10, autor: 3 }).subscribe();
 

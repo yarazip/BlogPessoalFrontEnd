@@ -1,0 +1,250 @@
+:host {
+  display: block;
+}
+
+.postits-editor {
+  margin-bottom: 1.5rem;
+  padding: 14px 16px;
+  border: 2px dashed var(--zine-contorno);
+  border-radius: 6px;
+}
+
+.postits-titulo {
+  margin: 0;
+  font-family: 'Mansalva', cursive;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.postits-quantos {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.postits-ajuda {
+  margin: 2px 0 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.postits-lado {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: none;
+
+  legend {
+    padding: 0;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  input {
+    width: auto;
+    margin: 0;
+  }
+}
+
+.postits-lista {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+/* cada post-it do editor já aparece na cor escolhida */
+.postit-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border: 2px solid #1f1a2e;
+  background: var(--papel, #ffe35c);
+  color: #1f1a2e;
+  box-shadow: 4px 4px 0 var(--zine-sombra);
+
+  textarea,
+  .legenda {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border: 2px solid #1f1a2e;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #1f1a2e;
+    font: inherit;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      box-shadow: 3px 3px 0 #1f1a2e;
+    }
+  }
+
+  textarea {
+    min-height: 70px;
+  }
+}
+
+.postit-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.postit-tipo {
+  font-family: 'Mansalva', cursive;
+  font-size: 1.1rem;
+}
+
+.postit-acoes {
+  display: flex;
+  gap: 4px;
+}
+
+.mini {
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid #1f1a2e;
+  border-radius: 6px;
+  background: #fff;
+  color: #1f1a2e;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.perigo:hover:not(:disabled) {
+    background: #ffb3ad;
+  }
+
+  @media (max-width: 480px) {
+    min-width: 44px;
+    height: 44px;
+  }
+}
+
+.cores {
+  display: flex;
+  gap: 8px;
+}
+
+.cor {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid #1f1a2e;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &.escolhida {
+    box-shadow: 0 0 0 3px #fff, 0 0 0 5px #1f1a2e;
+  }
+
+  @media (max-width: 480px) {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.contador {
+  align-self: flex-end;
+  font-size: 0.8rem;
+}
+
+.postit-previa {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  border: 2px solid #1f1a2e;
+  object-fit: cover;
+  background: #fff;
+}
+
+.postit-sem-foto {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.botao-foto {
+  display: inline-block;
+  padding: 5px 14px;
+  border: 2px solid #1f1a2e;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 2px 2px 0 #1f1a2e;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.aviso {
+  font-weight: 700;
+  color: #7a1a12;
+}
+
+.postits-erro {
+  margin: 0 0 10px;
+  color: #d93025;
+  font-size: 0.9rem;
+}
+
+.postits-adicionar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.adicionar {
+  padding: 6px 14px;
+  border: 2px solid var(--zine-contorno);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 44px;
+  }
+}
+
+.cheio {
+  color: var(--text-muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

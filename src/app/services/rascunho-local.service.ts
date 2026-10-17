@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FONTES, FontePostagem } from '../models/Fonte';
+import { CORES_DO_POSTIT, LadoDosPostits, MAXIMO_DE_POSTITS, Postit } from '../models/Postit';
 
 /** O que a tela de escrever guarda no navegador enquanto a pessoa digita. */
 export interface RascunhoSalvo {
@@ -7,6 +8,9 @@ export interface RascunhoSalvo {
   texto: string;
   temaId: number | null;
   fonte: FontePostagem | null;
+  /** Só quando há post-its (ou o lado não é o padrão): quem não usa post-its guarda o mesmo de antes. */
+  postits?: Postit[];
+  ladoDosPostits?: LadoDosPostits;
   /** Quando foi guardado (ISO), para avisar "salvo às 14:32". */
   salvoEm: string;
 }
@@ -67,12 +71,38 @@ export class RascunhoLocalService {
     ) {
       return null;
     }
+    const postits = v['postits'] === undefined ? undefined : this.validarPostits(v['postits']);
+    const lado = v['ladoDosPostits'];
+    if (postits === null || (lado !== undefined && lado !== 'ESQUERDA' && lado !== 'DIREITA')) {
+      return null;
+    }
     return {
       titulo: v['titulo'],
       texto: v['texto'],
       temaId: v['temaId'] as number | null,
       fonte: v['fonte'] as FontePostagem | null,
+      ...(postits !== undefined && { postits }),
+      ...(lado !== undefined && { ladoDosPostits: lado as LadoDosPostits }),
       salvoEm: v['salvoEm']
     };
+  }
+
+  /** Os post-its guardados: até 3, de tipo e cor conhecidos e foto só em https. Qualquer outra coisa invalida tudo. */
+  private validarPostits(valor: unknown): Postit[] | null {
+    if (!Array.isArray(valor) || valor.length > MAXIMO_DE_POSTITS) {
+      return null;
+    }
+    const postits: Postit[] = [];
+    for (const item of valor) {
+      const p = item as Record<string, unknown> | null;
+      const textoValido = p?.['texto'] === undefined || p?.['texto'] === null || typeof p?.['texto'] === 'string';
+      const fotoValida = p?.['fotoUrl'] === undefined || p?.['fotoUrl'] === null || (typeof p?.['fotoUrl'] === 'string' && p['fotoUrl'].startsWith('https://'));
+      const corValida = CORES_DO_POSTIT.some(c => c.id === p?.['cor']);
+      if (!p || (p['tipo'] !== 'NOTA' && p['tipo'] !== 'FOTO') || !textoValido || !fotoValida || !corValida) {
+        return null;
+      }
+      postits.push({ tipo: p['tipo'], texto: (p['texto'] as string | null | undefined) ?? null, fotoUrl: (p['fotoUrl'] as string | null | undefined) ?? null, cor: p['cor'] as Postit['cor'] });
+    }
+    return postits;
   }
 }
