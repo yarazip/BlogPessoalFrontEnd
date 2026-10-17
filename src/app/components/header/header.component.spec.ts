@@ -71,4 +71,16 @@ describe('HeaderComponent', () => {
     expect(fixture.componentInstance.isDarkMode).toBe(!antes);
     expect(localStorage.getItem('theme')).toBe(antes ? 'light' : 'dark');
   });
+
+  it('o menu do celular também tem o tema, com o texto do tema que vai ligar', () => {
+    const tema = () => element.querySelector<HTMLButtonElement>('.nav-links .tema-no-menu')!;
+    const antes = fixture.componentInstance.isDarkMode;
+    expect(tema().textContent!.trim()).toBe(antes ? 'Modo claro' : 'Modo escuro');
+
+    tema().click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isDarkMode).toBe(!antes);
+    expect(tema().textContent!.trim()).toBe(antes ? 'Modo escuro' : 'Modo claro');
+  });
 });

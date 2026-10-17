@@ -510,3 +510,34 @@ header {
 :host-context(.dark-mode) .main-nav .nav-links a::after {
   background-color: var(--zine-fita-logo);
 }
+
+/* ---------- celular: o botão de tema também entra no menu, e a barra fica só com o logo e o menu ---------- */
+.tema-no-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .header-right .theme-toggle {
+    display: none;
+  }
+
+  .main-nav .nav-links .tema-no-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 14px 0;
+    border: none;
+    background: none;
+    color: var(--zine-tinta);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+}

@@ -25,7 +25,7 @@ describe('DashboardHeaderComponent', () => {
   });
 
   it('o menu começa pelo Mural, tem o Eu (perfil, com as postagens dentro) e deixa Novidades por último', () => {
-    const itens = Array.from(el.querySelectorAll<HTMLAnchorElement>('.nav-links a')).map(a => a.getAttribute('href'));
+    const itens = Array.from(el.querySelectorAll<HTMLAnchorElement>('.nav-links > a')).map(a => a.getAttribute('href'));
 
     expect(itens).toEqual(['/explorar', '/perfil/24', '/dashboard']);
   });
@@ -72,6 +72,23 @@ describe('DashboardHeaderComponent', () => {
       fixture.detectChanges();
 
       expect(botao().getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('o menu ganha só o tema (o "+", o sino e o sair continuam fora dele)', () => {
+      const acoes = Array.from(el.querySelectorAll('.nav-links .nav-acoes .acao-menu')).map(b => b.textContent!.trim());
+
+      expect(acoes).toEqual([jasmine.stringMatching(/^Modo (claro|escuro)$/)]);
+      expect(el.querySelector('.nav-links .novo-rascunho, .nav-links app-sino, .nav-links .logout-btn')).toBeNull();
+    });
+
+    it('o item de tema do menu troca o tema e o próprio texto', () => {
+      const tema = () => el.querySelector<HTMLButtonElement>('.nav-acoes .acao-menu')!;
+      const antes = tema().textContent!.trim();
+
+      tema().click();
+      fixture.detectChanges();
+
+      expect(tema().textContent!.trim()).not.toBe(antes);
     });
   });
 

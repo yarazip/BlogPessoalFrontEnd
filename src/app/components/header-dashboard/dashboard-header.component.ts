@@ -19,6 +19,9 @@ export class DashboardHeaderComponent {
 
   isMobileMenuOpen = false;
 
+  /** O tema está escuro agora: o item do menu do celular oferece o outro. */
+  readonly escuro = this.themeService.escuro;
+
   /** Id de quem está logado, para o link do próprio perfil (a página guarda perfil e postagens juntos). */
   get idDoUsuario(): number | string {
     return this.authService.getUsuario()?.id ?? '';
