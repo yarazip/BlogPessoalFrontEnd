@@ -1,3 +1,4 @@
+import { SeloVerificadoComponent } from '../../components/selo-verificado/selo-verificado.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ConfirmarExclusaoComponent } from '../../components/confirmar-exclusao/confirmar-exclusao.component';
 import { ComentariosDaPostagemComponent } from '../../components/comentarios-da-postagem/comentarios-da-postagem.component';
@@ -30,6 +31,7 @@ const MESES = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'O
   selector: 'app-postagem-detail',
   standalone: true,
   imports: [
+    SeloVerificadoComponent,
     IconComponent,
     RouterLink,
     ReacoesComponent,

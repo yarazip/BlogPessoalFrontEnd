@@ -184,6 +184,14 @@ describe('PerfilComponent (perfil e postagens numa página só)', () => {
       expect(el.querySelector<HTMLImageElement>('.perfil-foto')!.getAttribute('src')).toBe('assets/img/sem-foto.svg');
     });
 
+    it('conta da administração ganha o selo de verificado ao lado do nome; as outras, não', () => {
+      abrir('5', of(perfil({ verificado: true })));
+      expect(el.querySelector('.perfil-nome app-selo-verificado')!.getAttribute('aria-label')).toBe('Conta verificada');
+
+      abrir('5');
+      expect(el.querySelector('.perfil-nome app-selo-verificado')).toBeNull();
+    });
+
     it('sem bio mostra "Sem bio ainda."', () => {
       abrir('5', of(perfil({ bio: null })));
 

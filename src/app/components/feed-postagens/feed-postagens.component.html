@@ -37,7 +37,7 @@
         }
 
         <header class="post-cabecalho" [class.com-menu]="ehMinha(postagem)">
-          <h4 class="autor"><a [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a></h4>
+          <h4 class="autor"><a [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}@if (postagem.usuario?.verificado) { <app-selo-verificado /> }</a></h4>
           <span class="meta">· {{ postagem.data | dateBr: 'dd/MM/yyyy' }}</span>
           @if (minutosDe(postagem); as minutos) {
             <span class="meta leitura">· {{ minutos }} min de leitura</span>

@@ -29,7 +29,7 @@
               <h1 class="detalhe-titulo" [style.font-family]="pilhaDe(postagem.fonte)" [style.font-weight]="pesoDoTituloDe(postagem.fonte)">{{ postagem.titulo }}</h1>
             }
             <p class="detalhe-assinatura">
-              postado por <a class="detalhe-nome" [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}</a>
+              postado por <a class="detalhe-nome" [routerLink]="['/perfil', postagem.usuario?.id]">{{ postagem.usuario?.nome }}@if (postagem.usuario?.verificado) { <app-selo-verificado /> }</a>
               às <time class="detalhe-hora" [attr.datetime]="postagem.data">{{ horaDe(postagem.data) }}</time>
               @if (postagem.tema) {
                 em <span class="detalhe-tema">#{{ nomeDoTema(postagem.tema.descricao) }}</span>

@@ -82,7 +82,7 @@
             }
             <div>
               <p class="nome">
-                {{ postagem.usuario?.nome }}
+                {{ postagem.usuario?.nome }}@if (postagem.usuario?.verificado) { <app-selo-verificado /> }
                 <span>
                   · {{ postagem.data | dateBr: 'dd/MM/yyyy' }}
                   @if (postagem.minutosLeitura) {
