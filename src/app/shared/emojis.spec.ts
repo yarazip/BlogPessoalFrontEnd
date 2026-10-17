@@ -1,5 +1,5 @@
 import { ICON_NAMES } from './icon/icon-names';
-import { EMOJIS, codigoDe, iconeDe, inserirNoTexto, partirEmTrechos } from './emojis';
+import { EMOJIS, codigoDe, comEmojiNaFrente, iconeDe, inserirNoTexto, partirEmTrechos } from './emojis';
 
 describe('emojis', () => {
   const sorriso = EMOJIS.find(e => e.nome === 'sorriso')!;
@@ -102,6 +102,33 @@ describe('emojis', () => {
     it('não insere se passar do limite de caracteres', () => {
       expect(inserirNoTexto('x'.repeat(278), 278, 278, ':sol:', 280)).toBeNull();
       expect(inserirNoTexto('x'.repeat(275), 275, 275, ':sol:', 280)).not.toBeNull();
+    });
+  });
+
+  describe('comEmojiNaFrente', () => {
+    const sol = EMOJIS.find(e => e.nome === 'sol')!;
+    const lua = EMOJIS.find(e => e.nome === 'lua')!;
+
+    it('põe o emoji na frente do texto, com um espaço', () => {
+      expect(comEmojiNaFrente('sonolenta, mas feliz', sol, 60)).toBe(':sol: sonolenta, mas feliz');
+    });
+
+    it('troca o emoji que já estava na frente, em vez de acumular', () => {
+      expect(comEmojiNaFrente(':sol: animada', lua, 60)).toBe(':lua: animada');
+      expect(comEmojiNaFrente(':sol:   animada', lua, 60)).toBe(':lua: animada');
+    });
+
+    it('só o emoji da frente é trocado; os do meio do texto ficam', () => {
+      expect(comEmojiNaFrente(':sol: oi :lua: tchau', sol, 60)).toBe(':sol: oi :lua: tchau');
+    });
+
+    it('texto vazio vira só o emoji', () => {
+      expect(comEmojiNaFrente('', sol, 60)).toBe(':sol:');
+    });
+
+    it('não deixa passar do limite de caracteres', () => {
+      expect(comEmojiNaFrente('x'.repeat(57), sol, 60)).toBeNull();
+      expect(comEmojiNaFrente('x'.repeat(50), sol, 60)).not.toBeNull();
     });
   });
 });

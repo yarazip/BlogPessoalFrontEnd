@@ -2,19 +2,21 @@ import { Component, inject, input, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LIMITE_HUMOR } from '../../models/Perfil';
 import { PerfilService } from '../../services/perfil.service';
+import { Emoji, comEmojiNaFrente } from '../../shared/emojis';
 import { mensagemDeErro } from '../../shared/mensagem-de-erro';
+import { SeletorDeEmojiComponent } from '../seletor-de-emoji/seletor-de-emoji.component';
 import { TextoComEmojisComponent } from '../texto-com-emojis/texto-com-emojis.component';
 
 /**
- * O "humor do dia" do perfil: uma frase curta ("sonolenta, mas feliz"), mostrada para todo mundo e editável só pela
- * dona. Aceita os emojis da Rasura (`:sol:`). Texto vazio apaga o humor.
+ * O "humor do dia" do perfil: uma frase curta com um emoji da Rasura ao lado ("☀ sonolenta, mas feliz"), mostrada para todo
+ * mundo, sem rótulo, e editável só pela dona. O emoji escolhido no seletor fica na frente do texto. Texto vazio apaga o humor.
  *
  *     <app-humor-do-dia [perfilId]="perfil.id" [humor]="perfil.humor" [ehDona]="ehOProprioPerfil" (atualizado)="..." />
  */
 @Component({
   selector: 'app-humor-do-dia',
   standalone: true,
-  imports: [ReactiveFormsModule, TextoComEmojisComponent],
+  imports: [ReactiveFormsModule, TextoComEmojisComponent, SeletorDeEmojiComponent],
   templateUrl: './humor-do-dia.component.html',
   styleUrls: ['./humor-do-dia.component.scss']
 })
@@ -46,6 +48,15 @@ export class HumorDoDiaComponent {
   cancelar(): void {
     this.editando = false;
     this.erro = null;
+  }
+
+  /** O emoji escolhido vai para a frente do humor, no lugar do que já estava lá. Não cabendo no limite, nada muda. */
+  escolherEmoji(emoji: Emoji): void {
+    const novo = comEmojiNaFrente(this.campo.value, emoji, this.limite);
+    if (novo !== null) {
+      this.campo.setValue(novo);
+      this.campo.markAsDirty();
+    }
   }
 
   salvar(): void {
