@@ -171,26 +171,47 @@
   overflow-wrap: anywhere;
 }
 
-/* ---------- visitas: o contador de visor ---------- */
+/* ---------- visitas: fichas de papel com número à mão, no estilo do resto do site ---------- */
 .contador {
   display: flex;
   justify-content: center;
-  gap: 3px;
-  margin: 2px 0 8px;
+  gap: 5px;
+  margin: 4px 0 10px;
 }
 
+/* cada dígito é uma ficha com borda grossa e sombra dura, como as caixas; levemente torta, como colada à mão */
 .digito {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 32px;
+  width: 28px;
+  height: 38px;
   border: 2px solid var(--zine-contorno);
-  background: #1f1a2e;
-  color: #6bff8f;
-  font-family: 'Courier New', monospace;
-  font-size: 1.3rem;
-  font-weight: 700;
-  text-shadow: 0 0 6px #6bff8f;
+  background: var(--card-bg);
+  box-shadow: 2px 2px 0 var(--zine-sombra);
+  color: var(--text-color);
+  font-family: 'Mansalva', cursive;
+  font-size: 1.7rem;
+  line-height: 1;
+
+  &:nth-child(odd) {
+    transform: rotate(-1.5deg);
+  }
+
+  &:nth-child(even) {
+    transform: rotate(1.2deg);
+  }
+
+  /* os zeros de preenchimento esmaecem: só o número de verdade tem a tinta cheia */
+  &.apagado {
+    color: var(--text-muted);
+    opacity: 0.55;
+  }
+
+  /* o último dígito ganha o marca-texto */
+  &:last-child {
+    background: var(--zine-marca);
+    color: var(--zine-tinta-marca);
+  }
 }
 
 .contador-legenda {
