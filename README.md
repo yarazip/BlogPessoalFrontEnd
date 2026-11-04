@@ -1,9 +1,33 @@
-# Rasura (front-end)
+# Rasura
 
-Front-end em **Angular 19** do Blog Pessoal: cadastro e login, postagens por usuário, feed público e dashboard.
-O back-end (Spring Boot) fica em outro repositório: [BlogPessoal](https://github.com/yarazip/BlogPessoal).
+**Rasura** é uma rede de blogs pessoais: cada pessoa tem seu perfil, escreve postagens e lê, comenta e
+reage às postagens dos outros. Este repositório é o **front-end em Angular 19**; a API é em **Java com
+Spring Boot** e fica em outro repositório: [BlogPessoal](https://github.com/yarazip/BlogPessoal).
 
-Publicado no Netlify.
+**Acesse:** [rasura.netlify.app](https://rasura.netlify.app)
+
+Projeto desenvolvido por mim, [Yara Rosa](https://www.linkedin.com/in/yara-rosa-dev), do front-end ao back-end.
+
+## Funcionalidades
+
+- Cadastro com confirmação de e-mail, login com JWT e recuperação de senha
+- Postagens com tema, edição, exclusão e contagem de visitas
+- Mural com as postagens de todos, paginado ("Carregar mais")
+- Comentários, reações com emoji e post-its nas postagens
+- Perfil com foto, bio, "humor do dia", postagens em destaque e arquivo por mês
+- Notificações (sino) de comentários e curtidas
+- Painel com estatísticas (Chart.js) e avisos da administração, com selo de verificado
+- Tema claro e escuro, layout responsivo e cuidados de acessibilidade
+
+## Tecnologias
+
+| Front-end (este repositório) | Back-end ([BlogPessoal](https://github.com/yarazip/BlogPessoal)) |
+|---|---|
+| Angular 19, TypeScript, RxJS | Java, Spring Boot |
+| Rotas com lazy loading, guards e interceptor HTTP | API REST com autenticação JWT |
+| Chart.js, date-fns | Erros no padrão RFC 7807 |
+| Jasmine + Karma (67 arquivos de teste), ESLint | Publicada no Render |
+| Publicado no Netlify, com cabeçalhos de segurança (CSP) | |
 
 ## Rodando localmente
 
@@ -87,7 +111,6 @@ Content-Security-Policy restrita. Ao mudar a URL da API em `environment.prod.ts`
 
 ## Limitações conhecidas
 
-- "Esqueci a senha" ainda não existe na API: a tela apenas informa que está em desenvolvimento.
 - Não há tela para criar temas (hoje são criados pela API). Um banco novo começa sem temas.
 - O token fica no `localStorage`, como é comum em SPAs com JWT; a CSP e a ausência de `innerHTML` com
   conteúdo de usuário reduzem o risco de XSS, mas não o eliminam por completo.
