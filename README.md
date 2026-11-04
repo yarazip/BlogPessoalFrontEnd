@@ -2,7 +2,7 @@
 
 **Rasura** é uma rede de blogs pessoais: cada pessoa tem seu perfil, escreve postagens e lê, comenta e
 reage às postagens dos outros. Este repositório é o **front-end em Angular 19**; a API é em **Java com
-Spring Boot** e fica em outro repositório: [BlogPessoal](https://github.com/yarazip/BlogPessoal).
+Spring Boot** e fica em um repositório privado.
 
 **Acesse:** [rasura.netlify.app](https://rasura.netlify.app)
 
@@ -21,7 +21,7 @@ Projeto desenvolvido por mim, [Yara Rosa](https://www.linkedin.com/in/yara-rosa-
 
 ## Tecnologias
 
-| Front-end (este repositório) | Back-end ([BlogPessoal](https://github.com/yarazip/BlogPessoal)) |
+| Front-end (este repositório) | Back-end (repositório privado) |
 |---|---|
 | Angular 19, TypeScript, RxJS | Java, Spring Boot |
 | Rotas com lazy loading, guards e interceptor HTTP | API REST com autenticação JWT |
@@ -31,7 +31,7 @@ Projeto desenvolvido por mim, [Yara Rosa](https://www.linkedin.com/in/yara-rosa-
 
 ## Rodando localmente
 
-Pré-requisitos: Node 22 e o back-end rodando em `http://localhost:8080` (veja o README dele).
+Pré-requisitos: Node 22 e o back-end rodando em `http://localhost:8080`.
 
 ```bash
 npm ci
